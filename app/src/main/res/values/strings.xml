@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">HealthConnect</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- strings to be copied for manage group activity -->
+    <string name="select_group">Select Group</string>
+    <string name="manage_group">Manage Group</string>
+    <string name="invite_user">Invite User</string>
+    <string name="select_role">Select Role</string>
+    <string name="edit_user">Edit User</string>
+
+    <string name="title_activity_manage_users">ManageUsers</string>
+    <string name="title_section1">Members</string>
+    <string name="title_section2">Edit User</string>
+    <string name="title_section3">Invite User</string>
+
+</resources>
