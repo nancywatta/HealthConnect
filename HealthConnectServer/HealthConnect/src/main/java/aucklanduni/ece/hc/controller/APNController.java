@@ -19,8 +19,6 @@ import aucklanduni.ece.hc.service.ApnUserService;
 public class APNController {
 	@Autowired
 	private ApnUserService apnUserService;
-	
-	
 
 	@RequestMapping(value="/showAll")
 	public String showAll(HttpServletRequest request, HttpServletResponse response){
@@ -34,7 +32,6 @@ public class APNController {
 		}
 		return "apnUser/showAll";
 	}
-	
 
 	@RequestMapping(value="/add")
 	public String add(HttpServletRequest request, HttpServletResponse response){
@@ -52,7 +49,6 @@ public class APNController {
 		}
 		return "apnUser/add";
 	}
-
 
 	@RequestMapping(value="/update")
 	public String update(HttpServletRequest request, HttpServletResponse response) throws Exception{

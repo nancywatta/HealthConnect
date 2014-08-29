@@ -45,6 +45,8 @@ public class Account implements Serializable {
 	@Column(name = "last_login_date")
 	@Temporal(TemporalType.DATE)
 	private Date lastLoginDate;
+	
+	private Dictionary role;
 
 	public long getId() {
 		return id;
@@ -101,8 +103,18 @@ public class Account implements Serializable {
 	public void setLastLoginDate(Date lastLoginDate) {
 		this.lastLoginDate = lastLoginDate;
 	}
+	
+	public void setRole(Dictionary role) {
+		this.role = role;
+	}
+	
+	public Dictionary getRole() {
+		return role;
+	}
+	
 	@Override
 	public String toString() {
 		return ReflectionToStringBuilder.toString(this);
 	}
+	
 }

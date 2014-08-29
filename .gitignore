@@ -3,3 +3,15 @@
 /.idea/workspace.xml
 .DS_Store
 /build
+
+HealthConnectServer/HealthConnect/target/m2e-wtp/web-resources/META-INF/maven/ece.auckland.ac.nz/HealthConnect/pom.properties
+
+HealthConnectServer/HealthConnect/target/m2e-wtp/web-resources/META-INF/MANIFEST.MF
+
+HealthConnectServer/HealthConnect/target/classes/jdbc.properties
+
+HealthConnectServer/HealthConnect/src/main/resources/jdbc.properties
+
+HealthConnectServer/HealthConnect/.project
+
+HealthConnectServer/HealthConnect/.classpath

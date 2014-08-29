@@ -13,7 +13,7 @@ CREATE TABLE `ACCOUNT` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8
 ;
 
-CREATE TABLE `GROUP` (
+CREATE TABLE `GROUP_INFO` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `groupname` varchar(64) NOT NULL,
   `created_date` datetime DEFAULT NULL,
@@ -31,7 +31,7 @@ CREATE TABLE `MEMBER` (
   PRIMARY KEY (`id`),
   KEY `mem_acc_fk` (`account_id`),
   KEY `mem_group_fk` (`group_id`),
-  CONSTRAINT `mem_group_fk` FOREIGN KEY (`group_id`) REFERENCES `group` (`id`),
+  CONSTRAINT `mem_group_fk` FOREIGN KEY (`group_id`) REFERENCES `group_info` (`id`),
   CONSTRAINT `mem_acc_fk` FOREIGN KEY (`account_id`) REFERENCES `account` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8
 ;

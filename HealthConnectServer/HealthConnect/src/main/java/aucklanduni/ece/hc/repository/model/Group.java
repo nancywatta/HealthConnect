@@ -15,7 +15,7 @@ import javax.persistence.TemporalType;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 
 @Entity
-@Table(name = "GROUP")
+@Table(name = "GROUP_INFO")
 public class Group implements Serializable {
 
 	private static final long serialVersionUID = 1L;
