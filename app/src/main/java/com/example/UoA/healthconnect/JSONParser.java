@@ -45,8 +45,15 @@ public class JSONParser {
                         jRole.getString("type"), jRole.getString("value"), jRole.getString("name"),
                         jRole.getString("description"));
 
+                String username = "";
+                try {
+                    username = jResult.getString("username");
+                }catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
                 Member member = new Member(jResult.getLong("id"), jResult.getString("email"),
-                        jResult.getString("username"), role);
+                        username, role);
 
                 members.add(member);
             }

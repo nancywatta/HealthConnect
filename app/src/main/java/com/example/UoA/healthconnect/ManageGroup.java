@@ -43,7 +43,7 @@ public class ManageGroup extends ActionBarActivity {
 	}
 
     private void getGroups() {
-        String url = "http://192.168.1.3:8080/HealthConnect/Group/showGroups";
+        String url = "http://192.168.1.6:8080/HealthConnect/Group/showGroups";
 
         String parameters = "accountId=" + accountId;
 

@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,10 +34,13 @@ public class InviteFragment extends Fragment {
     Context context;
     long groupId;
     long accountId;
+    long roleId;
     String groupName;
     TextView groupText;
+    TextView emailText;
     private RoleSpinAdapter adapter;
     Spinner roleSpinner;
+    Button saveButton;
 
     public InviteFragment() {
 
@@ -54,7 +58,18 @@ public class InviteFragment extends Fragment {
         groupName = ManageUsers.getGroupName();
 
         groupText = (TextView) dataView.findViewById(R.id.GroupText);
+        emailText = (TextView) dataView.findViewById(R.id.et_email_invite_user);
+        saveButton = (Button)dataView.findViewById(R.id.button_invite_user);
         groupText.setText(groupName);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                try {
+                    SaveInDB();
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
         roleSpinner = (Spinner) dataView.findViewById(R.id.spinner_role);
 
@@ -64,7 +79,7 @@ public class InviteFragment extends Fragment {
     }
 
     private void getRoles() {
-        String url = "http://192.168.1.3:8080/HealthConnect/Dictionary/showRoles";
+        String url = "http://192.168.1.6:8080/HealthConnect/Dictionary/showRoles";
 
         String parameters = "accountId=" + accountId + "&groupId=" + groupId;
 
@@ -176,15 +191,15 @@ public class InviteFragment extends Fragment {
 
         // Executed after the complete execution of doInBackground() method
         @Override
-        protected void onPostExecute(ArrayList<Dictionary> memberList){
-            if(memberList == null || memberList.size() <1) {
+        protected void onPostExecute(ArrayList<Dictionary> roleList){
+            if(roleList == null || roleList.size() <1) {
                 Toast.makeText(getActivity(), "No Roles Available", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             adapter = new RoleSpinAdapter(getActivity(),
                     android.R.layout.simple_spinner_item,
-                    memberList);
+                    roleList);
 
             roleSpinner.setAdapter(adapter);
             roleSpinner.setAdapter(adapter);
@@ -194,7 +209,7 @@ public class InviteFragment extends Fragment {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view,
                                            int position, long id) {
-
+                    roleId = adapter.getItem(position).getId();
                 }
                 @Override
                 public void onNothingSelected(AdapterView<?> adapter) {  }
@@ -203,4 +218,27 @@ public class InviteFragment extends Fragment {
     }
 
 
+    public void SaveInDB() {
+
+        if(emailText.getText().toString().compareTo("")==0) {
+            Toast.makeText(getActivity(), "Enter Email Id", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String url = "http://192.168.1.6:8080/HealthConnect/Group/inviteUser";
+
+        String parameters = "accountId=" + accountId + "&groupId=" + groupId
+                + "&emailId=" + emailText.getText().toString() + "&roleId=" + roleId;
+
+        // url , to save user in Database
+        url = url + "?" + parameters;
+
+        Log.d(TAG, "url: " + url);
+
+        // Instantiating InviteUserBackgroundTask to save member from Group service
+        // in a non-ui thread
+        InviteUserBackgroundTask userBackgroundTask = new InviteUserBackgroundTask(getActivity());
+
+        userBackgroundTask.execute(url);
+    }
 }

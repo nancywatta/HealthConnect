@@ -42,7 +42,7 @@ public class AccountDaoImpl  extends BaseDaoImpl<Account> implements AccountDao{
 		{
 			PreparedStatement ps = connection.prepareStatement(
 					"INSERT "
-							+ "INTO ACCOUNT ("
+							+ "INTO ACCOUNT "
 							+ "(EMAIL, PASSWORD, CREATED_DATE) VALUES"
 							+ "(?,?,?)" );
 			ps.setString(1, emailId);

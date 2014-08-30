@@ -52,7 +52,10 @@ public class MemberAdapter extends BaseAdapter {
         // Fetching i-th route
         Member member = result.get(position);
 
-        holder.text.setText(member.getUserName());
+        if(member.getUserName().compareTo("")!=0)
+            holder.text.setText(member.getUserName());
+        else
+            holder.text.setText(member.getEmail());
         holder.text1.setText(member.getRole().getName());
 
         return convertView;

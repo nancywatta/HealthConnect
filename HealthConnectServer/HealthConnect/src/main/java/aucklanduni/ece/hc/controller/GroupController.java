@@ -86,16 +86,6 @@ public class GroupController {
 				return result;
 			Account account = accountService.getAccountbyEmail(emailId);
 			if(account == null) {
-				Account t = new Account();
-				t.setEmail(emailId);
-				t.setPassword("123");
-				Calendar c = Calendar.getInstance();
-				t.setCreateDate(c.getTime());
-				try {
-					accountService.add(t);
-				}catch (Exception e) {
-					e.printStackTrace();
-				}
 				accountService.createAccount(emailId);
 				Account acc = accountService.getAccountbyEmail(emailId);
 				accId = acc.getId();

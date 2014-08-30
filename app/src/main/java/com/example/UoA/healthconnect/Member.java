@@ -20,4 +20,6 @@ public class Member {
     public String getUserName() { return userName; }
 
     public Dictionary getRole() { return role; }
+
+    public String getEmail() { return email; }
 }
