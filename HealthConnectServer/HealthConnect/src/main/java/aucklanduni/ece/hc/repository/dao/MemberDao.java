@@ -1,7 +1,17 @@
 package aucklanduni.ece.hc.repository.dao;
 
+import java.sql.Connection;
+import java.util.ArrayList;
+
+import aucklanduni.ece.hc.repository.model.Account;
 import aucklanduni.ece.hc.repository.model.Member;
 
 public interface MemberDao extends BaseDao<Member>{
-
+	public ArrayList<Account> GetMembers(Connection connection, long groupId) throws Exception;
+	
+	public void saveMember(Connection connection, long groupId, long accountId, String emailId, long roleId) throws Exception;
+	
+	public String GetMemberRole(Connection connection, long accountId, long groupId) throws Exception;
+	
+	public int checkPatientCount(Connection connection, long groupId) throws Exception;
 }

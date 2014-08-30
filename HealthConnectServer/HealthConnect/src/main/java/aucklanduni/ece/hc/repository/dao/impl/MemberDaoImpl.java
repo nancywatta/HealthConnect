@@ -56,11 +56,11 @@ public class MemberDaoImpl extends BaseDaoImpl<Member> implements MemberDao{
 	
 	public String GetMemberRole(Connection connection, long accountId, long groupId) throws Exception
 	{
-		String roleName = "";
+		String roleValue = "";
 		try
 		{
 			PreparedStatement ps = connection.prepareStatement(
-					"SELECT d.name "
+					"SELECT d.value "
 					+ "FROM DICTIONARY d "
 					+ "INNER JOIN MEMBER m "
 					+ "ON "
@@ -70,15 +70,62 @@ public class MemberDaoImpl extends BaseDaoImpl<Member> implements MemberDao{
 			ResultSet rs = ps.executeQuery();
 			while(rs.next())
 			{
-				roleName = rs.getString("name");
+				roleValue = rs.getString("value");
 			}
 		}
 		catch(Exception e)
 		{
 			throw e;
 		}
-		return roleName;
+		return roleValue;
 		
+	}
+	
+	public int checkPatientCount(Connection connection, long groupId) throws Exception {
+		try
+		{
+			PreparedStatement ps = connection.prepareStatement(
+					"SELECT COUNT(*) "
+					+ "FROM MEMBER m "
+					+ "INNER JOIN DICTIONARY d "
+					+ "ON "
+					+ "m.role_id=d.id "
+					+ "and m.group_id= " + groupId
+					+ " and d.type = 'Role' "
+					+ "and d.value = 'P' ");
+			ResultSet rs = ps.executeQuery();
+			while(rs.next())
+			{
+				return rs.getInt(1);
+			}
+			return 0;
+		}
+		catch(Exception e)
+		{
+			throw e;
+		}
+	}
+	
+	public void saveMember(Connection connection, long groupId, long accountId, String emailId, long roleId) throws Exception {
+		try
+		{
+			PreparedStatement ps = connection.prepareStatement(
+					"INSERT "
+							+ "INTO MEMBER "
+							+ "(ACCOUNT_ID, GROUP_ID, ROLE_ID,CREATED_DATE) VALUES"
+							+ "(?,?,?,?)" );
+			ps.setLong(1, accountId);
+			ps.setLong(2, groupId);
+			ps.setLong(3, roleId);
+			long time = System.currentTimeMillis();
+			java.sql.Timestamp timestamp = new java.sql.Timestamp(time);
+			ps.setTimestamp(4, timestamp);
+			ps.executeUpdate();
+		}
+		catch(Exception e)
+		{
+			throw e;
+		}
 	}
 		
 }

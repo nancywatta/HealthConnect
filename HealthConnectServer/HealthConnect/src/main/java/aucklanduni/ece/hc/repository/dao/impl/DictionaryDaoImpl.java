@@ -21,15 +21,16 @@ public class DictionaryDaoImpl  extends BaseDaoImpl<Dictionary> implements Dicti
 		try
 		{
 			PreparedStatement ps = connection.prepareStatement(
-					"SELECT id, name "
+					"SELECT id, value, name "
 					+ "FROM DICTIONARY "
-					+ "WHERE type='1' ");
+					+ "WHERE type='Role' ");
 			ResultSet rs = ps.executeQuery();
 			while(rs.next())
 			{
 				Dictionary roleObject = new Dictionary();
 				roleObject.setId(rs.getLong("id"));
 				roleObject.setName(rs.getString("name"));
+				roleObject.setValue(rs.getString("value"));
 				roleData.add(roleObject);
 			}
 			
@@ -41,21 +42,22 @@ public class DictionaryDaoImpl  extends BaseDaoImpl<Dictionary> implements Dicti
 		}
 	}
 	
-	public ArrayList<Dictionary> findByName(Connection connection, String roleName) throws Exception
+	public ArrayList<Dictionary> findByValue(Connection connection, String roleValue) throws Exception
 	{
 		ArrayList<Dictionary> roleData = new ArrayList<Dictionary>();
 		try
 		{
 			PreparedStatement ps = connection.prepareStatement(
-					"SELECT d.id, d.name "
+					"SELECT d.id, d.value, d.name "
 					+ "FROM DICTIONARY d "
-					+ "WHERE d.type='1' "
-					+ "and d.name= '" + roleName +"'");
+					+ "WHERE d.type='Role' "
+					+ "and d.value= '" + roleValue +"'");
 			ResultSet rs = ps.executeQuery();
 			while(rs.next())
 			{
 				Dictionary roleObject = new Dictionary();
 				roleObject.setId(rs.getLong("id"));
+				roleObject.setValue(rs.getString("value"));
 				roleObject.setName(rs.getString("name"));
 				roleData.add(roleObject);
 			}

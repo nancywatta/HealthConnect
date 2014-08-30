@@ -35,20 +35,20 @@ public class DictionaryServiceImpl extends BaseServiceImpl<Dictionary> implement
 			Database database= new Database();
 			Connection connection = database.Get_Connection();
 			MemberDaoImpl memberDao= new MemberDaoImpl();
-			String roleName =memberDao.GetMemberRole(connection, accountId, groupId);
-			if(roleName.compareTo("SM")==0)
+			String roleValue =memberDao.GetMemberRole(connection, accountId, groupId);
+			if(roleValue.compareTo("S")==0)
 				return null;
-			else if(roleName.compareTo("Patient")==0) {
+			else if(roleValue.compareTo("P")==0) {
 				roles = GetRoles();
 				for(int i=0; i<roles.size(); i++) {
 					Dictionary role = roles.get(i);
-					if(role.getName().compareTo(roleName)==0)
+					if(role.getValue().compareTo(roleValue)==0)
 						roles.remove(i);
 				}
 			}
-			else if(roleName.compareTo("Nurse")==0) {
+			else if(roleValue.compareTo("N")==0) {
 				DictionaryDaoImpl roleDao= new DictionaryDaoImpl();
-				roles = roleDao.findByName(connection,"Patient");
+				roles = roleDao.findByValue(connection,"P");
 			}
 			else {
 				return GetRoles();

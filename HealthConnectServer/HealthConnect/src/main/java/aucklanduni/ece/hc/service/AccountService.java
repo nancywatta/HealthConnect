@@ -3,5 +3,9 @@ package aucklanduni.ece.hc.service;
 import aucklanduni.ece.hc.repository.model.Account;
 
 public interface AccountService extends BaseService<Account>{
+	
+	public Account getAccountbyEmail(String emailId)throws Exception;
+	
+	public void createAccount(String emailId)throws Exception;
 
 }

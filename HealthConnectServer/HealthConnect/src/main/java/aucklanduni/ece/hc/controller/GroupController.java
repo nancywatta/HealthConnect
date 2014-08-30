@@ -1,6 +1,7 @@
 package aucklanduni.ece.hc.controller;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import aucklanduni.ece.hc.repository.model.Account;
 import aucklanduni.ece.hc.repository.model.Group;
+import aucklanduni.ece.hc.service.AccountService;
 import aucklanduni.ece.hc.service.GroupService;
 
 import com.google.gson.Gson;
@@ -24,6 +26,8 @@ import com.google.gson.Gson;
 public class GroupController {
 	@Autowired
 	private GroupService groupService;
+	@Autowired
+	private AccountService accountService;
 	
 	@RequestMapping(value="/showGroups")
 	@ResponseBody
@@ -64,6 +68,49 @@ public class GroupController {
 			e.printStackTrace();
 		}
 		return members;
+	}
+	
+	@RequestMapping(value="/inviteUser")
+	@ResponseBody
+	public String inviteUser(HttpServletRequest request, HttpServletResponse response,
+			@RequestParam("accountId") long accountId,
+			@RequestParam("groupId") long groupId,
+			@RequestParam("emailId") String emailId,
+			@RequestParam("roleId") long roleId){
+		String result = null;
+		long accId;
+		System.out.println("inviteUser");
+		try {
+			result = groupService.inviteUserValidation(accountId, groupId, roleId,emailId);
+			if(result.compareTo("Succes")!=0) 
+				return result;
+			Account account = accountService.getAccountbyEmail(emailId);
+			if(account == null) {
+				Account t = new Account();
+				t.setEmail(emailId);
+				t.setPassword("123");
+				Calendar c = Calendar.getInstance();
+				t.setCreateDate(c.getTime());
+				try {
+					accountService.add(t);
+				}catch (Exception e) {
+					e.printStackTrace();
+				}
+				accountService.createAccount(emailId);
+				Account acc = accountService.getAccountbyEmail(emailId);
+				accId = acc.getId();
+			}
+			else{
+				accId = account.getId();
+			}
+			
+			groupService.saveMember(groupId,accId,emailId,roleId);
+
+			return "Succes";
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 	
 }

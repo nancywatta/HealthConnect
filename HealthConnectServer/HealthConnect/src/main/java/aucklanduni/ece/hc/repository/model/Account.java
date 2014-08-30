@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 
@@ -46,6 +47,7 @@ public class Account implements Serializable {
 	@Temporal(TemporalType.DATE)
 	private Date lastLoginDate;
 	
+	@Transient
 	private Dictionary role;
 
 	public long getId() {
