@@ -11,27 +11,48 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 
+
+
+
+import aucklanduni.ece.hc.repository.model.Account;
 import aucklanduni.ece.hc.repository.model.ApnUser;
+import aucklanduni.ece.hc.service.AccountService;
 import aucklanduni.ece.hc.service.ApnUserService;
+import aucklanduni.ece.hc.service.GroupService;
 
 @Controller
 @RequestMapping("/ApnUser")
 public class APNController {
 	@Autowired
 	private ApnUserService apnUserService;
-
+	@Autowired
+	private AccountService accountService;
+	@Autowired
+	private GroupService groupService;
+	
 	@RequestMapping(value="/showAll")
 	public String showAll(HttpServletRequest request, HttpServletResponse response){
 		System.out.println("show all");
 		try {
 			List<ApnUser> list = apnUserService.findAll();
-			
 			System.out.println(list.get(0).toString());
+			
+			List<Account> listAccount = accountService.findAll();
+			System.out.println("accountService>>>"+listAccount.size());
+			
+//			Account t = groupService.addNew();
+//			System.out.println("groupService.addNew>>>"+t.getEmail());
+			
+			System.out.println(">>>"+apnUserService.executMySql());
+			System.out.println(">>>"+apnUserService.executMyHql());
+			
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return "apnUser/showAll";
 	}
+	
 
 	@RequestMapping(value="/add")
 	public String add(HttpServletRequest request, HttpServletResponse response){
@@ -49,6 +70,7 @@ public class APNController {
 		}
 		return "apnUser/add";
 	}
+
 
 	@RequestMapping(value="/update")
 	public String update(HttpServletRequest request, HttpServletResponse response) throws Exception{

@@ -6,6 +6,8 @@ import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
 import org.hibernate.Query;
+import org.hibernate.SQLQuery;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.metadata.ClassMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,18 +60,43 @@ public class BaseDaoImpl<T> implements BaseDao<T>{
 	@SuppressWarnings("unchecked")
 	public List<T> findAll() throws Exception {
 		String hql = "from " + getEntityClassName();
+		System.out.println(getEntityClassName());
 		Query query = sessionFactory.getCurrentSession().createQuery(hql);
 		return query.list();
 		
 	}
 
-	protected void executeUpdate(final String hql, final Object ... objects)  throws Exception{
+	public void executeUpdate(final String hql, final Object ... objects)  throws Exception{
 		Query query = sessionFactory.getCurrentSession().createQuery(hql);
 		for (int i = 0; i < objects.length; i++) {
 			query.setParameter(i, objects[i]);
 		}
 		query.executeUpdate();
 	}
+    
+    public int excuteUpdateBySql(String sql) {    
+        Query query =sessionFactory.getCurrentSession().createSQLQuery(sql);
+        return query.executeUpdate();    
+    }    
+
+
+	public Session getSession() {    
+        return sessionFactory.getCurrentSession();    
+    }    
+    
+    @SuppressWarnings("rawtypes")
+	public List findBySql(String sql) {    
+        @SuppressWarnings("unchecked")
+		List<Object[]> list = getSession().createSQLQuery(sql).list();    
+        return list;    
+    }    
+      
+    @SuppressWarnings("rawtypes")
+	public List findByHql(String hql) {    
+        @SuppressWarnings("unchecked")
+		List<Object[]> list = getSession().createQuery(hql).list();    
+        return list;    
+    }
 
 
 }

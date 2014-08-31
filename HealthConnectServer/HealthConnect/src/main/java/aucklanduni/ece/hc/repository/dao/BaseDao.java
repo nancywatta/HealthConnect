@@ -13,4 +13,10 @@ public interface BaseDao<T> {
 	public T findById(Serializable id) throws Exception;
 
 	public List<T> findAll() throws Exception;
+	
+	public void executeUpdate(final String hql, final Object ... objects)  throws Exception;
+	
+	public int excuteUpdateBySql(String sql); 
+	public List findBySql(String sql);
+	public List findByHql(String hql);
 }
