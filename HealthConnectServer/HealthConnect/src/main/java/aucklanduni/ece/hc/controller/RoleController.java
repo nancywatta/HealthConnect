@@ -37,8 +37,9 @@ public class RoleController {
 		try {
 			if(groupId == null || accountId == null) 
 				roleList = roleService.GetRoles();
-			else
-				roleList = roleService.GetSpecificRoles(groupId.longValue(), accountId.longValue());
+			else {
+				roleList = roleService.GetSpecificRoles(accountId.longValue(), groupId.longValue());
+			}
 				
 			rolesArray.put("roles", roleList);
 			Gson gson = new Gson();

@@ -7,5 +7,7 @@ public interface AccountService extends BaseService<Account>{
 	public Account getAccountbyEmail(String emailId)throws Exception;
 	
 	public void createAccount(String emailId)throws Exception;
+	
+	public Account getAccbyEmailPswd(String emailId, String password)throws Exception;
 
 }

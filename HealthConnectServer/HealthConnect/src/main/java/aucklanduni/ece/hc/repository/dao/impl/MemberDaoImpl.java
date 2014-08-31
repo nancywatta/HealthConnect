@@ -72,12 +72,12 @@ public class MemberDaoImpl extends BaseDaoImpl<Member> implements MemberDao{
 			{
 				roleValue = rs.getString("value");
 			}
+			return roleValue;
 		}
 		catch(Exception e)
 		{
 			throw e;
 		}
-		return roleValue;
 		
 	}
 	

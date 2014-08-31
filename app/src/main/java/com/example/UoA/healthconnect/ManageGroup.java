@@ -26,7 +26,7 @@ import java.util.ArrayList;
 public class ManageGroup extends ActionBarActivity {
 
     private static final String TAG = ManageGroup.class.getSimpleName();
-    long accountId=1;
+    long accountId;
     private Spinner spinner;
     private GroupSpinAdapter adapter;
     long groupId;
@@ -37,13 +37,16 @@ public class ManageGroup extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_manage_group);
 
+        Intent intent = getIntent();
+        accountId = intent.getLongExtra("ACCOUNTID",0);
+
         spinner = (Spinner) findViewById(R.id.spinner_group);
 
         getGroups();
 	}
 
     private void getGroups() {
-        String url = "http://192.168.1.6:8080/HealthConnect/Group/showGroups";
+        String url = "http://172.23.213.247:8080/HealthConnect/Group/showGroups";
 
         String parameters = "accountId=" + accountId;
 

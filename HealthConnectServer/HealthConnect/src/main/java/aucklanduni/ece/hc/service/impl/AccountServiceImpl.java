@@ -40,5 +40,19 @@ public class AccountServiceImpl extends BaseServiceImpl<Account> implements Acco
 		}
 
 	}
+	
+	public Account getAccbyEmailPswd(String emailId, String password)throws Exception{
+		try {
+			Database database= new Database();
+			Connection connection = database.Get_Connection();
+
+			Account account = accountDao.getAccbyEmailPswd(connection,emailId, password);
+			return account;
+		}
+		catch (Exception e) {
+			throw e;
+		}
+
+	}
 
 }

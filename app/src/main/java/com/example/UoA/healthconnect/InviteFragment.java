@@ -79,7 +79,7 @@ public class InviteFragment extends Fragment {
     }
 
     private void getRoles() {
-        String url = "http://192.168.1.6:8080/HealthConnect/Dictionary/showRoles";
+        String url = "http://172.23.213.247:8080/HealthConnect/Dictionary/showRoles";
 
         String parameters = "accountId=" + accountId + "&groupId=" + groupId;
 
@@ -225,7 +225,7 @@ public class InviteFragment extends Fragment {
             return;
         }
 
-        String url = "http://192.168.1.6:8080/HealthConnect/Group/inviteUser";
+        String url = "http://172.23.213.247:8080/HealthConnect/Group/inviteUser";
 
         String parameters = "accountId=" + accountId + "&groupId=" + groupId
                 + "&emailId=" + emailText.getText().toString() + "&roleId=" + roleId;

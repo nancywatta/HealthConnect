@@ -36,6 +36,7 @@ public class DictionaryServiceImpl extends BaseServiceImpl<Dictionary> implement
 			Connection connection = database.Get_Connection();
 			MemberDaoImpl memberDao= new MemberDaoImpl();
 			String roleValue =memberDao.GetMemberRole(connection, accountId, groupId);
+			System.out.println(roleValue);
 			if(roleValue.compareTo("S")==0)
 				return null;
 			else if(roleValue.compareTo("P")==0) {

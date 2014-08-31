@@ -46,11 +46,36 @@ public class AccountDaoImpl  extends BaseDaoImpl<Account> implements AccountDao{
 							+ "(EMAIL, PASSWORD, CREATED_DATE) VALUES"
 							+ "(?,?,?)" );
 			ps.setString(1, emailId);
-			ps.setString(2, "default");
+			ps.setString(2, "healthConnect");
 			long time = System.currentTimeMillis();
 			java.sql.Timestamp timestamp = new java.sql.Timestamp(time);
 			ps.setTimestamp(3, timestamp);
 			ps.executeUpdate();
+		}
+		catch(Exception e)
+		{
+			throw e;
+		}
+	}
+	
+	public Account getAccbyEmailPswd(Connection connection, String emailId, String password) throws Exception{
+		try
+		{
+			PreparedStatement ps = connection.prepareStatement(
+					"SELECT a.* "
+							+ "FROM ACCOUNT a "
+							+ "WHERE "
+							+ "a.email='" + emailId + "'"
+							+ " and a.password='" + password + "'");
+			ResultSet rs = ps.executeQuery();
+			while(rs.next())
+			{
+				Account account = new Account();
+				account.setEmail(rs.getString("email"));
+				account.setId(rs.getLong("id"));
+				return account;
+			}
+			return null;
 		}
 		catch(Exception e)
 		{
