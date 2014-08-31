@@ -5,9 +5,12 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -49,6 +52,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor>{
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
+    private EditText mUserNameView;
     private View mProgressView;
     private View mLoginFormView;
     long accountId;
@@ -59,9 +63,18 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor>{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        SharedPreferences pref = getSharedPreferences(getString(R.string.loginPref), Context.MODE_PRIVATE);
+        if(pref.getBoolean("activity_executed", false)){
+            Intent intent = new Intent(this, ManageGroup.class);
+            startActivity(intent);
+            finish();
+        }
+
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
+
+        mUserNameView = (EditText) findViewById(R.id.userName);
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -109,6 +122,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor>{
         // Store values at the time of the login attempt.
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
+        String username = mUserNameView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -140,14 +154,17 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor>{
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            String url = "http://172.23.213.247:8080/HealthConnect/Account/login";
+            String url = "http://" + getString(R.string.IPAddress)
+                + ":8080/HealthConnect/Account/login";
 
             String parameters = "emailId=" + email;
 
             if (!TextUtils.isEmpty(password))
                 parameters = parameters  + "&password=" + password;
+            if (!TextUtils.isEmpty(username))
+                parameters = parameters  + "&userName=" + username;
 
-            // url , from where the groups are fetched
+            // url , to create account
             url = url + "?" + parameters;
 
             Log.d(TAG, "url: " + url);
@@ -349,9 +366,16 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor>{
     }
 
     private void nextPage() {
+        SharedPreferences pref = getSharedPreferences(getString(R.string.loginPref), Context.MODE_PRIVATE);
+        Editor ed = pref.edit();
+        if(!pref.getBoolean("activity_executed", false)) {
+            ed.putBoolean("activity_executed", true);
+        }
+        ed.putLong("accountId", accountId);
+        ed.commit();
         Intent intent = new Intent(this,ManageGroup.class);
-        intent.putExtra("ACCOUNTID", accountId);
         startActivity(intent);
+        finish();
     }
 }
 

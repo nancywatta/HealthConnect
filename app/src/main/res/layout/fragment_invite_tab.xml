@@ -28,6 +28,9 @@
         android:id="@+id/spinner_role"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:typeface="sans"
+        android:textSize="15dip"
+        android:textStyle="bold"
         android:prompt="@string/select_role"
         />
     <Button

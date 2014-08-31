@@ -1,7 +1,9 @@
 package com.example.UoA.healthconnect;
 
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -37,8 +39,9 @@ public class ManageGroup extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_manage_group);
 
+        SharedPreferences pref = getSharedPreferences(getString(R.string.loginPref), Context.MODE_PRIVATE);
+        accountId = pref.getLong("accountId",0);
         Intent intent = getIntent();
-        accountId = intent.getLongExtra("ACCOUNTID",0);
 
         spinner = (Spinner) findViewById(R.id.spinner_group);
 
@@ -46,7 +49,8 @@ public class ManageGroup extends ActionBarActivity {
 	}
 
     private void getGroups() {
-        String url = "http://172.23.213.247:8080/HealthConnect/Group/showGroups";
+        String url = "http://" + getString(R.string.IPAddress) +
+                ":8080/HealthConnect/Group/showGroups";
 
         String parameters = "accountId=" + accountId;
 

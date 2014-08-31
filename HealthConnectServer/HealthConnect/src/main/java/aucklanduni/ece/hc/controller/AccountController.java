@@ -17,36 +17,53 @@ import aucklanduni.ece.hc.service.AccountService;
 public class AccountController {
 	@Autowired
 	private AccountService accountService;
-	
+
 	@RequestMapping(value="/login")
 	@ResponseBody
 	public String showGroups(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam("emailId") String emailId,
-			@RequestParam(value="password",required=false) String password){
+			@RequestParam(value="password",required=false) String password,
+			@RequestParam(value="userName",required=false) String userName){
 		Account account;
 		System.out.println("login");
 		try {
-			
+
 			if(password==null) {
+				// Check if account exist with Default password
 				account = accountService.getAccbyEmailPswd(emailId,"healthConnect");
+				// If no then return false, so that user puts his own password
 				if(account == null) {
 					System.out.println("false");
 					return "false";
 				}
+				// if yes, return the accountId
 				else {
 					System.out.println(Long.toString(account.getId()));
 					return Long.toString(account.getId());
 				}
 			}
 			else {
+				// check if account exist with given email and password
 				account = accountService.getAccbyEmailPswd(emailId,password);
-				if(account == null)
-					return "false";
+				// if No, check if the email already exist in DB
+				if(account == null) {
+					account = accountService.getAccountbyEmail(emailId);
+					// if email id exists, it means wrong password entered
+					if(account!=null)
+						return "false";
+					// else register the account and return created accountId
+					else {
+						accountService.createAccount(emailId, password,userName);
+						account = accountService.getAccountbyEmail(emailId);
+						return Long.toString(account.getId());
+					}
+				}
+				// if input email and password correct, return accountId
 				else {
 					return Long.toString(account.getId());
 				}
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

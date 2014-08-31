@@ -56,7 +56,8 @@ public class MemberFragment extends Fragment {
     }
 
     private void getMembers() {
-        String url = "http://172.23.213.247:8080/HealthConnect/Group/showMembers";
+        String url = "http://" + getString(R.string.IPAddress) +
+                ":8080/HealthConnect/Group/showMembers";
 
         String parameters = "accountId=" + accountId + "&groupId=" + groupId;
 
@@ -174,7 +175,7 @@ public class MemberFragment extends Fragment {
                 return;
             }
 
-            adapter=new MemberAdapter(getActivity(), memberList);
+            adapter=new MemberAdapter(getActivity(), memberList, accountId);
             list.setAdapter(adapter);
         }
     }

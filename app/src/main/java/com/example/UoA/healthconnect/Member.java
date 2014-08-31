@@ -22,4 +22,6 @@ public class Member {
     public Dictionary getRole() { return role; }
 
     public String getEmail() { return email; }
+
+    public long getAccountId() {  return accountId; }
 }

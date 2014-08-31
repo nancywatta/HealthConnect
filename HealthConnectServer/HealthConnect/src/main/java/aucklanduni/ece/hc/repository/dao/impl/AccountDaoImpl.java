@@ -37,19 +37,20 @@ public class AccountDaoImpl  extends BaseDaoImpl<Account> implements AccountDao{
 		}
 	}
 
-	public void createAccount(Connection connection, String emailId)throws Exception {
+	public void createAccount(Connection connection, String emailId, String password, String userName)throws Exception {
 		try
 		{
 			PreparedStatement ps = connection.prepareStatement(
 					"INSERT "
 							+ "INTO ACCOUNT "
-							+ "(EMAIL, PASSWORD, CREATED_DATE) VALUES"
-							+ "(?,?,?)" );
-			ps.setString(1, emailId);
-			ps.setString(2, "healthConnect");
+							+ "(USERNAME, EMAIL, PASSWORD, CREATED_DATE) VALUES"
+							+ "(?,?,?,?)" );
+			ps.setString(1, userName);
+			ps.setString(2, emailId);
+			ps.setString(3, password);
 			long time = System.currentTimeMillis();
 			java.sql.Timestamp timestamp = new java.sql.Timestamp(time);
-			ps.setTimestamp(3, timestamp);
+			ps.setTimestamp(4, timestamp);
 			ps.executeUpdate();
 		}
 		catch(Exception e)

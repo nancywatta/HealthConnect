@@ -28,12 +28,12 @@ public class AccountServiceImpl extends BaseServiceImpl<Account> implements Acco
 		}
 	}
 
-	public void createAccount(String emailId)throws Exception {
+	public void createAccount(String emailId, String password, String userName)throws Exception {
 		try {
 			Database database= new Database();
 			Connection connection = database.Get_Connection();
 
-			accountDao.createAccount(connection,emailId);
+			accountDao.createAccount(connection,emailId, password, userName);
 		}
 		catch (Exception e) {
 			throw e;

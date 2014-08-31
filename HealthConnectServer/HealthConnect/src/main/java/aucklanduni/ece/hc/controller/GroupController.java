@@ -86,7 +86,8 @@ public class GroupController {
 				return result;
 			Account account = accountService.getAccountbyEmail(emailId);
 			if(account == null) {
-				accountService.createAccount(emailId);
+				String userName=null;
+				accountService.createAccount(emailId, "heathConnect",userName);
 				Account acc = accountService.getAccountbyEmail(emailId);
 				accId = acc.getId();
 			}

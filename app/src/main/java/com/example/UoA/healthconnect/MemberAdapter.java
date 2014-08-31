@@ -2,6 +2,7 @@ package com.example.UoA.healthconnect;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,11 +18,13 @@ public class MemberAdapter extends BaseAdapter {
     private Activity activity;
     private ArrayList<Member> result;
     private static LayoutInflater inflater=null;
+    private long accountId;
 
-    public MemberAdapter(Activity a, ArrayList<Member> d) {
+    public MemberAdapter(Activity a, ArrayList<Member> d, long accountId) {
         activity = a;
         result=d;
         inflater = (LayoutInflater)activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.accountId = accountId;
     }
 
     public int getCount() {
@@ -49,11 +52,16 @@ public class MemberAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        // Fetching i-th route
         Member member = result.get(position);
 
-        if(member.getUserName().compareTo("")!=0)
-            holder.text.setText(member.getUserName());
+        if(member.getUserName().compareTo("")!=0) {
+            if(accountId == member.getAccountId()) {
+                holder.text.setTextColor(Color.parseColor("#9d0c0f"));
+                holder.text.setText(member.getUserName() + "(Me)");
+            }
+            else
+                holder.text.setText(member.getUserName());
+        }
         else
             holder.text.setText(member.getEmail());
         holder.text1.setText(member.getRole().getName());
