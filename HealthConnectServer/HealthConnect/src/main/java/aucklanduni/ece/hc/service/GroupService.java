@@ -16,4 +16,5 @@ public interface GroupService extends BaseService<Group>{
 	
 	public void saveMember(long groupId, long accountId, String emailId, long roleId) throws Exception;
 	
+	public void createGroup(Group group, Account account,long roleId) throws Exception;
 }

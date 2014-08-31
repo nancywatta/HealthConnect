@@ -2,6 +2,7 @@ package aucklanduni.ece.hc.controller;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,6 +29,7 @@ public class GroupController {
 	private GroupService groupService;
 	@Autowired
 	private AccountService accountService;
+	private Gson gson = new Gson();
 	
 	@RequestMapping(value="/showGroups")
 	@ResponseBody
@@ -102,6 +104,41 @@ public class GroupController {
 			e.printStackTrace();
 		}
 		return result;
+	}
+	
+	@RequestMapping(value="/createGroup")
+	@ResponseBody
+	public String createGroup(HttpServletRequest request, HttpServletResponse response,
+			@RequestParam("accountId") long accountId
+			,@RequestParam("groupName") String groupName
+			,@RequestParam("roleId") long roleId){
+		
+		System.out.println("createGroup");
+
+		//prepare group
+		Group group = new Group();
+		group.setGroupname(groupName);
+		group.setCreateDate(new Date());
+
+		//get account
+		Account account = null;
+		try {
+			account = accountService.findById(accountId);
+		} catch (Exception e) {
+			return "{\"status\":\"Fail\""
+					+ ",\"error\":\"Invalid Account Id \""+e.getMessage()+"}";
+		}	
+		
+		try{
+			//call creat group service
+			groupService.createGroup(group, account, roleId);
+		}catch(Exception e){
+			return "{\"status\":\"Fail\""
+					+ ",\"error\":\"Create Group Failed \""+e.getMessage()+"}";
+		}
+
+		return "{\"status\":\"Success\""
+				+ ",\"response\":"+gson.toJson(group)+"}";
 	}
 	
 }

@@ -8,12 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import aucklanduni.ece.hc.repository.dao.AccountDao;
+import aucklanduni.ece.hc.repository.dao.GroupDao;
 import aucklanduni.ece.hc.repository.dao.MemberDao;
 import aucklanduni.ece.hc.repository.dao.impl.GroupDaoImpl;
 import aucklanduni.ece.hc.repository.model.Account;
 import aucklanduni.ece.hc.repository.model.Database;
 import aucklanduni.ece.hc.repository.model.Dictionary;
 import aucklanduni.ece.hc.repository.model.Group;
+import aucklanduni.ece.hc.repository.model.Member;
 import aucklanduni.ece.hc.service.DictionaryService;
 import aucklanduni.ece.hc.service.GroupService;
 
@@ -25,6 +27,8 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 	private MemberDao memberDao;
 	@Autowired
 	private AccountDao accountDao;
+	@Autowired
+	private GroupDao groupDao;
 
 	public Map<String, ArrayList<Group>> GetGroups(long accountId)throws Exception {
 
@@ -99,6 +103,18 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 		catch (Exception e) {
 			throw e;
 		}
+	}
+
+	public void createGroup(Group group, Account account,long roleId) throws Exception {
+		// create group
+		groupDao.add(group);
+		
+		//add default memeber
+		Member owner = new Member();
+		owner.setAccountId(account.getId());
+		owner.setGroupId(group.getId());
+		owner.setRoleId(roleId);
+		memberDao.add(owner);
 	}
 
 }
