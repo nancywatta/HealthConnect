@@ -65,7 +65,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor>{
 
         SharedPreferences pref = getSharedPreferences(getString(R.string.loginPref), Context.MODE_PRIVATE);
         if(pref.getBoolean("activity_executed", false)){
-            Intent intent = new Intent(this, ManageGroup.class);
+            Intent intent = new Intent(this, WelcomePage.class);
             startActivity(intent);
             finish();
         }
@@ -373,7 +373,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor>{
         }
         ed.putLong("accountId", accountId);
         ed.commit();
-        Intent intent = new Intent(this,ManageGroup.class);
+        Intent intent = new Intent(this,WelcomePage.class);
         startActivity(intent);
         finish();
     }

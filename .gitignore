@@ -15,3 +15,9 @@ HealthConnectServer/HealthConnect/src/main/resources/jdbc.properties
 HealthConnectServer/HealthConnect/.project
 
 HealthConnectServer/HealthConnect/.classpath
+
+*.class
+
+HealthConnectServer/HealthConnect/target/classes/aucklanduni/ece/hc/service/impl/BaseServiceImpl.class
+
+HealthConnectServer/HealthConnect/target/classes/aucklanduni/ece/hc/repository/dao/impl/ApnUserDaoImpl.class
