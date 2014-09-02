@@ -41,7 +41,6 @@ public class ManageGroup extends ActionBarActivity {
 
         SharedPreferences pref = getSharedPreferences(getString(R.string.loginPref), Context.MODE_PRIVATE);
         accountId = pref.getLong("accountId",0);
-        Intent intent = getIntent();
 
         spinner = (Spinner) findViewById(R.id.spinner_group);
 

@@ -125,20 +125,23 @@ public class GroupController {
 		try {
 			account = accountService.findById(accountId);
 		} catch (Exception e) {
-			return "{\"status\":\"Fail\""
-					+ ",\"error\":\"Invalid Account Id \""+e.getMessage()+"}";
+			return "Fail";
+//			return "{\"status\":\"Fail\""
+//					+ ",\"error\":\"Invalid Account Id \""+e.getMessage()+"}";
 		}	
 		
 		try{
-			//call creat group service
+			//call create group service
 			groupService.createGroup(group, account, roleId);
 		}catch(Exception e){
-			return "{\"status\":\"Fail\""
-					+ ",\"error\":\"Create Group Failed \""+e.getMessage()+"}";
+			return "Fail";
+//			return "{\"status\":\"Fail\""
+//					+ ",\"error\":\"Create Group Failed \""+e.getMessage()+"}";
 		}
 
-		return "{\"status\":\"Success\""
-				+ ",\"response\":"+gson.toJson(group)+"}";
+//		return "{\"status\":\"Success\""
+//				+ ",\"response\":"+gson.toJson(group)+"}";
+		return group.getId()+ "";
 	}
 	
 }

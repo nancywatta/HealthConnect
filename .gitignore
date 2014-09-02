@@ -21,3 +21,11 @@ HealthConnectServer/HealthConnect/.classpath
 HealthConnectServer/HealthConnect/target/classes/aucklanduni/ece/hc/service/impl/BaseServiceImpl.class
 
 HealthConnectServer/HealthConnect/target/classes/aucklanduni/ece/hc/repository/dao/impl/ApnUserDaoImpl.class
+
+*.class
+
+*.class
+
+*.class
+
+*.class

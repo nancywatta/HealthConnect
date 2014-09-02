@@ -18,5 +18,6 @@
     <string name="title_section2">Edit User</string>
     <string name="title_section3">Invite User</string>
     <string name="title_activity_welcome_page">WelcomePage</string>
+    <string name="title_activity_create_group">CreateGroup</string>
 
 </resources>
