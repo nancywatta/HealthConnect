@@ -4,4 +4,7 @@ import aucklanduni.ece.hc.repository.model.Appointment;
 
 public interface AppointmentService  extends BaseService<Appointment> {
 
+	public Appointment findByName(String appointmentName);
+
+
 }
