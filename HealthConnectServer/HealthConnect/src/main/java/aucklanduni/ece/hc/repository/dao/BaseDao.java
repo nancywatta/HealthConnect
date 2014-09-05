@@ -17,6 +17,6 @@ public interface BaseDao<T> {
 	public void executeUpdate(final String hql, final Object ... objects)  throws Exception;
 	
 	public int excuteUpdateBySql(String sql); 
-	public List findBySql(String sql);
-	public List findByHql(String hql);
+	public List<T> findBySql(String sql);
+	public List<T> findByHql(String hql);
 }

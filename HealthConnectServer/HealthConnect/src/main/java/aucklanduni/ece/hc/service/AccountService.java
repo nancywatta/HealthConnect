@@ -1,7 +1,10 @@
 package aucklanduni.ece.hc.service;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import aucklanduni.ece.hc.repository.model.Account;
 
+@Transactional
 public interface AccountService extends BaseService<Account>{
 	
 	public Account getAccountbyEmail(String emailId)throws Exception;
@@ -10,4 +13,5 @@ public interface AccountService extends BaseService<Account>{
 	
 	public Account getAccbyEmailPswd(String emailId, String password)throws Exception;
 
+	public void createNewAccount(Account account) throws Exception;
 }

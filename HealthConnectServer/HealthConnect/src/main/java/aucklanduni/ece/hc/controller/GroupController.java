@@ -98,7 +98,6 @@ public class GroupController {
 			}
 			
 			groupService.saveMember(groupId,accId,emailId,roleId);
-
 			return "Succes";
 		} catch (Exception e) {
 			e.printStackTrace();

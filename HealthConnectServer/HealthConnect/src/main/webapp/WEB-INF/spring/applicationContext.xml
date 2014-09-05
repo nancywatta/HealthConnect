@@ -42,7 +42,18 @@
             </list>
          </property>
      </bean>
-         
+    
+      <!--  
+            maps handler methods based on HTTP paths
+      -->  
+      <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">  
+           <property name="messageConverters">
+            <list>
+                <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
+            </list>
+        </property>
+      </bean>  
+ 
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 	    <property name="driverClassName" value="${jdbc.driverClassName}"/>
 	    <property name="url" value="${jdbc.url}"/>

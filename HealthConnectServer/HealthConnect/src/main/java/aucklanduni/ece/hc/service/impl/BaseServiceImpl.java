@@ -50,12 +50,12 @@ public class BaseServiceImpl<T> implements BaseService<T> {
 	public int excuteUpdateBySql(String sql) throws Exception  {
 		return baseDao.excuteUpdateBySql(sql);
 	}  
-	@SuppressWarnings("rawtypes")
-	public List findBySql(String sql){
+	//@SuppressWarnings("rawtypes")
+	public List<T> findBySql(String sql){
 		return baseDao.findBySql(sql);
 	}
-	@SuppressWarnings("rawtypes")
-	public List findByHql(String hql) {        
+	//@SuppressWarnings("rawtypes")
+	public List<T> findByHql(String hql) {        
         return baseDao.findByHql(hql);    
     }
     

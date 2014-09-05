@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import aucklanduni.ece.hc.repository.model.Account;
 import aucklanduni.ece.hc.repository.model.Group;
+import aucklanduni.ece.hc.repository.model.Member;
 @Transactional
 public interface GroupService extends BaseService<Group>{
 	
@@ -19,4 +20,6 @@ public interface GroupService extends BaseService<Group>{
 	public void saveMember(long groupId, long accountId, String emailId, long roleId) throws Exception;
 	
 	public void createGroup(Group group, Account account,long roleId) throws Exception;
+	
+	public void saveNewMember(Member member) throws Exception;
 }

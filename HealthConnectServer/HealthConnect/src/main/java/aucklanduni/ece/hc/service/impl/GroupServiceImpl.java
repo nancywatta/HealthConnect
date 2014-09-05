@@ -2,6 +2,7 @@ package aucklanduni.ece.hc.service.impl;
 
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,7 +115,12 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 		owner.setAccountId(account.getId());
 		owner.setGroupId(group.getId());
 		owner.setRoleId(roleId);
+		owner.setCreateDate(new Date());
 		memberDao.add(owner);
+	}
+	
+	public void saveNewMember(Member member) throws Exception {
+		memberDao.add(member);
 	}
 
 }

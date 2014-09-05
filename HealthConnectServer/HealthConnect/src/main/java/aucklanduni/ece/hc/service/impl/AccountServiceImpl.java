@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import aucklanduni.ece.hc.repository.dao.AccountDao;
 import aucklanduni.ece.hc.repository.model.Account;
 import aucklanduni.ece.hc.repository.model.Database;
+import aucklanduni.ece.hc.repository.model.Group;
+import aucklanduni.ece.hc.repository.model.Member;
 import aucklanduni.ece.hc.service.AccountService;
 
 @Service
@@ -53,6 +55,12 @@ public class AccountServiceImpl extends BaseServiceImpl<Account> implements Acco
 			throw e;
 		}
 
+	}
+	
+	public void createNewAccount(Account account) throws Exception {
+		// create account
+		accountDao.add(account);
+		
 	}
 
 }

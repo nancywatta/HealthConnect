@@ -84,17 +84,17 @@ public class BaseDaoImpl<T> implements BaseDao<T>{
         return sessionFactory.getCurrentSession();    
     }    
     
-    @SuppressWarnings("rawtypes")
-	public List findBySql(String sql) {    
+    //@SuppressWarnings("rawtypes")
+	public List<T> findBySql(String sql) {    
         @SuppressWarnings("unchecked")
-		List<Object[]> list = getSession().createSQLQuery(sql).list();    
+		List<T> list = getSession().createSQLQuery(sql).list();    
         return list;    
     }    
       
-    @SuppressWarnings("rawtypes")
-	public List findByHql(String hql) {    
+   // @SuppressWarnings("rawtypes")
+	public List<T> findByHql(String hql) {    
         @SuppressWarnings("unchecked")
-		List<Object[]> list = getSession().createQuery(hql).list();    
+		List<T> list = getSession().createQuery(hql).list();    
         return list;    
     }
 

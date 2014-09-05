@@ -19,6 +19,6 @@ public interface BaseService<T> {
 	public void executeUpdate(final String hql, final Object ... objects)throws Exception;
 
 	public int excuteUpdateBySql(String sql) throws Exception ;
-	public List findBySql(String sql);
-	public List findByHql(String hql) ;
+	public List<T> findBySql(String sql);
+	public List<T> findByHql(String hql) ;
 }
