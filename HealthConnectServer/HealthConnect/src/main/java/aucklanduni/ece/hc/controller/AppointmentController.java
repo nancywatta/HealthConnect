@@ -1,6 +1,8 @@
 package aucklanduni.ece.hc.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,6 +18,7 @@ import com.google.gson.Gson;
 import aucklanduni.ece.hc.repository.model.Account;
 import aucklanduni.ece.hc.repository.model.Appointment;
 import aucklanduni.ece.hc.repository.model.AppointmentAccountRef;
+import aucklanduni.ece.hc.repository.model.Group;
 import aucklanduni.ece.hc.service.AppointmentService;
 
 
@@ -42,7 +45,7 @@ public class AppointmentController {
 		appointment.setLocation(appointmentLocation);
 		//update the reference table
 		aaf.setAccountId(accountId);
-		aaf.setAppointmentId(appointmentService.findByName(appointmentName).getId());
+		//aaf.setAppointmentId(appointmentService.findByName(appointmentName).getId());
 		//for this to work, manually add one row to accout table
 		//insert into accout(id,email,username) values(1,"wke918","wuke")
 		try {
@@ -53,20 +56,23 @@ public class AppointmentController {
 		return null;
 	}
 
-	/*
+	
 	@RequestMapping("/viewAppointment")
 	@ResponseBody
 	public String viewAppointment(HttpServletRequest request, HttpServletResponse response,
-			@RequestParam("accountId") String accountId){
+			@RequestParam("accountId") long accountId){
+		System.out.println(">>>>>>>>>>>>>>>>>viewAppointment"+accountId);
 		String appointments=null;
 		try{
-			List<Appointment> appointmentList=appointmentService.showAllAppointment(accountId);
+			Map<String, ArrayList<Appointment>> appointmentList=appointmentService.showAllAppointment(accountId);
 			Gson gson = new Gson();
 			appointments = gson.toJson(appointmentList);
+			System.out.println(appointments);
 		}
 		catch(Exception e){
 			e.printStackTrace();
 		}
 		return appointments;
-	} */
+	} 
+	
 }
