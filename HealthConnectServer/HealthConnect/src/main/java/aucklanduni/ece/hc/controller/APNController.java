@@ -14,11 +14,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 
 
+
 import aucklanduni.ece.hc.repository.model.Account;
 import aucklanduni.ece.hc.repository.model.ApnUser;
 import aucklanduni.ece.hc.service.AccountService;
 import aucklanduni.ece.hc.service.ApnUserService;
 import aucklanduni.ece.hc.service.GroupService;
+import aucklanduni.ece.hc.service.NotifyService;
 
 @Controller
 @RequestMapping("/ApnUser")
@@ -29,6 +31,8 @@ public class APNController {
 	private AccountService accountService;
 	@Autowired
 	private GroupService groupService;
+	@Autowired
+	private NotifyService notifyService;
 	
 	@RequestMapping(value="/showAll")
 	public String showAll(HttpServletRequest request, HttpServletResponse response){
@@ -65,6 +69,9 @@ public class APNController {
 			apnUserService.add(t);
 			
 			System.out.println(t.toString());
+			System.out.println("=======notify:");
+			
+			notifyService.notify("yy","yy","yy");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
