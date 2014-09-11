@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.wordnik.swagger.annotations.Api;
+
 import aucklanduni.ece.hc.repository.model.ApnUser;
 import aucklanduni.ece.hc.service.ApnUserService;
 import aucklanduni.ece.hc.webservice.model.HCMessage;
-
+@Api(value = "apnuser", description = "Apnuser Demo")
 @RestController
 @RequestMapping("/service/apnuser/")
 public class ApnRestController {
