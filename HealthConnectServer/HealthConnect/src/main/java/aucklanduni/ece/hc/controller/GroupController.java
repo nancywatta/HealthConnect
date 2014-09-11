@@ -31,6 +31,7 @@ public class GroupController {
 	private AccountService accountService;
 	private Gson gson = new Gson();
 	
+	// http://localhost:8080/HealthConnect/Group/showGroups?accountId=123
 	@RequestMapping(value="/showGroups")
 	@ResponseBody
 	public String showGroups(HttpServletRequest request, HttpServletResponse response,
@@ -50,6 +51,7 @@ public class GroupController {
 		return groups;
 	}
 
+	// http://localhost:8080/HealthConnect/Group/showMembers?accountId=123&groupId=1
 	@RequestMapping(value="/showMembers")
 	@ResponseBody
 	public String showMembers(HttpServletRequest request, HttpServletResponse response,
@@ -98,6 +100,30 @@ public class GroupController {
 			}
 			
 			groupService.saveMember(groupId,accId,emailId,roleId);
+			return "Succes";
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	//Ben 09/2014
+	// http://localhost:8080/HealthConnect/Group/deleteMember?accountId=123&groupId=1&memberId=123
+	@RequestMapping(value="/deleteMember")
+	@ResponseBody
+	public String inviteUser(HttpServletRequest request, HttpServletResponse response,
+			@RequestParam("accountId") long accountId,
+			@RequestParam("groupId") long groupId,
+			@RequestParam("memberId") long memberId){
+		String result = null;
+		System.out.println("deleteMember");
+		try {
+			result = groupService.deleteMemberValidation(accountId, groupId, memberId);
+			if(result.compareTo("Succes")!=0) 
+				return result;
+			
+			
+			groupService.deleteMember(groupId,memberId);
 			return "Succes";
 		} catch (Exception e) {
 			e.printStackTrace();

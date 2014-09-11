@@ -11,7 +11,11 @@ public interface MemberDao extends BaseDao<Member>{
 	
 	public void saveMember(Connection connection, long groupId, long accountId, String emailId, long roleId) throws Exception;
 	
+	//Ben 09/2014
+	public void deleteMember(Connection connection, long groupId, long memberId) throws Exception;
+	
 	public String GetMemberRole(Connection connection, long accountId, long groupId) throws Exception;
 	
 	public int checkPatientCount(Connection connection, long groupId) throws Exception;
+	
 }

@@ -12,6 +12,7 @@ import aucklanduni.ece.hc.repository.model.Account;
 import aucklanduni.ece.hc.repository.model.Dictionary;
 import aucklanduni.ece.hc.repository.model.Member;
 
+
 @Repository
 public class MemberDaoImpl extends BaseDaoImpl<Member> implements MemberDao{
 	
@@ -120,6 +121,27 @@ public class MemberDaoImpl extends BaseDaoImpl<Member> implements MemberDao{
 			long time = System.currentTimeMillis();
 			java.sql.Timestamp timestamp = new java.sql.Timestamp(time);
 			ps.setTimestamp(4, timestamp);
+			ps.executeUpdate();
+		}
+		catch(Exception e)
+		{
+			throw e;
+		}
+	}
+	
+	//Ben 09/2014
+	public void deleteMember(Connection connection, long groupId, long memberId) throws Exception {
+		try
+		{
+			PreparedStatement ps = connection.prepareStatement(
+					"DELETE "
+							+ "FROM MEMBER"
+							+ " WHERE "
+							+ "ACCOUNT_ID = ?"
+							+ " AND "
+							+ "GROUP_ID = ?" );
+			ps.setLong(1, memberId);
+			ps.setLong(2, groupId);
 			ps.executeUpdate();
 		}
 		catch(Exception e)
