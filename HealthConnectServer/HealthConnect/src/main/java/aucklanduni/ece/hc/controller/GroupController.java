@@ -195,8 +195,19 @@ public class GroupController {
 //				return "{\"status\":\"Fail\""
 //						+ ",\"error\":\"Invalid Group Id\""+e.getMessage()+"}";
 			}
+		String result = null;
+		try {
+			result = groupService.deleteGroup(accountId, groupId);
+			if(result.compareTo("succeed!")!=0) 
+			    return result;
+			return "succeed!";
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 //		return "{\"status\":\"Success\""}";
-			return "Success";
+		return result;
 		
 	}
 	

@@ -28,4 +28,5 @@ public interface GroupService extends BaseService<Group>{
 	public void saveNewMember(Member member) throws Exception;
 	
 	public String deleteGroup(long accountId, long groupId) throws Exception;
+	 
 }
