@@ -117,7 +117,7 @@ public class GroupController {
 	// http://localhost:8080/HealthConnect/Group/deleteMember?accountId=123&groupId=1&memberId=123
 	@RequestMapping(value="/deleteMember")
 	@ResponseBody
-	public String inviteUser(HttpServletRequest request, HttpServletResponse response,
+	public String deleteUser(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam("accountId") long accountId,
 			@RequestParam("groupId") long groupId,
 			@RequestParam("memberId") long memberId){
@@ -127,10 +127,12 @@ public class GroupController {
 			result = groupService.deleteMemberValidation(accountId, groupId, memberId);
 			if(result.compareTo("Succes")!=0) 
 				return result;
-			
-			
+						
 			groupService.deleteMember(groupId,memberId);
+			notifyService.notify(memberId, "You have been deleted from group", "email");
+			
 			return "Succes";
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
