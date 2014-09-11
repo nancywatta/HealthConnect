@@ -255,14 +255,14 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 //					return "Only the patient can delete the member";
 				if(memberRole.compareTo("S")==0)
 					return "Nurse cannot delete the support member";
-//				else if(memberRole.compareTo("N")==0)
-//					return "Nurse cannot delete another nurse";
+				else if(memberRole.compareTo("N")==0)
+					return "Nurse cannot delete another nurse";
 				else return "Succes";
 			}
 			else if(userRole.compareTo("S")==0)
 				return "Action Not Allowed";
 			}
-			return "The user is invalid";
+			return "The user/member is invalid";
 			
 		}
 		catch (Exception e) {
