@@ -29,7 +29,7 @@ public class Appointment implements Serializable {
 	private String name;
 
 	@Column(name = "time", nullable = false)
-	private String time;
+	private Date time;
 	
 	@Column(name = "location")
 	private String location;
@@ -67,11 +67,11 @@ public class Appointment implements Serializable {
 		this.name = name;
 	}
 
-	public String getTime() {
+	public Date getTime() {
 		return time;
 	}
 
-	public void setTime(String time) {
+	public void setTime(Date time) {
 		this.time = time;
 	}
 
