@@ -1,5 +1,9 @@
 package aucklanduni.ece.hc.controller;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -20,47 +24,61 @@ public class AccountController {
 
 	@RequestMapping(value="/login")
 	@ResponseBody
-	public String showGroups(HttpServletRequest request, HttpServletResponse response,
+	public String login(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam("emailId") String emailId,
 			@RequestParam(value="password",required=false) String password,
 			@RequestParam(value="userName",required=false) String userName){
-		Account account;
-		System.out.println("login");
+		List<Account> memberAccs = new ArrayList<Account>();
+		Account account = new Account();
 		try {
 
+			// Check if account exist with given email and (given password or Default password)
+			String pswd = (password == null) ? "healthConnect" : password;
+			memberAccs = accountService.findByHql(
+					"from Account a "
+							+ "WHERE "
+							+ "a.email='" + emailId + "'"
+							+ " and a.password='" + 
+							pswd + "'");
+			
 			if(password==null) {
-				// Check if account exist with Default password
-				account = accountService.getAccbyEmailPswd(emailId,"healthConnect");
 				// If no then return false, so that user puts his own password
-				if(account == null) {
-					System.out.println("false");
+				if(memberAccs == null || memberAccs.size() <1) {
 					return "false";
 				}
 				// if yes, return the accountId
 				else {
-					System.out.println(Long.toString(account.getId()));
-					return Long.toString(account.getId());
+					memberAccs.get(0).setLastLoginDate(new Date());
+					accountService.update(memberAccs.get(0));
+					return Long.toString(memberAccs.get(0).getId());
 				}
 			}
 			else {
-				// check if account exist with given email and password
-				account = accountService.getAccbyEmailPswd(emailId,password);
 				// if No, check if the email already exist in DB
-				if(account == null) {
-					account = accountService.getAccountbyEmail(emailId);
+				if(memberAccs == null || memberAccs.size() < 1) {
+					memberAccs = accountService.findByHql(
+							"from Account a "
+									+ "WHERE "
+									+ "a.email='" + emailId + "'");
+					
 					// if email id exists, it means wrong password entered
-					if(account!=null)
+					if(memberAccs.size() > 0)
 						return "false";
 					// else register the account and return created accountId
 					else {
-						accountService.createAccount(emailId, password,userName);
-						account = accountService.getAccountbyEmail(emailId);
+						account.setCreateDate(new Date());
+						account.setEmail(emailId);
+						account.setPassword(password);
+						account.setUsername(userName);
+						accountService.createNewAccount(account);
 						return Long.toString(account.getId());
 					}
 				}
 				// if input email and password correct, return accountId
 				else {
-					return Long.toString(account.getId());
+					memberAccs.get(0).setLastLoginDate(new Date());
+					accountService.update(memberAccs.get(0));
+					return Long.toString(memberAccs.get(0).getId());
 				}
 			}
 

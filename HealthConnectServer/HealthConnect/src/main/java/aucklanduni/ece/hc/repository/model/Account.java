@@ -36,15 +36,15 @@ public class Account implements Serializable {
 	private String password;
 
 	@Column(name = "created_date")
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date createDate;
 	
 	@Column(name = "updated_date")
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedDate;
 	
 	@Column(name = "last_login_date")
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastLoginDate;
 	
 	@Transient

@@ -20,6 +20,7 @@ import aucklanduni.ece.hc.repository.model.Group;
 import aucklanduni.ece.hc.repository.model.Member;
 import aucklanduni.ece.hc.service.DictionaryService;
 import aucklanduni.ece.hc.service.GroupService;
+import aucklanduni.ece.hc.service.NotifyService;
 import aucklanduni.ece.hc.webservice.model.ValidationFailException;
 
 import com.google.gson.Gson;
@@ -35,21 +36,8 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 	private AccountDao accountDao;
 	@Autowired
 	private GroupDao groupDao;
-
-	public Map<String, ArrayList<Group>> GetGroups(long accountId)throws Exception {
-
-		Map<String, ArrayList<Group>> groups = null;
-		try {
-			Database database= new Database();
-			Connection connection = database.Get_Connection();
-			GroupDaoImpl groupDao= new GroupDaoImpl();
-			groups=groupDao.GetGroups(connection,accountId);
-		}
-		catch (Exception e) {
-			throw e;
-		}
-		return groups;
-	}
+	@Autowired
+	private NotifyService notifyService;
 
 	public ArrayList<Account> GetMembers(long accountId,long groupId)throws Exception {
 		ArrayList<Account> members = null;
@@ -63,43 +51,46 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 		}
 		return members;
 	}
-
-	public  String inviteUserValidation (long accountId,long groupId, long roleId, String emailId)throws Exception {
+	
+	public  void inviteUser (long accountId, 
+			long groupId, long roleId, String emailId) throws ValidationFailException, Exception {
+		long accId;
+		List<Account> accounts = new ArrayList<Account>();
 		try {
-			Database database= new Database();
-			Connection connection = database.Get_Connection();
-			String roleValue = memberDao.GetMemberRole(connection, accountId, groupId);
-			if(roleValue.compareTo("S")==0)
-				return "Action Not Allowed";
-
-			Dictionary role = dictionaryService.findById(new Long(roleId));
-
-			if(roleValue.compareTo("P")==0) {
-
-				if(roleValue.compareTo(role.getValue())==0)
-					return "Only one patient allowed per group";
-			} else if(roleValue.compareTo("N")==0) {
-				if(role.getValue().compareTo("P")!=0)
-					return "Action Not Allowed";
-				if(memberDao.checkPatientCount(connection,groupId) >= 1)
-					return "Only one patient allowed per group";
+			accounts = accountDao.findByHql(
+					"from Account a "
+							+ "WHERE "
+							+ "a.email='" + emailId + "'");
+			if(accounts == null || accounts.size() < 1) {
+				Account memberAcc = new Account();
+				memberAcc.setCreateDate(new Date());
+				memberAcc.setEmail(emailId);
+				memberAcc.setPassword("healthConnect");
+				accountDao.add(memberAcc);
+				accId = memberAcc.getId();
 			}
+			else{
+				accId = accounts.get(0).getId();
+			}
+
+			// save member details in the MEMBER table
+			Member newMember = new Member();
+			newMember.setAccountId(accId);
+			newMember.setCreateDate(new Date());
+			newMember.setGroupId(groupId);
+			newMember.setRoleId(roleId);
+
+			saveNewMember(newMember);
 			
-			Account account = accountDao.getAccountByEmail(connection, emailId);
-			if(account!=null) {
-				roleValue = "";
-				roleValue = memberDao.GetMemberRole(connection, account.getId(), groupId);
-				if(roleValue.compareTo("")!=0)
-					return "Already a member in this Group";
-			}
-				
-			return "Succes";
-		}
-		catch (Exception e) {
+			notifyService.notify(emailId,"You have been invited to a group","yy");
+			
+		}catch (ValidationFailException ve) {
+			throw ve;
+		}catch (Exception e) {
 			throw e;
 		}
 	}
-	
+
 	public void createNewGroup(long accountId, String groupName, long roleId, String members) 
 			throws ValidationFailException,Exception {
 		try {

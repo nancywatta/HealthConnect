@@ -1,64 +1,59 @@
 package aucklanduni.ece.hc.service.impl;
 
-import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import aucklanduni.ece.hc.repository.dao.impl.DictionaryDaoImpl;
-import aucklanduni.ece.hc.repository.dao.impl.MemberDaoImpl;
-import aucklanduni.ece.hc.repository.model.Database;
+import aucklanduni.ece.hc.repository.dao.DictionaryDao;
 import aucklanduni.ece.hc.repository.model.Dictionary;
 import aucklanduni.ece.hc.service.DictionaryService;
 
 @Service
 public class DictionaryServiceImpl extends BaseServiceImpl<Dictionary> implements DictionaryService{
 
-	public ArrayList<Dictionary> GetRoles()throws Exception {
-		ArrayList<Dictionary> roles = null;
-		try {
-			Database database= new Database();
-			Connection connection = database.Get_Connection();
-			DictionaryDaoImpl roleDao= new DictionaryDaoImpl();
-			roles=roleDao.GetRoles(connection);
-		}
-		catch (Exception e) {
-			throw e;
-		}
-		return roles;
-	}
-	
+	@Autowired
+	private DictionaryDao dictionaryDao;
+
 	public ArrayList<Dictionary> GetSpecificRoles(long accountId, long groupId) throws Exception {
-		ArrayList<Dictionary> roles = new ArrayList<Dictionary>();
+		List<Dictionary> roles = new ArrayList<Dictionary>();
 		try {
-			Database database= new Database();
-			Connection connection = database.Get_Connection();
-			MemberDaoImpl memberDao= new MemberDaoImpl();
-			String roleValue =memberDao.GetMemberRole(connection, accountId, groupId);
-			System.out.println(roleValue);
+
+			List<Dictionary> ownerRoles = new ArrayList<Dictionary>();
+			ownerRoles = dictionaryDao.findByHql(
+					"select d from Dictionary d, Member m "
+							+ "WHERE "
+							+ "m.roleId=d.id "
+							+ "and m.groupId= " + groupId
+							+ " and m.accountId= " + accountId);
+
+			String roleValue = ownerRoles.get(0).getValue();
+
 			if(roleValue.compareTo("S")==0)
 				return null;
 			else if(roleValue.compareTo("P")==0) {
-				roles = GetRoles();
-				for(int i=0; i<roles.size(); i++) {
-					Dictionary role = roles.get(i);
-					if(role.getValue().compareTo(roleValue)==0)
-						roles.remove(i);
-				}
+				roles = dictionaryDao.findByHql(
+						"from Dictionary "
+								+ "WHERE type='Role' " 
+								+ "and value!='P'");
 			}
 			else if(roleValue.compareTo("N")==0) {
-				DictionaryDaoImpl roleDao= new DictionaryDaoImpl();
-				roles = roleDao.findByValue(connection,"P");
+				roles = dictionaryDao.findByHql(
+						"from Dictionary "
+								+ "WHERE type='Role' " 
+								+ "and value='P'");
 			}
 			else {
-				return GetRoles();
+				roles = dictionaryDao.findByHql(
+						"from Dictionary "
+								+ "WHERE type='Role' ");
 			}
 		}
 		catch (Exception e) {
 			throw e;
 		}
-		return roles;
+		return (ArrayList<Dictionary>)roles;
 	}
-	
+
 }

@@ -35,7 +35,7 @@ public class Member  implements Serializable {
 	private long roleId;
 
 	@Column(name = "created_date")
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date createDate;
 
 	public long getId() {

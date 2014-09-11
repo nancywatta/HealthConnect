@@ -3,6 +3,7 @@ package aucklanduni.ece.hc.controller;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,10 +16,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import aucklanduni.ece.hc.repository.model.Account;
+import aucklanduni.ece.hc.repository.model.Dictionary;
 import aucklanduni.ece.hc.repository.model.Group;
 import aucklanduni.ece.hc.service.AccountService;
+import aucklanduni.ece.hc.service.DictionaryService;
 import aucklanduni.ece.hc.service.GroupService;
 import aucklanduni.ece.hc.service.NotifyService;
+import aucklanduni.ece.hc.webservice.model.ValidationFailException;
 
 import com.google.gson.Gson;
 
@@ -30,23 +34,28 @@ public class GroupController {
 	@Autowired
 	private AccountService accountService;
 	@Autowired
+	private DictionaryService dictionaryService;
+	@Autowired
 	private NotifyService notifyService;
 	private Gson gson = new Gson();
-	
+
 	// http://localhost:8080/HealthConnect/Group/showGroups?accountId=123
 	@RequestMapping(value="/showGroups")
 	@ResponseBody
 	public String showGroups(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam("accountId") long accountId){
 		String groups = null;
-		System.out.println("showGroups");
+		List<Group> groupList = new ArrayList<Group>();
+		Map<String, ArrayList<Group>> groupArray = new HashMap<String, ArrayList<Group>>();
 		try {
-			
-			Map<String, ArrayList<Group>> groupList = groupService.GetGroups(accountId);
-			Gson gson = new Gson();
-			System.out.println(gson.toJson(groupList));
+			groupList = groupService.findByHql("select distinct g from Group g, "
+					+ "Member m "
+					+ "WHERE "
+					+ "g.id=m.groupId "
+					+ "and m.accountId= " + accountId);
+			groupArray.put("groups", (ArrayList<Group>)groupList);
 			groups = gson.toJson(groupList);
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -57,25 +66,24 @@ public class GroupController {
 	@RequestMapping(value="/showMembers")
 	@ResponseBody
 	public String showMembers(HttpServletRequest request, HttpServletResponse response,
-			@RequestParam("accountId") long accountId,
+			@RequestParam(value = "accountId",required=false) Long accountId,
 			@RequestParam("groupId") long groupId){
 		String members = null;
-		System.out.println("showMembers");
 		try {
-			
-			ArrayList<Account> memberList = groupService.GetMembers(accountId,groupId);
+			long accId = 0;
+			if(accountId!=null)
+				accId = accountId.longValue();
+			ArrayList<Account> memberList = groupService.GetMembers(accId,groupId);
 			Map<String, ArrayList<Account>> memberArray = new HashMap<String, ArrayList<Account>>();
 			memberArray.put("members", memberList);
-			Gson gson = new Gson();
-			System.out.println(gson.toJson(memberArray));
 			members = gson.toJson(memberArray);
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return members;
 	}
-	
+
 	@RequestMapping(value="/inviteUser")
 	@ResponseBody
 	public String inviteUser(HttpServletRequest request, HttpServletResponse response,
@@ -83,35 +91,34 @@ public class GroupController {
 			@RequestParam("groupId") long groupId,
 			@RequestParam("emailId") String emailId,
 			@RequestParam("roleId") long roleId){
-		String result = null;
-		long accId;
-		System.out.println("inviteUser");
 		try {
-			result = groupService.inviteUserValidation(accountId, groupId, roleId,emailId);
-			if(result.compareTo("Succes")!=0) 
-				return result;
-			Account account = accountService.getAccountbyEmail(emailId);
-			if(account == null) {
-				String userName=null;
-				accountService.createAccount(emailId, "heathConnect",userName);
-				Account acc = accountService.getAccountbyEmail(emailId);
-				accId = acc.getId();
-			}
-			else{
-				accId = account.getId();
+			List<Dictionary> roles = new ArrayList<Dictionary>();
+			roles = dictionaryService.findByHql(
+					"select d from Dictionary d, Member m "
+							+ "WHERE "
+							+ "m.roleId=d.id "
+							+ "and m.groupId= " + groupId
+							+ " and m.accountId= " + accountId);
+			
+			if(roles== null || roles.size() < 1) {
+				return "Invalid Input";
 			}
 			
-			groupService.saveMember(groupId,accId,emailId,roleId);
-
-			notifyService.notify(emailId,"You have been invited to a group","yy");
+			groupService.inviteValidation(roles.get(0).getId(), accountId, groupId, roleId,emailId);
+			
+			groupService.inviteUser(accountId, groupId, roleId, emailId);
+			
 			return "Succes";
-			
-		} catch (Exception e) {
-			e.printStackTrace();
+
+		}catch(ValidationFailException ve) {
+			return ve.getMessage();
 		}
-		return result;
+		catch (Exception e) {
+			e.printStackTrace();
+			return e.getMessage();
+		}
 	}
-	
+
 	//Ben 09/2014
 	// http://localhost:8080/HealthConnect/Group/deleteMember?accountId=123&groupId=1&memberId=123
 	@RequestMapping(value="/deleteMember")
@@ -126,96 +133,58 @@ public class GroupController {
 			result = groupService.deleteMemberValidation(accountId, groupId, memberId);
 			if(result.compareTo("Succes")!=0) 
 				return result;
-						
+
 			groupService.deleteMember(groupId,memberId);
 			notifyService.notify(memberId, "You have been deleted from group", "email");
-			
+
 			return "Succes";
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return result;
 	}
-	
-	@RequestMapping(value="/createGroup")
+
+	@RequestMapping(value="/deleteGroup")
 	@ResponseBody
-	public String createGroup(HttpServletRequest request, HttpServletResponse response,
+	public String deleteGroup(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam("accountId") long accountId
-			,@RequestParam("groupName") String groupName
-			,@RequestParam("roleId") long roleId){
-		
-		System.out.println("createGroup");
+			,@RequestParam("groupId") long groupId){
 
-		//prepare group
-		Group group = new Group();
-		group.setGroupname(groupName);
-		group.setCreateDate(new Date());
-
+		System.out.println("deleteGroup");
 		//get account
 		Account account = null;
 		try {
 			account = accountService.findById(accountId);
 		} catch (Exception e) {
 			return "Fail";
-//			return "{\"status\":\"Fail\""
-//					+ ",\"error\":\"Invalid Account Id \""+e.getMessage()+"}";
+			//				return "{\"status\":\"Fail\""
+			//					    + ",\"error\":\"Invalid Account Id \""+e.getMessage()+"}";
 		}	
-		
-		try{
-			//call create group service
-			groupService.createGroup(group, account, roleId);
-		}catch(Exception e){
-			return "Fail";
-//			return "{\"status\":\"Fail\""
-//					+ ",\"error\":\"Create Group Failed \""+e.getMessage()+"}";
-		}
-
-//		return "{\"status\":\"Success\""
-//				+ ",\"response\":"+gson.toJson(group)+"}";
-		return group.getId()+ "";
-	}
-	
-	@RequestMapping(value="/deleteGroup")
-	@ResponseBody
-	public String deleteGroup(HttpServletRequest request, HttpServletResponse response,
-			@RequestParam("accountId") long accountId
-			,@RequestParam("groupId") long groupId){
-		
-		System.out.println("deleteGroup");
-		//get account
-		Account account = null;
-		try {
-			    account = accountService.findById(accountId);
-			} catch (Exception e) {
-				return "Fail";
-//				return "{\"status\":\"Fail\""
-//					    + ",\"error\":\"Invalid Account Id \""+e.getMessage()+"}";
-			}	
 		//get group
 		Group group = null;
 		try{
-		//call create group service
-				group = groupService.findById(groupId);
-			}catch(Exception e){
-				return "Fail";
-//				return "{\"status\":\"Fail\""
-//						+ ",\"error\":\"Invalid Group Id\""+e.getMessage()+"}";
-			}
+			//call create group service
+			group = groupService.findById(groupId);
+		}catch(Exception e){
+			return "Fail";
+			//				return "{\"status\":\"Fail\""
+			//						+ ",\"error\":\"Invalid Group Id\""+e.getMessage()+"}";
+		}
 		String result = null;
 		try {
 			result = groupService.deleteGroup(accountId, groupId);
 			if(result.compareTo("succeed!")!=0) 
-			    return result;
+				return result;
 			return "succeed!";
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-//		return "{\"status\":\"Success\""}";
+
+		//		return "{\"status\":\"Success\""}";
 		return result;
-		
+
 	}
-	
+
 }

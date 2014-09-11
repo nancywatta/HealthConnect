@@ -1,14 +1,12 @@
 package aucklanduni.ece.hc.webservice;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,15 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 import aucklanduni.ece.hc.repository.model.Account;
 import aucklanduni.ece.hc.repository.model.Dictionary;
 import aucklanduni.ece.hc.repository.model.Group;
-import aucklanduni.ece.hc.repository.model.Member;
 import aucklanduni.ece.hc.service.AccountService;
 import aucklanduni.ece.hc.service.DictionaryService;
 import aucklanduni.ece.hc.service.GroupService;
 import aucklanduni.ece.hc.webservice.model.HCMessage;
 import aucklanduni.ece.hc.webservice.model.ValidationFailException;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 @RestController
 @RequestMapping("/service/group/")
@@ -74,7 +68,6 @@ public class GroupRestController {
 			groupService.createNewGroup(accountId, groupName, roleId, members);
 
 		}catch(ValidationFailException ve) {
-			//TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			message.setFail("404", ve.getMessage());
 		} catch (Exception e) {
 			e.printStackTrace();

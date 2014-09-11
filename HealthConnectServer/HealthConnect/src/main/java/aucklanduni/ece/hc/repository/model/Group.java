@@ -29,11 +29,11 @@ public class Group implements Serializable {
 	private String groupname;
 	
 	@Column(name = "created_date")
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date createDate;
 	
 	@Column(name = "updated_date")
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedDate;
 
 	public long getId() {

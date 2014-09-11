@@ -4,8 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.springframework.stereotype.Repository;
 
@@ -14,33 +12,6 @@ import aucklanduni.ece.hc.repository.model.Dictionary;
 
 @Repository
 public class DictionaryDaoImpl  extends BaseDaoImpl<Dictionary> implements DictionaryDao{
-	
-	public ArrayList<Dictionary> GetRoles(Connection connection) throws Exception
-	{
-		ArrayList<Dictionary> roleData = new ArrayList<Dictionary>();
-		try
-		{
-			PreparedStatement ps = connection.prepareStatement(
-					"SELECT id, value, name "
-					+ "FROM DICTIONARY "
-					+ "WHERE type='Role' ");
-			ResultSet rs = ps.executeQuery();
-			while(rs.next())
-			{
-				Dictionary roleObject = new Dictionary();
-				roleObject.setId(rs.getLong("id"));
-				roleObject.setName(rs.getString("name"));
-				roleObject.setValue(rs.getString("value"));
-				roleData.add(roleObject);
-			}
-			
-			return roleData;
-		}
-		catch(Exception e)
-		{
-			throw e;
-		}
-	}
 	
 	public ArrayList<Dictionary> findByValue(Connection connection, String roleValue) throws Exception
 	{

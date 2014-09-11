@@ -32,31 +32,25 @@ public class RoleController {
 			@RequestParam(value="accountId",required=false) Long accountId){
 		String roles = null;
 		Map<String, ArrayList<Dictionary>> rolesArray = new HashMap<String, ArrayList<Dictionary>>();
-		ArrayList<Dictionary> roleList;
-		System.out.println("showRoles");
+		List<Dictionary> roleList = new ArrayList<Dictionary>();
 		try {
 			if(groupId == null || accountId == null) 
-				roleList = roleService.GetRoles();
+				roleList = roleService.findByHql(
+						"from Dictionary "
+								+ "WHERE type='Role' ");
 			else {
 				roleList = roleService.GetSpecificRoles(accountId.longValue(), groupId.longValue());
 			}
-				
-			rolesArray.put("roles", roleList);
+
+			rolesArray.put("roles", (ArrayList<Dictionary>)roleList);
 			Gson gson = new Gson();
-			System.out.println(gson.toJson(rolesArray));
 			roles = gson.toJson(rolesArray);
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		return roles;
-//		try {
-//			response.getWriter().print(roles);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 	}
 
 	@RequestMapping(value="/showAll")

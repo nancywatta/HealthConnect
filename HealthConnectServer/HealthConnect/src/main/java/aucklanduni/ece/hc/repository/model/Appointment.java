@@ -44,11 +44,11 @@ public class Appointment implements Serializable {
 	private String isShared;
 
 	@Column(name = "created_date")
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date createDate;
 	
 	@Column(name = "updated_date")
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedDate;
 
 	public long getId() {

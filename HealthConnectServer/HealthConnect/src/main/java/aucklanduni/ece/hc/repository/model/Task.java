@@ -50,11 +50,11 @@ public class Task implements Serializable {
 	private String desciption;
 
 	@Column(name = "created_date")
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date createDate;
 	
 	@Column(name = "updated_date")
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedDate;
 
 	public long getId() {
