@@ -169,4 +169,35 @@ public class GroupController {
 		return group.getId()+ "";
 	}
 	
+	@RequestMapping(value="/deleteGroup")
+	@ResponseBody
+	public String deleteGroup(HttpServletRequest request, HttpServletResponse response,
+			@RequestParam("accountId") long accountId
+			,@RequestParam("groupId") long groupId){
+		
+		System.out.println("deleteGroup");
+		//get account
+		Account account = null;
+		try {
+			    account = accountService.findById(accountId);
+			} catch (Exception e) {
+				return "Fail";
+//				return "{\"status\":\"Fail\""
+//					    + ",\"error\":\"Invalid Account Id \""+e.getMessage()+"}";
+			}	
+		//get group
+		Group group = null;
+		try{
+		//call create group service
+				group = groupService.findById(groupId);
+			}catch(Exception e){
+				return "Fail";
+//				return "{\"status\":\"Fail\""
+//						+ ",\"error\":\"Invalid Group Id\""+e.getMessage()+"}";
+			}
+//		return "{\"status\":\"Success\""}";
+			return "Success";
+		
+	}
+	
 }
