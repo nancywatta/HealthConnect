@@ -105,24 +105,27 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 			String userRole = memberDao.GetMemberRole(connection, accountId, groupId);
 			String memberRole = memberDao.GetMemberRole(connection, memberId, groupId);
 			
-			if(userRole.compareTo("S")==0)
-				return "Action Not Allowed";
-
-
+			
 			if(userRole.compareTo("P")==0) {
 				if(userRole.compareTo(memberRole)==0)
 					return "Cannot delete the patient in the group, please delete the group";
-				return "Succes";
+				else return "Succes";
 			} 
-			
+			//delete the user himself
+			else if (accountId == memberId)
+				return "Succes";
 			else if(userRole.compareTo("N")==0) {
 				//nurse can delete member only there is no patient in the group
 //				if(memberDao.checkPatientCount(connection,groupId) != 0)
 //					return "Only the patient can delete the member";
 				if(memberRole.compareTo("S")==0)
 					return "Nurse cannot delete the support member";
-				return "Succes";
+//				else if(memberRole.compareTo("N")==0)
+//					return "Nurse cannot delete another nurse";
+				else return "Succes";
 			}
+			else if(userRole.compareTo("S")==0)
+				return "Action Not Allowed";
 			
 			return "The user is invalid";
 			

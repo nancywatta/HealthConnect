@@ -94,7 +94,10 @@ public class AccountDaoImpl  extends BaseDaoImpl<Account> implements AccountDao{
 							+ "WHERE "
 							+ "a.id='" + accountId + "'");
 			ResultSet rs = ps.executeQuery();
-			return rs.getString("email");
+			String emailAdd = "";
+			while(rs.next())
+			{emailAdd = rs.getString("email");}
+			return emailAdd;
 		}
 		catch(Exception e)
 		{
