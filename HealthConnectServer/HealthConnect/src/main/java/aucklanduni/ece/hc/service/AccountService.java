@@ -14,4 +14,7 @@ public interface AccountService extends BaseService<Account>{
 	public Account getAccbyEmailPswd(String emailId, String password)throws Exception;
 
 	public void createNewAccount(Account account) throws Exception;
+	
+	//Ben 09/2014
+	public String getEmailByAccountId(long accountId)throws Exception;
 }

@@ -84,4 +84,22 @@ public class AccountDaoImpl  extends BaseDaoImpl<Account> implements AccountDao{
 		}
 	}
 	
+	//Ben 09/2014
+	public String getEmailByAccountId(Connection connection, long accountId) throws Exception {
+		try
+		{
+			PreparedStatement ps = connection.prepareStatement(
+					"SELECT a.email "
+							+ "FROM ACCOUNT a "
+							+ "WHERE "
+							+ "a.id='" + accountId + "'");
+			ResultSet rs = ps.executeQuery();
+			return rs.getString("email");
+		}
+		catch(Exception e)
+		{
+			throw e;
+		}
+	}
+	
 }
