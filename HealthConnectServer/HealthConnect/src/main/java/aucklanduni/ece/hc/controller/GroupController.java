@@ -19,6 +19,7 @@ import aucklanduni.ece.hc.repository.model.Account;
 import aucklanduni.ece.hc.repository.model.Group;
 import aucklanduni.ece.hc.service.AccountService;
 import aucklanduni.ece.hc.service.GroupService;
+import aucklanduni.ece.hc.service.NotifyService;
 
 import com.google.gson.Gson;
 
@@ -29,6 +30,8 @@ public class GroupController {
 	private GroupService groupService;
 	@Autowired
 	private AccountService accountService;
+	@Autowired
+	private NotifyService notifyService;
 	private Gson gson = new Gson();
 	
 	// http://localhost:8080/HealthConnect/Group/showGroups?accountId=123
@@ -100,7 +103,10 @@ public class GroupController {
 			}
 			
 			groupService.saveMember(groupId,accId,emailId,roleId);
+
+			notifyService.notify(emailId,"You have been invited to a group","yy");
 			return "Succes";
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

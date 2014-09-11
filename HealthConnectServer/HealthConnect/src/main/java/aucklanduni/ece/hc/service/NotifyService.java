@@ -9,7 +9,8 @@ public interface NotifyService {
 	
 	
 	
-	public void notify(String emailId, String message, String type)throws Exception;
+	public void notify(long accountId, String message, String type)throws Exception;
 	
+	public void notify(String emailId, String message, String type)throws Exception;
 
 }

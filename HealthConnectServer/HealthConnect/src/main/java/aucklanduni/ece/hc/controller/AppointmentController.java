@@ -20,6 +20,7 @@ import aucklanduni.ece.hc.repository.model.Appointment;
 import aucklanduni.ece.hc.repository.model.AppointmentAccountRef;
 import aucklanduni.ece.hc.repository.model.Group;
 import aucklanduni.ece.hc.service.AppointmentService;
+import aucklanduni.ece.hc.service.NotifyService;
 
 
 @Controller
@@ -27,6 +28,8 @@ import aucklanduni.ece.hc.service.AppointmentService;
 public class AppointmentController {
 	@Autowired
 	private AppointmentService appointmentService;
+	@Autowired
+	private NotifyService notifyService;
 	
 	@RequestMapping("/createAppointment")
 	@ResponseBody

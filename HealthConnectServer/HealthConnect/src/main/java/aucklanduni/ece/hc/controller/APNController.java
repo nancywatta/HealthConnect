@@ -71,7 +71,7 @@ public class APNController {
 			System.out.println(t.toString());
 			System.out.println("=======notify:");
 			
-			notifyService.notify("yy","yy","yy");
+			notifyService.notify(01,"yy","yy");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
