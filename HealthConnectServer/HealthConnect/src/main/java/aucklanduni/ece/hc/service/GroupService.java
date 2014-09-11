@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import aucklanduni.ece.hc.repository.model.Account;
 import aucklanduni.ece.hc.repository.model.Group;
 import aucklanduni.ece.hc.repository.model.Member;
+import aucklanduni.ece.hc.webservice.model.ValidationFailException;
 @Transactional
 public interface GroupService extends BaseService<Group>{
 	
@@ -16,6 +17,12 @@ public interface GroupService extends BaseService<Group>{
 	public ArrayList<Account> GetMembers(long accountId,long groupId)throws Exception;
 	
 	public  String inviteUserValidation (long accountId,long groupId, long roleId, String emailId)throws Exception;
+	
+	public  void inviteValidation (long ownerRoleId, long accountId, 
+			long groupId, long roleId, String emailId)throws ValidationFailException, Exception;
+	
+	public void createNewGroup(long accountId, String groupName, long roleId, String members) 
+			throws ValidationFailException,Exception;
 	
 	public void saveMember(long groupId, long accountId, String emailId, long roleId) throws Exception;
 	

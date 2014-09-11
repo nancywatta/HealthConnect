@@ -3,6 +3,7 @@ package aucklanduni.ece.hc.service.impl;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,10 @@ import aucklanduni.ece.hc.repository.model.Group;
 import aucklanduni.ece.hc.repository.model.Member;
 import aucklanduni.ece.hc.service.DictionaryService;
 import aucklanduni.ece.hc.service.GroupService;
+import aucklanduni.ece.hc.webservice.model.ValidationFailException;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 @Service
 public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupService{
@@ -95,6 +100,136 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 		}
 	}
 	
+	public void createNewGroup(long accountId, String groupName, long roleId, String members) 
+			throws ValidationFailException,Exception {
+		try {
+			// save group in GROUP_INFO Table
+			Group newGroup = new Group();
+			newGroup.setGroupname(groupName);
+			newGroup.setCreateDate(new Date());
+			Account account = accountDao.findById(accountId);
+			createGroup(newGroup, account, roleId);
+
+			if(members !=null) {
+				List<Account> accList = 
+						new Gson().fromJson(members, new TypeToken<List<Account>>() {}.getType());
+
+				for(Account  member : accList) {
+					// Perform Member Validations
+					inviteValidation(roleId, accountId, 
+							newGroup.getId(), member.getRole().getId(), member.getEmail());
+
+					List<Account> memberAccs = new ArrayList<Account>();
+					memberAccs = accountDao.findByHql(
+							"from Account a "
+									+ "WHERE "
+									+ "a.email='" + member.getEmail() + "'");
+					long memberAccId;
+
+					// if invited account does not exist, create the account with default password
+					if(memberAccs.size() < 1) {
+						Account memberAcc = new Account();
+						memberAcc.setCreateDate(new Date());
+						memberAcc.setEmail(member.getEmail());
+						memberAcc.setPassword("healthConnect");
+						accountDao.add(memberAcc);
+						memberAccId = memberAcc.getId();
+					}
+					else {
+						memberAccId = memberAccs.get(0).getId();
+					}
+
+					// save member details in the MEMBER table
+					Member newMember = new Member();
+					newMember.setAccountId(memberAccId);
+					newMember.setCreateDate(new Date());
+					newMember.setGroupId(newGroup.getId());
+					newMember.setRoleId(member.getRole().getId());
+
+					saveNewMember(newMember);
+				}
+			}
+		}catch (ValidationFailException ve) {
+			throw ve;
+		}catch (Exception e) {
+			throw e;
+		}
+
+	}
+
+	public  void inviteValidation (long ownerRoleId, long accountId, 
+			long groupId, long roleId, String emailId) throws ValidationFailException, Exception {
+		try {
+
+			// Fetch Role of Owner of Group
+			Dictionary ownerRole = dictionaryService.findById(new Long(ownerRoleId));
+
+			String roleValue = ownerRole.getValue();
+
+			// Support Member cannot invite any user in Group
+			if(roleValue.compareTo("S")==0)
+				throw new ValidationFailException("Action Not Allowed");
+
+			// Fetch Role of user being Invited
+			Dictionary role = dictionaryService.findById(new Long(roleId));
+
+
+			if(roleValue.compareTo("P")==0) {
+
+				// Patient cannot invite any other patient in Group
+				if(roleValue.compareTo(role.getValue())==0)
+					throw new ValidationFailException("Only one patient allowed per group");
+			} else if(roleValue.compareTo("N")==0) {
+
+				// Nurse can only invite patient in Group
+				if(role.getValue().compareTo("P")!=0)
+					throw new ValidationFailException("Action Not Allowed");
+
+				// Check if Patient already exists in Group
+				List<Member> members = new ArrayList<Member>();
+				members = memberDao.findByHql(
+						"from Member m "
+								+ "INNER JOIN DICTIONARY d "
+								+ "ON "
+								+ "m.role_id=d.id "
+								+ "and m.group_id= " + groupId
+								+ " and d.type = 'Role' "
+								+ "and d.value = 'P' ");
+
+				// If patient already exists, Nurse cannot invite any more patient
+				if(members.size() >= 1)
+					throw new ValidationFailException("Only one patient allowed per group");
+			}
+
+			// Check if the invited member is already registered user
+			List<Account> accounts = new ArrayList<Account>();
+			accounts = accountDao.findByHql(
+					"from Account a "
+							+ "WHERE "
+							+ "a.email='" + emailId + "'");
+
+			if(accounts.size() >=1) {
+
+				// Check if the invited member is already member of the input Group
+				List<Dictionary> roles = new ArrayList<Dictionary>();
+				roles = dictionaryService.findByHql(
+						"from Dictionary d "
+								+ "INNER JOIN MEMBER m "
+								+ "ON "
+								+ "m.role_id=d.id "
+								+ "and m.group_id= " + groupId
+								+ " and m.account_id= " + accountId);
+
+				// throw error if invited member is already member of the input Group
+				if(roles.size() >= 1)
+					throw new ValidationFailException("Already a member in this Group");
+			}
+		}
+		catch (Exception e) {
+			throw e;
+		}
+
+	}
 	
 	//Ben 09/2014 TODO:maybe some problem like inviteValidation
 	public  String deleteMemberValidation (long accountId,long groupId, long memberId)throws Exception {

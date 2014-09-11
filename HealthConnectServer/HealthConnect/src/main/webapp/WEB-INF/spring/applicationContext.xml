@@ -103,11 +103,11 @@
 			<tx:method name="pass*" propagation="REQUIRED" rollback-for="java.lang.Exception" />
 			<tx:method name="amend*" propagation="REQUIRED" rollback-for="java.lang.Exception" />
 			<tx:method name="no*" propagation="REQUIRED" rollback-for="java.lang.Exception" />
-			<tx:method name="get*" propagation="REQUIRED" read-only="true" />  
-	        <tx:method name="count*" propagation="REQUIRED" read-only="true" />  
-	        <tx:method name="find*" propagation="REQUIRED" read-only="true" />  
-	        <tx:method name="list*" propagation="REQUIRED" read-only="true" />  
-	        <tx:method name="*" read-only="true" />
+			<tx:method name="get*" propagation="SUPPORTS" read-only="true" />  
+	        <tx:method name="count*" propagation="SUPPORTS" read-only="true" />  
+	        <tx:method name="find*" propagation="SUPPORTS" read-only="true" />  
+	        <tx:method name="list*" propagation="SUPPORTS" read-only="true" />  
+	        <tx:method name="*" propagation="SUPPORTS" read-only="true" />
 	   </tx:attributes>
 	</tx:advice>
 

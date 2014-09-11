@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,6 +22,7 @@ import aucklanduni.ece.hc.service.AccountService;
 import aucklanduni.ece.hc.service.DictionaryService;
 import aucklanduni.ece.hc.service.GroupService;
 import aucklanduni.ece.hc.webservice.model.HCMessage;
+import aucklanduni.ece.hc.webservice.model.ValidationFailException;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -52,66 +54,29 @@ public class GroupRestController {
 			// Only Patient or Nurse can create a Group
 			if(! (role.getValue().compareTo("P")==0 
 					|| role.getValue().compareTo("N")==0)) {
-				message.setFail("404", "Only Patient or Nurse can create a Group");
-				return message;
+				throw new ValidationFailException("Only Patient or Nurse can create a Group");
 			}
 
 			Account account = null;
 			// check if given accountId exists
 			account = accountService.findById(accountId);
 			if(account == null) {
-				message.setFail("404", "Account does not exist");
-				return message;
+				throw new ValidationFailException("Account does not exist");
 			}
 
 			// check if group name already exists
 			List<Group> groups = new ArrayList<Group>();
-			groups = groupService.findBySql("SELECT * from GROUP_INFO WHERE groupname='" + groupName + "'");
+			groups = groupService.findByHql("from Group WHERE groupname='" + groupName + "'");
 			if(groups.size() > 0) {
-				message.setFail("404", "Group Name Already Exists");
-				return message;
+				throw new ValidationFailException("Group Name Already Exists");
 			}
 
-			// save group in GROUP_INFO Table
-			Group newGroup = new Group();
-			newGroup.setGroupname(groupName);
-			newGroup.setCreateDate(new Date());
-			groupService.createGroup(newGroup, account, roleId);
+			groupService.createNewGroup(accountId, groupName, roleId, members);
 
-			if(members !=null) {
-				List<Account> accList = 
-						new Gson().fromJson(members, new TypeToken<List<Account>>() {}.getType());
-
-				for(Account  member : accList) {
-					// Perform Member Validations
-					String val = groupService.inviteUserValidation(accountId, 
-							newGroup.getId(), member.getRole().getId(), member.getEmail());
-					if(val.compareTo("Succes")!=0) 
-						return message.setFail("404", val);
-
-					Account memberAcc = accountService.getAccountbyEmail(member.getEmail());
-					// if invited account does not exist, create the account with default password
-					if(memberAcc == null) {
-						memberAcc = new Account();
-						memberAcc.setCreateDate(new Date());
-						memberAcc.setEmail(member.getEmail());
-						memberAcc.setPassword("healthConnect");
-						accountService.createNewAccount(memberAcc);
-					}
-
-					// save member details in the MEMBER table
-					Member newMember = new Member();
-					newMember.setAccountId(memberAcc.getId());
-					newMember.setCreateDate(new Date());
-					newMember.setGroupId(newGroup.getId());
-					newMember.setRoleId(member.getRole().getId());
-
-					groupService.saveNewMember(newMember);
-				}
-			}
-
-
-		}catch (Exception e) {
+		}catch(ValidationFailException ve) {
+			//TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			message.setFail("404", ve.getMessage());
+		} catch (Exception e) {
 			e.printStackTrace();
 			message.setFail("400", e.getMessage());
 		}
