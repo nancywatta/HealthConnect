@@ -187,14 +187,14 @@ public class GroupController {
 		System.out.println("deleteMember");
 		try {
 			result = groupService.deleteMemberValidation(accountId, groupId, memberId);
-			if(result.compareTo("Succes")!=0) 
+			if(result.compareTo("Succes")!=0){ 
 				return result;
-
+			} else{
 			groupService.deleteMember(groupId,memberId);
 			notifyService.notify(memberId, "You have been deleted from group", "email");
 
 			return "Succes";
-
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
