@@ -150,41 +150,23 @@ public class GroupController {
 	public String deleteGroup(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam("accountId") long accountId
 			,@RequestParam("groupId") long groupId){
-
-		System.out.println("deleteGroup");
-		//get account
-		Account account = null;
-		try {
-			account = accountService.findById(accountId);
-		} catch (Exception e) {
-			return "Fail";
-			//				return "{\"status\":\"Fail\""
-			//					    + ",\"error\":\"Invalid Account Id \""+e.getMessage()+"}";
-		}	
-		//get group
-		Group group = null;
-		try{
-			//call create group service
-			group = groupService.findById(groupId);
-		}catch(Exception e){
-			return "Fail";
-			//				return "{\"status\":\"Fail\""
-			//						+ ",\"error\":\"Invalid Group Id\""+e.getMessage()+"}";
-		}
 		String result = null;
-		try {
-			result = groupService.deleteGroup(accountId, groupId);
-			if(result.compareTo("succeed!")!=0) 
+		System.out.println("deleteGroup");
+		try{
+			result = groupService.deleteGroupValidation(accountId, groupId);
+			if(result.compareTo("Succes")!=0) 
 				return result;
-			return "succeed!";
-
+			groupService.deleteMember(accountId, groupId);
+			groupService.deleteGroup(groupId);
+			return "Succes";
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		//		return "{\"status\":\"Success\""}";
+		
+		
 		return result;
-
 	}
 
 }

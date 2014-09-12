@@ -149,5 +149,26 @@ public class MemberDaoImpl extends BaseDaoImpl<Member> implements MemberDao{
 			throw e;
 		}
 	}
+	
+	//empty the members of a group
+	public void deleteAllMember(Connection connection, long accountId, long groupId) throws Exception {
+		try
+		{
+			PreparedStatement ps = connection.prepareStatement(
+					"DELETE "
+							+ "FROM MEMBER"
+							+ " WHERE "
+							+ "ACCOUNT_ID = ?"
+							+ " AND "
+							+ "GROUP_ID = ?" );
+			ps.setLong(1, accountId);
+			ps.setLong(2, groupId);
+			ps.executeUpdate();
+		}
+		catch(Exception e)
+		{
+			throw e;
+		}
+	}
 		
 }
