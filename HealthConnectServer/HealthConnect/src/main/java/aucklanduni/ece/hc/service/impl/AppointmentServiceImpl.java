@@ -40,5 +40,10 @@ public class AppointmentServiceImpl  extends BaseServiceImpl<Appointment> implem
 	 return appointments;
 	 
 	}
+	public void createNewAppointment(long accountId, String appointmentTime,
+			String appointmentName, String appointmentLocation) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }
