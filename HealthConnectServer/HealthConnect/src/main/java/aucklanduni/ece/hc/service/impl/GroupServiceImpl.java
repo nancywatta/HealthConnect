@@ -380,12 +380,12 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 		
 	}
 
-	public void deleteAllMember(long accountId, long groupId) throws Exception {
+	public void deleteAllMember(long groupId) throws Exception {
 		//delete group
 				try {
 					Database database= new Database();
 					Connection connection = database.Get_Connection();
-					memberDao.deleteAllMember(connection, accountId, groupId);
+					memberDao.deleteAllMember(connection,groupId);
 				}
 				catch (Exception e) {
 					throw e;

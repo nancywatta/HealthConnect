@@ -16,8 +16,10 @@ public interface MemberDao extends BaseDao<Member>{
 	
 	public String GetMemberRole(Connection connection, long accountId, long groupId) throws Exception;
 	
+	
+	
 	public int checkPatientCount(Connection connection, long groupId) throws Exception;
 	
-	public void deleteAllMember(Connection connection, long accountId, long groupId) throws Exception;
+	public void deleteAllMember(Connection connection,long groupId) throws Exception;
 	
 }

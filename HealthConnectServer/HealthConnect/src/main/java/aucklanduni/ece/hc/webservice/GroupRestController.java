@@ -312,7 +312,7 @@ public class GroupRestController {
 			  result = groupService.deleteGroupValidation(accountId, groupId);
 			  if(result.compareTo("Succes")!=0) 
 					return message;
-				groupService.deleteAllMember(accountId, groupId);
+				groupService.deleteAllMember(groupId);
 				groupService.deleteGroup(groupId);
 
 				message.setSuccess();

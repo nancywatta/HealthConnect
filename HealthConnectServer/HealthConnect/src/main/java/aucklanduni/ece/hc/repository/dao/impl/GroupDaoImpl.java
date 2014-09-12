@@ -17,7 +17,7 @@ public class GroupDaoImpl extends BaseDaoImpl<Group> implements GroupDao{
 		{
 			PreparedStatement ps = connection.prepareStatement(
 					"DELETE "
-							+ "FROM group_info"
+							+ "FROM GROUP_INFO"
 							+ " WHERE "
 							+ "GROUP_ID = ?" );
 			
