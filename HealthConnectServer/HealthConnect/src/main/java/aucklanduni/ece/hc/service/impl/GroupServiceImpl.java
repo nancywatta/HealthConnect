@@ -303,32 +303,18 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 	}
 	
 	
-	public String deleteGroup(long accountId, long groupId) throws Exception {
-		
+	public void deleteGroup(long groupId) throws Exception {
+		//delete group
 		try {
 			Database database= new Database();
 			Connection connection = database.Get_Connection();
-			String roleValue = memberDao.GetMemberRole(connection, accountId, groupId);
-			if(roleValue.compareTo("N")==0){
-				ArrayList<Account> members = memberDao.GetMembers(connection,groupId);
-				if(members == null){
-					GroupDaoImpl groupDao= new GroupDaoImpl();
-					groupDao.deleteGroup(connection, accountId, groupId);
-					return "succeed!";
-				} else {
-					return "action not allowed!";
-				}
-			}
-			if(roleValue.compareTo("S")==0){
-				GroupDaoImpl groupDao= new GroupDaoImpl();
-				groupDao.deleteGroup(connection, accountId, groupId);
-				return "succeed!";
-			}
+			groupDao.deleteGroup(connection, groupId);
 		}
 		catch (Exception e) {
 			throw e;
 		}
-		return null;
+		
+		
 		
 		
 	}
