@@ -1,6 +1,7 @@
 package aucklanduni.ece.hc.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -16,8 +17,8 @@ public interface AppointmentService  extends BaseService<Appointment> {
 	public Map<String, ArrayList<Appointment>> showAllAppointment(long accountId) throws Exception;
     //View the target appointments according to the account id.
 
-	public void createNewAppointment(long accountId, String appointmentTime,
-			String appointmentName, String appointmentLocation); 
+	public void createNewAppointment(long accountId, Date appointmentTime,
+			String appointmentName, String appointmentLocation) throws Exception; 
 	      
 
 }

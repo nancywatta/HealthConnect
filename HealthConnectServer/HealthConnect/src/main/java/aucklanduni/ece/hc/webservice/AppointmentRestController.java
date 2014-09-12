@@ -1,6 +1,7 @@
 package aucklanduni.ece.hc.webservice;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,9 +36,9 @@ public class AppointmentRestController {
 	@RequestMapping(value="/createAppointment",method = RequestMethod.POST
 			,headers="Accept=application/json"
 			)
-	public HCMessage createGroup(HttpServletRequest request, HttpServletResponse response
+	public HCMessage createAppointment(HttpServletRequest request, HttpServletResponse response
 			,@RequestParam(value="accountId") long accountId
-			,@RequestParam("appointmentTime") String appointmentTime
+			,@RequestParam("appointmentTime") Date appointmentTime
 			,@RequestParam("appointmentName") String appointmentName
 			,@RequestParam("appointmentLocation") String appointmentLocation
 			) {
