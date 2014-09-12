@@ -13,6 +13,6 @@ public interface AppointmentService  extends BaseService<Appointment> {
 
 
 	public Map<String, ArrayList<Appointment>> showAllAppointment(long accountId) throws Exception;
-
+    //View the target appointments according to the account id.
 
 }

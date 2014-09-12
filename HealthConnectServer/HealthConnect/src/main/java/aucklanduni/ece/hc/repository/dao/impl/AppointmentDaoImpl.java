@@ -1,5 +1,13 @@
 package aucklanduni.ece.hc.repository.dao.impl;
 
+/*
+ * 
+ * author: Tech Geeks
+ * time:Sep.2014
+ * This AppointmentDaoImpl contact SQL with Sever.
+ * 
+ */
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -35,13 +43,13 @@ public class AppointmentDaoImpl  extends BaseDaoImpl<Appointment> implements App
 			PreparedStatement ps = connection.prepareStatement(
 					"SELECT DISTINCT ap.id, ap.name "
 					+ "FROM APPOINTMENT ap "
-					+ "INNER JOIN APP_ACC_REF aar "
+					+ "INNER JOIN APP_ACC_REF aar "//APP_ACC_REF can be as the third variable.
 					+ "ON "
 					+ "ap.id=aar.appointment_id "
 					+ "INNER JOIN ACCOUNT ac"
 					+ "ON"
 					+ "ac.id=aar.account_id"
-					+ "and aar.account_id= " + accountId);
+					+ "and aar.account_id= " + accountId);//contact appointment with SQL.
 			ResultSet rs = ps.executeQuery();
 			while(rs.next())
 			{

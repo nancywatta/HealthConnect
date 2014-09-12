@@ -22,7 +22,14 @@ import aucklanduni.ece.hc.repository.model.Group;
 import aucklanduni.ece.hc.service.AppointmentService;
 import aucklanduni.ece.hc.service.NotifyService;
 
-
+/*
+ * author: Tech Geeks
+ * time:Sep.2014
+ * This AppointmentController sets main functions of appointments, including creating, viewing, sharing, filtering.
+ * Once modifying one of these functions, the relevant files need to be modified.
+ * Relevant files could include AppointmentService, Appointment, ApppintmentDao, AppointmetDaoImpl.
+ * 
+ */
 @Controller
 @RequestMapping("/Appointment")
 public class AppointmentController {
@@ -31,7 +38,7 @@ public class AppointmentController {
 	@Autowired
 	private NotifyService notifyService;
 	
-	@RequestMapping("/createAppointment")
+	@RequestMapping("/createAppointment")//As nurses or patients, they can create appointments.
 	@ResponseBody
 	public String createAppointment(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam("accountId") long accountId,
@@ -60,7 +67,7 @@ public class AppointmentController {
 	}
 
 	
-	@RequestMapping("/viewAppointment")
+	@RequestMapping("/viewAppointment")//As nurses or patients, they can view the appointments.
 	@ResponseBody
 	public String viewAppointment(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam("accountId") long accountId){
