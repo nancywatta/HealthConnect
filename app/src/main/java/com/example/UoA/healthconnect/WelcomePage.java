@@ -1,18 +1,35 @@
 package com.example.UoA.healthconnect;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 public class WelcomePage extends ActionBarActivity {
+
+    TextView welcomeText;
+    String emailId;
+    String userName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome_page);
+
+        welcomeText = (TextView)findViewById(R.id.WelcomeText);
+        SharedPreferences pref = getSharedPreferences(getString(R.string.loginPref), Context.MODE_PRIVATE);
+        userName = pref.getString("userName", "");
+        if(userName == null || userName.compareTo("")==0) {
+            emailId = pref.getString("email","");
+            welcomeText.setText("Welcome " + emailId);
+        } else {
+            welcomeText.setText("Welcome " + userName);
+        }
 
     }
 
