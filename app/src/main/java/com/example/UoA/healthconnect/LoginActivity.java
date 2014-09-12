@@ -28,7 +28,9 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -56,6 +58,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor>{
     private View mProgressView;
     private View mLoginFormView;
     long accountId;
+    String emailId;
+    String userName;
     private static final String TAG = LoginActivity.class.getSimpleName();
 
     @Override
@@ -306,18 +310,31 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor>{
             mAuthTask = null;
             showProgress(false);
 
-            if(result==null) {
-                Toast.makeText(LoginActivity.this, "No Connection", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            if (result.compareTo("false")!=0) {
-                accountId = Long.valueOf(result).longValue();
-                nextPage();
-            } else {
+            if(result==null || result.compareTo("")==0) {
+                //Toast.makeText(LoginActivity.this, "No Connection", Toast.LENGTH_SHORT).show();
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
+            } else {
+                JSONObject jObject = null;
+                try {
+                    jObject = new JSONObject(result);
+                    accountId = jObject.getLong("id");
+                    emailId = jObject.getString("email");
+                    userName = jObject.getString("username");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                //accountId = Long.valueOf(result).longValue();
+                nextPage();
             }
+
+//            if (result.compareTo("false")!=0) {
+//                accountId = Long.valueOf(result).longValue();
+//                nextPage();
+//            } else {
+//                mPasswordView.setError(getString(R.string.error_incorrect_password));
+//                mPasswordView.requestFocus();
+//            }
         }
 
         @Override
@@ -372,6 +389,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor>{
             ed.putBoolean("activity_executed", true);
         }
         ed.putLong("accountId", accountId);
+        ed.putString("email", emailId);
+        ed.putString("userName", userName);
         ed.commit();
         Intent intent = new Intent(this,WelcomePage.class);
         startActivity(intent);
