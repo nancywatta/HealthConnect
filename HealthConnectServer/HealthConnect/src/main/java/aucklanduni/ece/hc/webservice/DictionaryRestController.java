@@ -25,6 +25,15 @@ import aucklanduni.ece.hc.webservice.model.ValidationFailException;
 
 import com.wordnik.swagger.annotations.Api;
 
+/**
+ * 
+ * @ClassName: DictionaryRestController 
+ * @Description: Dictionary REST service to receive requests
+ * to manage the roles
+ * @author Nancy Watta
+ *
+ */
+
 @Api(value = "role", description = "Manage roles")
 @RestController
 @RequestMapping("/service/Dictionary/")
@@ -36,6 +45,23 @@ public class DictionaryRestController {
 	@Autowired
 	private GroupService groupService;
 
+	/**
+	 * 
+	 * @Title: showRoles 
+	 * @Description: Service will return all roles present in database, if either of 
+	 * the input i.e groupId or accountId is null.
+	 * If both the groupId and accountId is passed in input, the service will return 
+	 * specific roles based on business validation. 
+	 * 1. For Nurse, only Patient Role will be returned.
+	 * 2. For Support Member, no roles will be returned.
+	 * 3. For Patient, only Nurse and Support Member role will be returned. 
+	 * @param request
+	 * @param response
+	 * @param groupId - optional
+	 * @param accountId - optional
+	 * @return HCMessage
+	 * @throws
+	 */
 	@RequestMapping(value="/showRoles",method = RequestMethod.GET
 			,headers="Accept=application/json"
 			)

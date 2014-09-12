@@ -25,6 +25,15 @@ import aucklanduni.ece.hc.webservice.model.ValidationFailException;
 
 import com.wordnik.swagger.annotations.Api;
 
+/**
+ * 
+ * @ClassName: GroupRestController 
+ * @Description: Group REST service to receive requests
+ * to manage the groups
+ * @author Nancy Watta
+ *
+ */
+
 @Api(value = "group", description = "Manage Groups")
 @RestController
 @RequestMapping("/service/group/")
@@ -36,6 +45,42 @@ public class GroupRestController {
 	@Autowired
 	private AccountService accountService;
 
+	/**
+	 * 
+	 * @Title: createGroup 
+	 * @Description: Service will create group for the given accountId
+	 * and save details of the group in the GROUP_INFO table.
+	 * The service will also save the owner role in the MEMBER table. 
+	 * If the member array is passed in input, service will perform business validations.
+	 * 1. Nurse can only invite Patient.
+	 * 2. Support Member can neither create the group nor invite anyone to the group.
+	 * 3. Patient can invite Nurse and Support Member to the group.
+	 * 4. A group can have only one Patient.
+	 *  After validation passes successfully, service will save member details in the
+	 *  MEMBER table.
+	 *  Input member array is of the below format
+	 *  [
+	 *    { "email":"google1@gmail.com",
+	 *      "role":
+	 *             { "id":2 }
+	 *    },
+	 *    { "email":"google2@gmail.com",
+	 *      "role":
+	 *             { "id":3 }
+	 *    },
+	 *  ]
+	 *  if the invited member does not exist in database, account will be registered
+	 *  and emailId and default password will be saved in the ACCOUNT table.
+	 *  
+	 * @param request
+	 * @param response
+	 * @param accountId 
+	 * @param groupName
+	 * @param roleId 
+	 * @param members  - optional
+	 * @return HCMessage
+	 * @throws
+	 */
 	@RequestMapping(value="/createGroup",method = RequestMethod.POST
 			,headers="Accept=application/json"
 			)
@@ -82,6 +127,18 @@ public class GroupRestController {
 		return message;
 	}
 
+	/**
+	 * 
+	 * @Title: showGroups 
+	 * @Description: Service will return all the groups of the given
+	 * accountId.
+	 *  
+	 * @param request
+	 * @param response
+	 * @param accountId 
+	 * @return HCMessage
+	 * @throws
+	 */
 	@RequestMapping(value="/showGroups",method = RequestMethod.GET
 			,headers="Accept=application/json"
 			)
@@ -97,13 +154,14 @@ public class GroupRestController {
 			if(account == null) {
 				throw new ValidationFailException("Account does not exist");
 			}
-			
+
 			groupList = groupService.findByHql("select distinct g from Group g, "
 					+ "Member m "
 					+ "WHERE "
 					+ "g.id=m.groupId "
 					+ "and m.accountId= " + accountId);
-			
+
+			// if no group exists for the given account
 			if(groupList == null || groupList.size() < 1) 
 				throw new ValidationFailException("No Group Exists for given Account");
 
@@ -119,6 +177,19 @@ public class GroupRestController {
 		return message;
 	}
 
+	/**
+	 * 
+	 * @Title: showMembers 
+	 * @Description: Service will return all the members of the given
+	 * groupId from MEMBER table.
+	 *  
+	 * @param request
+	 * @param response
+	 * @param accountId - optional
+	 * @param groupId
+	 * @return HCMessage
+	 * @throws
+	 */
 	@RequestMapping(value="/showMembers",method = RequestMethod.GET
 			,headers="Accept=application/json"
 			)
@@ -138,9 +209,12 @@ public class GroupRestController {
 				}
 			}
 			ArrayList<Account> memberList = groupService.GetMembers(accId,groupId);
+			
+			// if no member exists for the given group
 			if(memberList== null || memberList.size() < 1) {
 				throw new ValidationFailException("GroupId does not exist");
 			}
+			
 			Map<String, ArrayList<Account>> memberArray = new HashMap<String, ArrayList<Account>>();
 			memberArray.put("members", memberList);
 			message.setSuccess(memberArray);
@@ -154,6 +228,29 @@ public class GroupRestController {
 		return message;
 	}
 
+	/**
+	 * 
+	 * @Title: inviteUser 
+	 * @Description: Service will invite member to the input group based
+	 * on business validation
+	 * 1. Nurse can only invite Patient.
+	 * 2. Support Member cannot invite anyone to the group.
+	 * 3. Patient can invite Nurse and Support Member to the group.
+	 * 4. A group can have only one Patient.
+	 * After validation passes successfully, service will save member details in the
+	 *  MEMBER table.
+	 *  If the invited member does not exist in database, account will be registered
+	 *  and emailId and default password will be saved in the ACCOUNT table.
+	 *  
+	 * @param request
+	 * @param response
+	 * @param accountId - of the member inviting other user
+	 * @param groupId - of the group to be invited in
+	 * @param emailId - of the user being invited
+	 * @param roleId - of the user being invited
+	 * @return HCMessage
+	 * @throws
+	 */
 	@RequestMapping(value="/inviteUser",method = RequestMethod.POST
 			,headers="Accept=application/json"
 			)
@@ -179,12 +276,15 @@ public class GroupRestController {
 							+ "and m.groupId= " + groupId
 							+ " and m.accountId= " + accountId);
 
+			// if the input accountId and GroupId does not exist in database
 			if(roles== null || roles.size() < 1) {
 				throw new ValidationFailException("Invalid Input");
 			}
 
+			// perform business validation
 			groupService.inviteValidation(roles.get(0).getId(), accountId, groupId, roleId,emailId);
 
+			// save invited member details in the MEMBER table.
 			groupService.inviteUser(accountId, groupId, roleId, emailId);
 
 			message.setSuccess();

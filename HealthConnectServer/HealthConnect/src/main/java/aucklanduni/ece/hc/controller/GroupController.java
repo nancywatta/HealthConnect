@@ -1,7 +1,6 @@
 package aucklanduni.ece.hc.controller;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +25,15 @@ import aucklanduni.ece.hc.webservice.model.ValidationFailException;
 
 import com.google.gson.Gson;
 
+/**
+ * 
+ * @ClassName: GroupController 
+ * @Description: Group Controller to receive requests
+ * to manage the groups
+ * @author Nancy Watta
+ *
+ */
+
 @Controller
 @RequestMapping("/Group")
 public class GroupController {
@@ -40,6 +48,18 @@ public class GroupController {
 	private Gson gson = new Gson();
 
 	// http://localhost:8080/HealthConnect/Group/showGroups?accountId=123
+	/**
+	 * 
+	 * @Title: showGroups 
+	 * @Description: Service will return all the groups of the given
+	 * accountId.
+	 *  
+	 * @param request
+	 * @param response
+	 * @param accountId 
+	 * @return String
+	 * @throws
+	 */
 	@RequestMapping(value="/showGroups")
 	@ResponseBody
 	public String showGroups(HttpServletRequest request, HttpServletResponse response,
@@ -54,7 +74,7 @@ public class GroupController {
 					+ "g.id=m.groupId "
 					+ "and m.accountId= " + accountId);
 			groupArray.put("groups", (ArrayList<Group>)groupList);
-			groups = gson.toJson(groupList);
+			groups = gson.toJson(groupArray);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -63,6 +83,19 @@ public class GroupController {
 	}
 
 	// http://localhost:8080/HealthConnect/Group/showMembers?accountId=123&groupId=1
+	/**
+	 * 
+	 * @Title: showMembers 
+	 * @Description: Service will return all the members of the given
+	 * groupId from MEMBER table.
+	 *  
+	 * @param request
+	 * @param response
+	 * @param accountId - optional
+	 * @param groupId
+	 * @return String
+	 * @throws
+	 */
 	@RequestMapping(value="/showMembers")
 	@ResponseBody
 	public String showMembers(HttpServletRequest request, HttpServletResponse response,
@@ -84,6 +117,29 @@ public class GroupController {
 		return members;
 	}
 
+	/**
+	 * 
+	 * @Title: inviteUser 
+	 * @Description: Service will invite member to the input group based
+	 * on business validation
+	 * 1. Nurse can only invite Patient.
+	 * 2. Support Member cannot invite anyone to the group.
+	 * 3. Patient can invite Nurse and Support Member to the group.
+	 * 4. A group can have only one Patient.
+	 * After validation passes successfully, service will save member details in the
+	 *  MEMBER table.
+	 *  If the invited member does not exist in database, account will be registered
+	 *  and emailId and default password will be saved in the ACCOUNT table.
+	 *  
+	 * @param request
+	 * @param response
+	 * @param accountId - of the member inviting other user
+	 * @param groupId - of the group to be invited in
+	 * @param emailId - of the user being invited
+	 * @param roleId - of the user being invited
+	 * @return String
+	 * @throws
+	 */
 	@RequestMapping(value="/inviteUser")
 	@ResponseBody
 	public String inviteUser(HttpServletRequest request, HttpServletResponse response,

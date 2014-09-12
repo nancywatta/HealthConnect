@@ -20,6 +20,14 @@ import aucklanduni.ece.hc.webservice.model.ValidationFailException;
 
 import com.wordnik.swagger.annotations.Api;
 
+/**
+ * 
+ * @ClassName: AccountRestController 
+ * @Description: Account REST service to receive requests 
+ * to manage accounts
+ * @author Nancy Watta
+ *
+ */
 @Api(value = "account", description = "Manage Account")
 @RestController
 @RequestMapping("/service/Account/")
@@ -28,6 +36,22 @@ public class AccountRestController {
 	@Autowired
 	private AccountService accountService;
 
+	/**
+	 * 
+	 * @Title: login 
+	 * @Description: Service will return account details on successful login.
+	 * If the emailId does not exist, the service will register the account and 
+	 * save the input emailId, password and userName in the ACCOUNT table.
+	 * On successful login, last login date will be updated in the ACCOUNT table
+	 * 
+	 * @param request
+	 * @param response
+	 * @param emailId
+	 * @param password - optional if default
+	 * @param userName  - optional
+	 * @return HCMessage
+	 * @throws
+	 */
 	@RequestMapping(value="/login",method = RequestMethod.GET
 			,headers="Accept=application/json"
 			)
@@ -54,7 +78,7 @@ public class AccountRestController {
 				if(memberAccs == null || memberAccs.size() <1) {
 					throw new ValidationFailException("Please enter a password");
 				}
-				// if yes, return the accountId
+				// if yes, return the accountId and update the last login date
 				else {
 					memberAccs.get(0).setLastLoginDate(new Date());
 					accountService.update(memberAccs.get(0));
@@ -84,7 +108,7 @@ public class AccountRestController {
 						return message;
 					}
 				}
-				// if input email and password correct, return accountId
+				// if input email and password correct, return accountId and update the last login date
 				else {
 					memberAccs.get(0).setLastLoginDate(new Date());
 					accountService.update(memberAccs.get(0));

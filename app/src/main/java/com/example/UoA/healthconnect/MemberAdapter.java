@@ -62,8 +62,14 @@ public class MemberAdapter extends BaseAdapter {
             else
                 holder.text.setText(member.getUserName());
         }
-        else
-            holder.text.setText(member.getEmail());
+        else {
+            if(accountId == member.getAccountId()) {
+                holder.text.setTextColor(Color.parseColor("#9d0c0f"));
+                holder.text.setText(member.getEmail() + "(Me)");
+            }
+            else
+               holder.text.setText(member.getEmail());
+        }
         holder.text1.setText(member.getRole().getName());
 
         return convertView;

@@ -16,6 +16,13 @@ public class DictionaryServiceImpl extends BaseServiceImpl<Dictionary> implement
 	@Autowired
 	private DictionaryDao dictionaryDao;
 
+	/**
+	 * For the given groupId and accountId, the function will return 
+	 * specific roles based on business validation. 
+	 * 1. For Nurse, only Patient Role will be returned.
+	 * 2. For Support Member, no roles will be returned.
+	 * 3. For Patient, only Nurse and Support Member role will be returned.
+	 */
 	public ArrayList<Dictionary> GetSpecificRoles(long accountId, long groupId) throws Exception {
 		List<Dictionary> roles = new ArrayList<Dictionary>();
 		try {
@@ -30,14 +37,18 @@ public class DictionaryServiceImpl extends BaseServiceImpl<Dictionary> implement
 
 			String roleValue = ownerRoles.get(0).getValue();
 
+			// Support Member cannot invite anyone, thus no role will be returned
 			if(roleValue.compareTo("S")==0)
 				return null;
+			/* For Patient, all roles except Patient will be returned, since 
+			since a group can have only one patient */
 			else if(roleValue.compareTo("P")==0) {
 				roles = dictionaryDao.findByHql(
 						"from Dictionary "
 								+ "WHERE type='Role' " 
 								+ "and value!='P'");
 			}
+			// For Nurse, only Patient role will be returned
 			else if(roleValue.compareTo("N")==0) {
 				roles = dictionaryDao.findByHql(
 						"from Dictionary "

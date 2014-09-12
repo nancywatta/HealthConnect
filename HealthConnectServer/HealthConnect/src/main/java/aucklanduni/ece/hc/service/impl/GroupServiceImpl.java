@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Service;
 import aucklanduni.ece.hc.repository.dao.AccountDao;
 import aucklanduni.ece.hc.repository.dao.GroupDao;
 import aucklanduni.ece.hc.repository.dao.MemberDao;
-import aucklanduni.ece.hc.repository.dao.impl.GroupDaoImpl;
 import aucklanduni.ece.hc.repository.model.Account;
 import aucklanduni.ece.hc.repository.model.Database;
 import aucklanduni.ece.hc.repository.model.Dictionary;
@@ -39,6 +37,10 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 	@Autowired
 	private NotifyService notifyService;
 
+	/**
+	 * Function will get all members from the MEMBER table for the given groupId
+	 * It will also return the role of each member in the given Group.
+	 */
 	public ArrayList<Account> GetMembers(long accountId,long groupId)throws Exception {
 		ArrayList<Account> members = null;
 		try {
@@ -52,6 +54,11 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 		return members;
 	}
 	
+	/**
+	 * Function will save member details in MEMBER table for the given accountId
+	 * and emailId. if the invited member does not exist in database, account will be registered
+	 *  and emailId and default password will be saved in the ACCOUNT table.
+	 */
 	public  void inviteUser (long accountId, 
 			long groupId, long roleId, String emailId) throws ValidationFailException, Exception {
 		long accId;
@@ -91,6 +98,10 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 		}
 	}
 
+	/**
+	 * Function will save group details in GROUP_INFO table for the given accountId
+	 * The service will also save the owner role in the MEMBER table.
+	 */
 	public void createNewGroup(long accountId, String groupName, long roleId, String members) 
 			throws ValidationFailException,Exception {
 		try {
@@ -148,6 +159,13 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 
 	}
 
+	/**
+	 * Function will perform business validations.
+	 * 1. Nurse can only invite Patient.
+	 * 2. Support Member can neither create the group nor invite anyone to the group.
+	 * 3. Patient can invite Nurse and Support Member to the group.
+	 * 4. A group can have only one Patient.
+	 */
 	public  void inviteValidation (long ownerRoleId, long accountId, 
 			long groupId, long roleId, String emailId) throws ValidationFailException, Exception {
 		try {
@@ -285,6 +303,11 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 		}
 	}
 
+	/**
+	 * Function will save group details in GROUP_INFO table
+	 * it will also save the owner details in the MEMBER table
+	 * for the given group.
+	 */
 	public void createGroup(Group group, Account account,long roleId) throws Exception {
 		// create group
 		groupDao.add(group);
@@ -298,6 +321,9 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 		memberDao.add(owner);
 	}
 	
+	/**
+	 * Function will save member details in MEMBER table
+	 */
 	public void saveNewMember(Member member) throws Exception {
 		memberDao.add(member);
 	}
