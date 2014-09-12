@@ -1,6 +1,7 @@
 package aucklanduni.ece.hc.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +43,7 @@ public class AppointmentController {
 	@ResponseBody
 	public String createAppointment(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam("accountId") long accountId,
-			@RequestParam("appointmentTime") String appointmentTime,
+			@RequestParam("appointmentTime") Date appointmentTime,
 			@RequestParam("appointmentName") String appointmentName,
 			@RequestParam("appointmentLocation") String appointmentLocation) {
 		
