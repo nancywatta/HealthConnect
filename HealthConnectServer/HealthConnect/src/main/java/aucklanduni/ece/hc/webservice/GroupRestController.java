@@ -298,4 +298,34 @@ public class GroupRestController {
 		}
 		return message;
 	}
+	
+	
+	@RequestMapping(value="/deleteGroup",method = RequestMethod.POST
+			,headers="Accept=application/json"
+			)
+	public HCMessage createGroup(HttpServletRequest request, HttpServletResponse response
+			,@RequestParam("accountId") long accountId
+			,@RequestParam("groupId") long groupId) {
+		HCMessage message = new  HCMessage();
+		try {
+			  String result = null;
+			  result = groupService.deleteGroupValidation(accountId, groupId);
+			  if(result.compareTo("Succes")!=0) 
+					return message;
+				groupService.deleteAllMember(accountId, groupId);
+				groupService.deleteGroup(groupId);
+
+				message.setSuccess();
+
+			}catch(ValidationFailException ve) {
+				message.setFail("404", ve.getMessage());
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				message.setFail("400", e.getMessage());
+			}
+			return message;
+		}	
+	
+	
 }
