@@ -33,5 +33,7 @@ public interface GroupService extends BaseService<Group>{
 	public  String deleteGroupValidation (long accountId,long groupId)throws Exception;
 	
 	public void deleteGroup(long groupId) throws Exception;
+
+	public void deleteAllMember(long accountId, long groupId) throws Exception;
 	 
 }
