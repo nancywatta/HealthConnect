@@ -22,8 +22,7 @@ public interface GroupService extends BaseService<Group>{
 	public void createNewGroup(long accountId, String groupName, long roleId, String members) 
 			throws ValidationFailException,Exception;
 	
-	//Ben 09/2014
-	public  String deleteMemberValidation (long accountId,long groupId, long memberId)
+	public  boolean deleteMemberValidation (long accountId,long groupId, long memberId)
 			throws Exception;
 	
 	public void deleteMember(long groupId, long memberId) throws Exception;

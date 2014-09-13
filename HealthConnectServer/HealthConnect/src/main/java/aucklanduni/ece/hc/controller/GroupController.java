@@ -47,7 +47,7 @@ public class GroupController {
 	private NotifyService notifyService;
 	private Gson gson = new Gson();
 
-	// http://localhost:8080/HealthConnect/Group/showGroups?accountId=123
+
 	/**
 	 * 
 	 * @Title: showGroups 
@@ -82,7 +82,7 @@ public class GroupController {
 		return groups;
 	}
 
-	// http://localhost:8080/HealthConnect/Group/showMembers?accountId=123&groupId=1
+	
 	/**
 	 * 
 	 * @Title: showMembers 
@@ -174,33 +174,55 @@ public class GroupController {
 			return e.getMessage();
 		}
 	}
+	
 
-	//Ben 09/2014
+	/**
+	 * 
+	 * @Title: deleteMember 
+	 * @author Ben Zhong
+	 * @Description: Service will delete a specific member from a group
+	 * on business validation
+	 * 1. Patient can delete nurse and support member.
+	 * 2. Patient cannot delete itself.
+	 * 3. Nurse can delete the patient.
+	 * 4. Nurse or Support Member can delete itself.
+	 * 5. Nurse or Support Member cannot delete another nurse or support member.
+	 *  
+	 * @param request
+	 * @param response
+	 * @param accountId - of the current user (the one who execute the operation)
+	 * @param groupId - of the group will be modified
+	 * @param memberId - of the member will be deleted from the group
+	 * @return String
+	 * @throws
+	 */
 	// http://localhost:8080/HealthConnect/Group/deleteMember?accountId=123&groupId=1&memberId=123
+	
 	@RequestMapping(value="/deleteMember")
 	@ResponseBody
 	public String deleteUser(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam("accountId") long accountId,
 			@RequestParam("groupId") long groupId,
 			@RequestParam("memberId") long memberId){
-		String result = null;
+		String result = "fail";
 		System.out.println("deleteMember");
 		try {
-			result = groupService.deleteMemberValidation(accountId, groupId, memberId);
-			if(result.compareTo("Succes")!=0){ 
-				return result;
-			} else{
-			groupService.deleteMember(groupId,memberId);
-			notifyService.notify(memberId, "You have been deleted from group", "email");
-
-			return "Succes";
-			}
-		} catch (Exception e) {
+			boolean checkValidation = false;
+			checkValidation = groupService.deleteMemberValidation(accountId, groupId, memberId);
+			  if(checkValidation) 
+			  {
+				  groupService.deleteMember(groupId,memberId);
+				  notifyService.notify(memberId, "You have been deleted from group", "email");
+				  result = "success";
+				  return result;
+				  }
+			} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return result;
 	}
 
+	
 	/**
 	 * 
 	 * @Title: deleteGroup 

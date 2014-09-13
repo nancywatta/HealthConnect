@@ -21,6 +21,7 @@ import aucklanduni.ece.hc.repository.model.Group;
 import aucklanduni.ece.hc.service.AccountService;
 import aucklanduni.ece.hc.service.DictionaryService;
 import aucklanduni.ece.hc.service.GroupService;
+import aucklanduni.ece.hc.service.NotifyService;
 import aucklanduni.ece.hc.webservice.model.HCMessage;
 import aucklanduni.ece.hc.webservice.model.ValidationFailException;
 
@@ -45,6 +46,8 @@ public class GroupRestController {
 	private DictionaryService roleService;
 	@Autowired
 	private AccountService accountService;
+	@Autowired
+	private NotifyService notifyService;
 
 	/**
 	 * 
@@ -329,8 +332,27 @@ public class GroupRestController {
 	
 	
 	
-	//Ben 09/2014
-	// http://localhost:8080/HealthConnect/Group/deleteMember?accountId=123&groupId=1&memberId=123
+	/**
+	 * 
+	 * @Title: deleteMember 
+	 * @author Ben Zhong
+	 * @Description: Service will delete a specific member from a group
+	 * on business validation
+	 * 1. Patient can delete nurse and support member.
+	 * 2. Patient cannot delete itself.
+	 * 3. Nurse can delete the patient.
+	 * 4. Nurse or Support Member can delete itself.
+	 * 5. Nurse or Support Member cannot delete another nurse or support member.
+	 *  
+	 * @param request
+	 * @param response
+	 * @param accountId - of the current user (the one who execute the operation)
+	 * @param groupId - of the group will be modified
+	 * @param memberId - of the member will be deleted from the group
+	 * @return HCMessage
+	 * @throws
+	 */
+	
 	@RequestMapping(value="/deleteMember",method = RequestMethod.POST
 			,headers="Accept=application/json")
 	public HCMessage deleteUser(HttpServletRequest request, HttpServletResponse response,
@@ -339,14 +361,13 @@ public class GroupRestController {
 			@RequestParam("memberId") long memberId) {
 		HCMessage message = new  HCMessage();
 		try {
-			String result = null;
-			  result = groupService.deleteMemberValidation(accountId, groupId, memberId);
-			  if(result.compareTo("Succes")!=0) 
-					return message;else{
-						groupService.deleteMember(groupId,memberId);
-						//notifyService.notify(memberId, "You have been deleted from group", "email");
-
-				message.setSuccess("member ("+memberId+") has been deleted from group ("+groupId+")");}
+			boolean checkValidation = false;
+			checkValidation = groupService.deleteMemberValidation(accountId, groupId, memberId);
+			  if(checkValidation) 
+			  {
+				  groupService.deleteMember(groupId,memberId);
+				  notifyService.notify(memberId, "You have been deleted from group", "email");
+				  message.setSuccess("member ("+memberId+") has been deleted from group ("+groupId+")");}
 
 			}catch(ValidationFailException ve) {
 				message.setFail("404", ve.getMessage());

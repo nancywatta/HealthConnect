@@ -240,8 +240,15 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 
 	}
 	
-	//Ben 09/2014 
-	public  String deleteMemberValidation (long accountId,long groupId, long memberId)throws Exception {
+	/**
+	 * Function will perform business validations.
+	 * 1. Patient can delete nurse and support member.
+	 * 2. Patient cannot delete itself.
+	 * 3. Nurse can delete the patient.
+	 * 4. Nurse or Support Member can delete itself.
+	 * 5. Nurse or Support Member cannot delete another nurse or support member.
+	 */ 
+	public  boolean deleteMemberValidation (long accountId,long groupId, long memberId)throws Exception {
 		try {
 			Database database= new Database();
 			Connection connection = database.Get_Connection();
@@ -249,33 +256,45 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 			String userRole = memberDao.GetMemberRole(connection, accountId, groupId);
 			String memberRole = memberDao.GetMemberRole(connection, memberId, groupId);
 			
+			// Check if both member are valid
 			if(userRole== "" || memberRole == "")
 				throw new ValidationFailException("The user/member is invalid");
 			
+			// The current user is Patient
 			if(userRole.compareTo("P")==0) {
+				
+				//Patient cannot delete itself.
 				if(accountId == memberId)
 					throw new ValidationFailException("Cannot delete the patient in the group, please delete the group");
-				else return "Succes";
+				
+				else return true;
 			} 
 
+			// The current user is Nurse
 			else if(userRole.compareTo("N")==0) {
-				//nurse can delete member only there is no patient in the group
-//				if(memberDao.checkPatientCount(connection,groupId) != 0)
-//					throw new ValidationFailException("Only the patient can delete the member");
+				
+				//Nurse can delete itself.
 				if(accountId == memberId)
-					return "Succes";
+					return true;
+				//Nurse cannot delete support member.
 				else if(memberRole.compareTo("S")==0)
 					throw new ValidationFailException("Nurse cannot delete the support member");
+				//Nurse cannot delete another nurse.
 				else if(memberRole.compareTo("N")==0)
 					throw new ValidationFailException("Nurse cannot delete another nurse");
-				else return "Succes";
+				
+				else return true;
 			}
-			else if(userRole.compareTo("S")==0)
-				if(accountId == memberId)
-					return "Succes";
-				else throw new ValidationFailException("Action Not Allowed");
 			
-			return "Unknown Error";
+			// The current user is Support Member
+			else if(userRole.compareTo("S")==0)
+				
+				//Support Member can only delete itself
+				if(accountId == memberId)
+					return true;
+				else throw new ValidationFailException("Support Member can only delete itself");
+			
+			return false;
 			
 		}
 		catch (Exception e) {
@@ -284,46 +303,10 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 	}
 	
 	
-//	//Ben 09/2014 TODO:maybe some problem like inviteValidation
-//		public  String deleteMemberValidation (long accountId,long groupId, long memberId)throws Exception {
-//			try {
-//				Database database= new Database();
-//				Connection connection = database.Get_Connection();
-//				
-//				String userRole = memberDao.GetMemberRole(connection, accountId, groupId);
-//				String memberRole = memberDao.GetMemberRole(connection, memberId, groupId);
-//				
-//				if(userRole!= "" && memberRole != ""){
-//				if(userRole.compareTo("P")==0) {
-//					if(userRole.compareTo(memberRole)==0)
-//						return "Cannot delete the patient in the group, please delete the group";
-//					else return "Succes";
-//				} 
-//				//delete the user himself
-//				else if (accountId == memberId)
-//					return "Succes";
-//				else if(userRole.compareTo("N")==0) {
-//					//nurse can delete member only there is no patient in the group
-////					if(memberDao.checkPatientCount(connection,groupId) != 0)
-////						return "Only the patient can delete the member";
-//					if(memberRole.compareTo("S")==0)
-//						return "Nurse cannot delete the support member";
-//					else if(memberRole.compareTo("N")==0)
-//						return "Nurse cannot delete another nurse";
-//					else return "Succes";
-//				}
-//				else if(userRole.compareTo("S")==0)
-//					return "Action Not Allowed";
-//				}
-//				return "The user/member is invalid";
-//				
-//			}
-//			catch (Exception e) {
-//				throw e;
-//			}
-//		}
 	
-	
+	/**
+	 * Function will save a member into a specific group
+	 */
 	public void saveMember(long groupId, long accountId, String emailId, long roleId) throws Exception {
 		try {
 			Database database= new Database();
@@ -335,7 +318,9 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 		}
 	}
 	
-	//Ben 09/2014
+	/**
+	 * Function will delete a specific member from a specific group
+	 */
 	public void deleteMember(long groupId, long memberId) throws Exception {
 		try {
 			Database database= new Database();
