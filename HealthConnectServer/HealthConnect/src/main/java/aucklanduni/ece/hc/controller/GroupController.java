@@ -228,18 +228,18 @@ public class GroupController {
 		String result = null;
 		System.out.println("deleteGroup");
 		try{
-			result = groupService.deleteGroupValidation(accountId, groupId);
-			if(result.compareTo("Succes")!=0) 
-				return result;
+			groupService.deleteGroupValidation(accountId, groupId);
 			groupService.deleteAllMember(groupId);
 			groupService.deleteGroup(groupId);
 			return "Succes";
 			
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (ValidationFailException ve) {
+			result = ve.getMessage();
 		}
-
-		
+		catch (Exception e) {
+			e.printStackTrace();
+			result = e.getMessage();
+		}
 		
 		return result;
 	}

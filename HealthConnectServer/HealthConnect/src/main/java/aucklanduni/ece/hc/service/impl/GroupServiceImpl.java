@@ -328,7 +328,8 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 		memberDao.add(member);
 	}
 	
-	public  String deleteGroupValidation (long accountId,long groupId)throws Exception {
+	public  void deleteGroupValidation (long accountId,long groupId) 
+			throws ValidationFailException, Exception {
 		try {
 			Database database= new Database();
 			Connection connection = database.Get_Connection();
@@ -336,36 +337,22 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 			String userRole = memberDao.GetMemberRole(connection, accountId, groupId);
 			if(userRole != ""){
 				if(userRole.compareTo("S")==0){
-					return "Action Not Allowed";
+					throw new ValidationFailException("Support Member cannot delete the Group");
 				} else if(userRole.compareTo("N")==0){
 					ArrayList<Account> members = null;
 					members=memberDao.GetMembers(connection,groupId);
 					if(members.size() > 1){
-						return "Nurse can only delete empty group!";
-					} else{
-						return "Succes";
-					}
-				} else{
-					return "Succes";
+						throw new ValidationFailException("Nurse can only delete empty group!");
+					} 
 				}
-				
 			} else{
-				return "invalid action";
+				throw new ValidationFailException("Invalid action");
 			}
-				
-			
-			
-			
-			
-			
 		} catch (Exception e) {
 			throw e;
 		} 
 		
 	}
-	
-	
-	
 	
 	public void deleteGroup(long groupId) throws Exception {
 		//delete group

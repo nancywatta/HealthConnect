@@ -13,6 +13,7 @@ import android.widget.TextView;
 public class WelcomePage extends ActionBarActivity {
 
     TextView welcomeText;
+    long accountId;
     String emailId;
     String userName;
 
@@ -23,6 +24,7 @@ public class WelcomePage extends ActionBarActivity {
 
         welcomeText = (TextView)findViewById(R.id.WelcomeText);
         SharedPreferences pref = getSharedPreferences(getString(R.string.loginPref), Context.MODE_PRIVATE);
+        accountId = pref.getLong("accountId",0);
         userName = pref.getString("userName", "");
         if(userName == null || userName.compareTo("")==0) {
             emailId = pref.getString("email","");
@@ -55,6 +57,12 @@ public class WelcomePage extends ActionBarActivity {
 
     public void goToManageGroup(View v) {
         Intent intent = new Intent(this,ManageGroup.class);
+        startActivity(intent);
+    }
+
+    public void goToCreateGroup(View v) {
+        Intent intent = new Intent(this,CreateGroup.class);
+        intent.putExtra("ACCOUNTID", accountId);
         startActivity(intent);
     }
 }

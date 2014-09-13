@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -25,7 +26,8 @@ import java.util.ArrayList;
  * Created by Nancy on 8/29/14.
  * Class for Tab1 "Member"
  */
-public class MemberFragment extends Fragment {
+public class MemberFragment extends Fragment implements
+        MyAlertDialogWIndow.AlertPositiveListener {
 
     private static final String TAG = MemberFragment.class.getSimpleName();
     Context context;
@@ -33,6 +35,8 @@ public class MemberFragment extends Fragment {
     long groupId;
     long accountId;
     MemberAdapter adapter;
+    ArrayList<Member> memberArray = new ArrayList<Member>();
+    Member memberDetails;
 
     public MemberFragment() {
 
@@ -45,7 +49,48 @@ public class MemberFragment extends Fragment {
                 container, false);
 
         context = container.getContext();
-        list =(ListView)dataView.findViewById(R.id.list);
+        list = (ListView) dataView.findViewById(R.id.list);
+
+        list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+            public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+                                           int pos, long id) {
+
+                /** Instantiating the DialogFragment */
+                MyAlertDialogWIndow alert = new MyAlertDialogWIndow();
+
+                Bundle args = new Bundle();
+                args.putString("message", "Do you want to remove "
+                                +  memberArray.get(pos).getEmail() + " from Group?");
+                alert.setArguments(args);
+
+                /** Opening the dialog window */
+                //alert.show(fm, "Alert_Dialog");
+                alert.show(getFragmentManager(), "Alert_Dialog");
+                memberDetails = memberArray.get(pos);
+
+                return true;
+            }
+        });
+
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                /** Instantiating the DialogFragment */
+                MyAlertDialogWIndow alert = new MyAlertDialogWIndow();
+
+                Bundle args = new Bundle();
+                args.putString("message", "Do you want to remove "
+                        +  memberArray.get(position).getEmail() + " from Group?");
+                alert.setArguments(args);
+
+                /** Opening the dialog window */
+                alert.show(getFragmentManager(), "Alert_Dialog");
+                memberDetails = memberArray.get(position);
+            }
+        });
 
         groupId = ManageUsers.getGroupId();
         accountId = ManageUsers.getAccountId();
@@ -74,7 +119,9 @@ public class MemberFragment extends Fragment {
         downloadTask.execute(url);
     }
 
-    /** A class, to download members from Group webservice */
+    /**
+     * A class, to download members from Group webservice
+     */
     private class DownloadTask extends AsyncTask<String, Integer, String> {
 
         String data = null;
@@ -82,9 +129,9 @@ public class MemberFragment extends Fragment {
         // Invoked by execute() method of this object
         @Override
         protected String doInBackground(String... url) {
-            try{
+            try {
                 data = downloadUrl(url[0]);
-            }catch(Exception e){
+            } catch (Exception e) {
                 Log.d(TAG, e.toString());
                 e.printStackTrace();
             }
@@ -93,7 +140,7 @@ public class MemberFragment extends Fragment {
 
         // Executed after the complete execution of doInBackground() method
         @Override
-        protected void onPostExecute(String result){
+        protected void onPostExecute(String result) {
 
             // Instantiating ParserTask which parses the json data from Group webservice
             // in a non-ui thread
@@ -109,7 +156,7 @@ public class MemberFragment extends Fragment {
         String data = "";
         InputStream iStream = null;
         HttpURLConnection urlConnection = null;
-        try{
+        try {
             URL url = new URL(strUrl);
             // Creating an http connection to communicate with url
             urlConnection = (HttpURLConnection) url.openConnection();
@@ -125,16 +172,16 @@ public class MemberFragment extends Fragment {
             StringBuffer sb = new StringBuffer();
 
             String line = "";
-            while( ( line = br.readLine()) != null){
+            while ((line = br.readLine()) != null) {
                 sb.append(line);
             }
 
             data = sb.toString();
             br.close();
 
-        }catch(Exception e){
+        } catch (Exception e) {
             Log.d("Exception while downloading url", e.toString());
-        }finally{
+        } finally {
             iStream.close();
             urlConnection.disconnect();
         }
@@ -142,8 +189,10 @@ public class MemberFragment extends Fragment {
         return data;
     }
 
-    /** A class to parse the members in non-ui thread */
-    class ParserTask extends AsyncTask<String, Integer, ArrayList<Member>>{
+    /**
+     * A class to parse the members in non-ui thread
+     */
+    class ParserTask extends AsyncTask<String, Integer, ArrayList<Member>> {
 
         JSONObject jObject;
 
@@ -154,14 +203,14 @@ public class MemberFragment extends Fragment {
             ArrayList<Member> members = null;
             JSONParser parser = new JSONParser();
 
-            try{
+            try {
                 jObject = new JSONObject(jsonData[0]);
 
                 /** Getting the parsed data as an ArrayList */
                 members = parser.memberParse(jObject);
 
-            }catch(Exception e){
-                Log.d(TAG,e.toString());
+            } catch (Exception e) {
+                Log.d(TAG, e.toString());
                 e.printStackTrace();
             }
             return members;
@@ -169,15 +218,28 @@ public class MemberFragment extends Fragment {
 
         // Executed after the complete execution of doInBackground() method
         @Override
-        protected void onPostExecute(ArrayList<Member> memberList){
-            if(memberList == null || memberList.size() <1) {
+        protected void onPostExecute(ArrayList<Member> memberList) {
+            if (memberList == null || memberList.size() < 1) {
                 Toast.makeText(context, "No Members Added", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            adapter=new MemberAdapter(getActivity(), memberList, accountId);
+            memberArray = memberList;
+
+            adapter = new MemberAdapter(getActivity(), memberList, accountId);
             list.setAdapter(adapter);
         }
     }
 
+    /**
+     * Defining button click listener for the OK button of the alert dialog window
+     */
+    @Override
+    public void onPositiveClick(boolean isDeleteSet) {
+
+    }
+
+    public void deleteMember() {
+        Log.d(TAG, "deleteMember in Fragment");
+    }
 }

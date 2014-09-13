@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,7 +21,7 @@ import java.util.Locale;
 import java.util.Vector;
 
 public class ManageUsers extends ActionBarActivity implements
-		ActionBar.TabListener {
+		ActionBar.TabListener,MyAlertDialogWIndow.AlertPositiveListener {
 
     private static final String TAG = ManageUsers.class.getSimpleName();
 
@@ -145,7 +146,6 @@ public class ManageUsers extends ActionBarActivity implements
 		public SectionsPagerAdapter(FragmentManager fm) {
 			super(fm);
 			fragments.add(MemberFragment.class.getName());
-			fragments.add(EditFragment.class.getName());
 			fragments.add(InviteFragment.class.getName());
 		}
 
@@ -159,8 +159,8 @@ public class ManageUsers extends ActionBarActivity implements
 
 		@Override
 		public int getCount() {
-			// Show 3 total pages.
-			return 3; 
+			// Show 2 total pages.
+			return 2;
 		}
 
 		@Override
@@ -170,33 +170,11 @@ public class ManageUsers extends ActionBarActivity implements
 			case 0:
 				return getString(R.string.title_section1).toUpperCase(l);
 			case 1:
-				return getString(R.string.title_section2).toUpperCase(l);
-			case 2:
 				return getString(R.string.title_section3).toUpperCase(l);
 			}
 			return null;
 		}
 	}
-
-	/*Class for Tab2 "Edit User"*/
-	
-	public static class EditFragment extends Fragment {
-
-	    public EditFragment() {
-	    }
-
-	    @Override
-	    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-	            Bundle savedInstanceState) {
-	        View dataView = inflater.inflate(R.layout.fragment_edit_tab,
-	                container, false);
-	       // TextView sectionBarView = (TextView) dataView
-	          //      .findViewById(R.id.section_label);
-	        //sectionBarView.setText("Invite");
-	        return dataView;
-	    }
-	}
-
 
 	/**
 	 * A placeholder fragment containing a simple view.
@@ -230,5 +208,17 @@ public class ManageUsers extends ActionBarActivity implements
 			return rootView;
 		}
 	}
+
+    /**
+     * Defining button click listener for the OK button of the alert dialog window
+     */
+    @Override
+    public void onPositiveClick(boolean isDeleteSet) {
+        Log.d(TAG, "onPositiveClick" + isDeleteSet);
+        Fragment currentFragment    =
+                getSupportFragmentManager().findFragmentByTag( "android:switcher:" + mViewPager.getId() + ":" + 0);
+
+        ((MemberFragment)currentFragment).deleteMember();
+    }
 
 }

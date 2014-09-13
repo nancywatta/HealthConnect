@@ -116,6 +116,8 @@ public class GroupRestController {
 			}
 
 			groupService.createNewGroup(accountId, groupName, roleId, members);
+			
+			message.setSuccess();
 
 		}catch(ValidationFailException ve) {
 			message.setFail("404", ve.getMessage());
@@ -308,10 +310,7 @@ public class GroupRestController {
 			,@RequestParam("groupId") long groupId) {
 		HCMessage message = new  HCMessage();
 		try {
-			  String result = null;
-			  result = groupService.deleteGroupValidation(accountId, groupId);
-			  if(result.compareTo("Succes")!=0) 
-					return message;
+			  groupService.deleteGroupValidation(accountId, groupId);
 				groupService.deleteAllMember(groupId);
 				groupService.deleteGroup(groupId);
 

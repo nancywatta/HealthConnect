@@ -15,7 +15,7 @@
         android:layout_marginTop="2dp"
         android:background="@android:color/darker_gray"/>
     <EditText
-        android:id="@+id/et_email_invite_user"
+        android:id="@+id/et_groupName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Enter Group Name "
@@ -30,7 +30,7 @@
         android:prompt="@string/select_role"
         />
     <Button
-        android:id="@+id/button_invite_user"
+        android:id="@+id/button_create_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/cyan"

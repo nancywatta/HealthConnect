@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.Spinner;
@@ -64,6 +65,11 @@ public class InviteFragment extends Fragment {
         saveButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 try {
+                    InputMethodManager inputManager = (InputMethodManager)
+                            context.getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                    inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
+                            InputMethodManager.HIDE_NOT_ALWAYS);
                     SaveInDB();
                 } catch(Exception e) {
                     e.printStackTrace();

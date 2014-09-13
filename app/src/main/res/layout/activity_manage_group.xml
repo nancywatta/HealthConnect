@@ -21,12 +21,27 @@
         android:textStyle="bold"
         android:prompt="@string/select_group"
         />
-       <Button 
-       android:layout_width="match_parent"
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+       <Button
+           android:id="@+id/selectBtn"
+       android:layout_width="0dp"
        android:layout_height="wrap_content"
+           android:layout_weight="0.5"
        android:text="Select"
        android:onClick="onClickBtnNewCustomer"
         />
-
+    <Button
+        android:id="@+id/deleteBtn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.5"
+        android:text="Delete"
+        android:onClick="onClickDeleteGroup"
+        />
+        </LinearLayout>
     
 </LinearLayout>
