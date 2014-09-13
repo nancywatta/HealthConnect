@@ -77,4 +77,9 @@ public class AccountServiceImpl extends BaseServiceImpl<Account> implements Acco
 		}
 	}
 
+	public Account getAccbyAppointmentId(long appointmentId) throws Exception {
+		Account account=accountDao.getAccbyAppointmentId(appointmentId);
+		return account;
+	}
+
 }

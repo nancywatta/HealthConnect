@@ -17,4 +17,7 @@ public interface AccountService extends BaseService<Account>{
 	
 	//Ben 09/2014
 	public String getEmailByAccountId(long accountId)throws Exception;
+    
+	//Wu
+	public Account getAccbyAppointmentId(long appointmentId) throws Exception;
 }

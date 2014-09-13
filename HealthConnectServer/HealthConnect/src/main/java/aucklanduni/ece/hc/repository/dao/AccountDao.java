@@ -17,5 +17,8 @@ public interface AccountDao  extends BaseDao<Account> {
 	
 	//Ben 09/2014
 	public String getEmailByAccountId(Connection connection, long accountId) throws Exception;
+    
+	//Wu
+	public Account getAccbyAppointmentId(long appointmentId) throws Exception;
 	
 }

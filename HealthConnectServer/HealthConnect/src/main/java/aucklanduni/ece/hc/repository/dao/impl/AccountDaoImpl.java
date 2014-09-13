@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 
 import aucklanduni.ece.hc.repository.dao.AccountDao;
@@ -103,6 +104,15 @@ public class AccountDaoImpl  extends BaseDaoImpl<Account> implements AccountDao{
 		{
 			throw e;
 		}
+	}
+	
+	//Wu
+	public Account getAccbyAppointmentId(long appointmentId) throws Exception {
+		Session s=getSession();
+		String hql="from Account acc, AppointmentAccountRef ref, Appointment app "+
+		"where app.id=? and app.id=ref.appointment_id and acc.id=ref.account_id";
+		Account account = (Account) s.createQuery(hql).setParameter(0, appointmentId);
+		return account;
 	}
 	
 }

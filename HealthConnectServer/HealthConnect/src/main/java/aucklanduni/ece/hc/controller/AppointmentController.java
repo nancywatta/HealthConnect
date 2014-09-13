@@ -20,11 +20,19 @@ import com.google.gson.Gson;
 import aucklanduni.ece.hc.repository.model.Account;
 import aucklanduni.ece.hc.repository.model.Appointment;
 import aucklanduni.ece.hc.repository.model.AppointmentAccountRef;
+import aucklanduni.ece.hc.repository.model.Dictionary;
 import aucklanduni.ece.hc.repository.model.Group;
+import aucklanduni.ece.hc.repository.model.Member;
+import aucklanduni.ece.hc.service.AccountService;
+import aucklanduni.ece.hc.service.AppointmentAccountRefService;
 import aucklanduni.ece.hc.service.AppointmentService;
+import aucklanduni.ece.hc.service.DictionaryService;
+import aucklanduni.ece.hc.service.GroupService;
+import aucklanduni.ece.hc.service.MemberService;
 import aucklanduni.ece.hc.service.NotifyService;
+import aucklanduni.ece.hc.webservice.model.ValidationFailException;
 
-/*
+/**
  * author: Tech Geeks
  * time:Sep.2014
  * This AppointmentController sets main functions of appointments, including creating, viewing, sharing, filtering.
@@ -38,34 +46,111 @@ public class AppointmentController {
 	@Autowired
 	private AppointmentService appointmentService;
 	@Autowired
-	private NotifyService notifyService;
+	private AccountService accountService;
+	@Autowired
+	private DictionaryService roleService;
+	@Autowired
+	private GroupService groupService;
+	@Autowired
+	private AppointmentAccountRefService aafService;
+	@Autowired
+	private MemberService memberService;
 	
+	/**
+	 * This method is used to handle /Appointment/createAppointment request. It create an appointment record
+	 * if the current user is a nurse.
+	 * @param request
+	 * @param response
+	 * @param accountId
+	 * @param roleId
+	 * @param appointmentTime
+	 * @param appointmentName
+	 * @param appointmentLocation
+	 * @return
+	 */
 	@RequestMapping("/createAppointment")//As nurses or patients, they can create appointments.
 	@ResponseBody
 	public String createAppointment(HttpServletRequest request, HttpServletResponse response,
-			@RequestParam("accountId") long accountId,
-			@RequestParam("appointmentTime") Date appointmentTime,
-			@RequestParam("appointmentName") String appointmentName,
-			@RequestParam("appointmentLocation") String appointmentLocation) {
+			@RequestParam(value="accountId") long accountId,
+			@RequestParam(value="roleId") long roleId,
+			@RequestParam(value="appointmentTime") Date appointmentTime,
+			@RequestParam(value="appointmentName") String appointmentName,
+			@RequestParam(value="appointmentLocation") String appointmentLocation) {
 		
-		Account account=new Account();
-		Appointment appointment=new Appointment();
-		AppointmentAccountRef aaf=new AppointmentAccountRef();
-		account.setId(accountId);
-		appointment.setTime(appointmentTime);
-		appointment.setName(appointmentName);
-		appointment.setLocation(appointmentLocation);
-		//update the reference table
-		aaf.setAccountId(accountId);
-		//aaf.setAppointmentId(appointmentService.findByName(appointmentName).getId());
-		//for this to work, manually add one row to accout table
-		//insert into accout(id,email,username) values(1,"wke918","wuke")
 		try {
+			Dictionary role = null;
+			role = roleService.findById(roleId);
+			// check if the current user is a nurse
+			if(! (role.getValue().compareTo("N")==0 ) ) {
+				throw new ValidationFailException("Only Nurse can create an appointment");
+			}
+			
+			Account account = null;
+			// check if given accountId exists
+			account = accountService.findById(accountId);
+			if(account == null) {
+				throw new ValidationFailException("Account does not exist");
+			}
+			
+			Appointment appointment=new Appointment();
+			AppointmentAccountRef aaf=new AppointmentAccountRef();
+			appointment.setTime(appointmentTime);
+			appointment.setName(appointmentName);
+			appointment.setLocation(appointmentLocation);
+			
+			//update the reference table
+			aaf.setAccountId(accountId);
+			aaf.setAppointmentId(appointment.getId());
+			aafService.add(aaf);
 			appointmentService.add(appointment);
-		} catch (Exception e) {
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+		return "createAppointment/ok";
+	}
+	
+	/**
+	 * This method is used to handle /Appointment/shareAppointment request, which share an appointment to a
+	 * group. 
+	 * @param request
+	 * @param response
+	 * @param groupId
+	 * @param memberId
+	 * @param appointmentId
+	 * @return
+	 */
+	@RequestMapping("/shareAppointment")
+	@ResponseBody
+	public String shareGroup(HttpServletRequest request, HttpServletResponse response,
+			@RequestParam(value="groupId") long groupId,
+			@RequestParam(value="memberId") long memberId,
+			@RequestParam(value="appointmentId") long appointmentId){
+		try{
+			Appointment appointment=null;
+			// check if given appointment exists
+			appointment=appointmentService.findById(appointmentId);
+			if(appointment==null){
+				throw new ValidationFailException("such appointment does not exist");
+			}
+			
+			Group group=null;
+			// check if given group exists
+			group=groupService.findById(groupId);
+			if(group==null){
+				throw new ValidationFailException("such group does not exist");
+			}
+			
+			//update the relationship in database
+			Account account=accountService.getAccbyAppointmentId(appointment.getId());
+			Member member=new Member();
+			member.setAccountId(account.getId());
+			member.setGroupId(group.getId());
+			memberService.add(member);
+			
+		} catch(Exception e){
 			e.printStackTrace();
 		}
-		return null;
+		return "shareAppointment/ok";
 	}
 
 	
