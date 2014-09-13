@@ -340,7 +340,7 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 				} else if(userRole.compareTo("N")==0){
 					ArrayList<Account> members = null;
 					members=memberDao.GetMembers(connection,groupId);
-					if(members != null){
+					if(members.size() > 1){
 						return "Nurse can only delete empty group!";
 					} else{
 						return "Succes";
