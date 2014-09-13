@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import aucklanduni.ece.hc.repository.model.Account;
@@ -325,6 +326,39 @@ public class GroupRestController {
 			}
 			return message;
 		}	
+	
+	
+	
+	//Ben 09/2014
+	// http://localhost:8080/HealthConnect/Group/deleteMember?accountId=123&groupId=1&memberId=123
+	@RequestMapping(value="/deleteMember",method = RequestMethod.POST
+			,headers="Accept=application/json")
+	public HCMessage deleteUser(HttpServletRequest request, HttpServletResponse response,
+			@RequestParam("accountId") long accountId,
+			@RequestParam("groupId") long groupId,
+			@RequestParam("memberId") long memberId) {
+		HCMessage message = new  HCMessage();
+		try {
+			String result = null;
+			  result = groupService.deleteMemberValidation(accountId, groupId, memberId);
+			  if(result.compareTo("Succes")!=0) 
+					return message;else{
+						groupService.deleteMember(groupId,memberId);
+						//notifyService.notify(memberId, "You have been deleted from group", "email");
+
+				message.setSuccess("member ("+memberId+") has been deleted from group ("+groupId+")");}
+
+			}catch(ValidationFailException ve) {
+				message.setFail("404", ve.getMessage());
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				message.setFail("400", e.getMessage());
+			}
+			return message;
+		}	
+
+	
 	
 	
 }

@@ -240,7 +240,7 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 
 	}
 	
-	//Ben 09/2014 TODO:maybe some problem like inviteValidation
+	//Ben 09/2014 
 	public  String deleteMemberValidation (long accountId,long groupId, long memberId)throws Exception {
 		try {
 			Database database= new Database();
@@ -249,35 +249,79 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 			String userRole = memberDao.GetMemberRole(connection, accountId, groupId);
 			String memberRole = memberDao.GetMemberRole(connection, memberId, groupId);
 			
-			if(userRole!= "" && memberRole != ""){
+			if(userRole== "" || memberRole == "")
+				throw new ValidationFailException("The user/member is invalid");
+			
 			if(userRole.compareTo("P")==0) {
-				if(userRole.compareTo(memberRole)==0)
-					return "Cannot delete the patient in the group, please delete the group";
+				if(accountId == memberId)
+					throw new ValidationFailException("Cannot delete the patient in the group, please delete the group");
 				else return "Succes";
 			} 
-			//delete the user himself
-			else if (accountId == memberId)
-				return "Succes";
+
 			else if(userRole.compareTo("N")==0) {
 				//nurse can delete member only there is no patient in the group
 //				if(memberDao.checkPatientCount(connection,groupId) != 0)
-//					return "Only the patient can delete the member";
-				if(memberRole.compareTo("S")==0)
-					return "Nurse cannot delete the support member";
+//					throw new ValidationFailException("Only the patient can delete the member");
+				if(accountId == memberId)
+					return "Succes";
+				else if(memberRole.compareTo("S")==0)
+					throw new ValidationFailException("Nurse cannot delete the support member");
 				else if(memberRole.compareTo("N")==0)
-					return "Nurse cannot delete another nurse";
+					throw new ValidationFailException("Nurse cannot delete another nurse");
 				else return "Succes";
 			}
 			else if(userRole.compareTo("S")==0)
-				return "Action Not Allowed";
-			}
-			return "The user/member is invalid";
+				if(accountId == memberId)
+					return "Succes";
+				else throw new ValidationFailException("Action Not Allowed");
+			
+			return "Unknown Error";
 			
 		}
 		catch (Exception e) {
 			throw e;
 		}
 	}
+	
+	
+//	//Ben 09/2014 TODO:maybe some problem like inviteValidation
+//		public  String deleteMemberValidation (long accountId,long groupId, long memberId)throws Exception {
+//			try {
+//				Database database= new Database();
+//				Connection connection = database.Get_Connection();
+//				
+//				String userRole = memberDao.GetMemberRole(connection, accountId, groupId);
+//				String memberRole = memberDao.GetMemberRole(connection, memberId, groupId);
+//				
+//				if(userRole!= "" && memberRole != ""){
+//				if(userRole.compareTo("P")==0) {
+//					if(userRole.compareTo(memberRole)==0)
+//						return "Cannot delete the patient in the group, please delete the group";
+//					else return "Succes";
+//				} 
+//				//delete the user himself
+//				else if (accountId == memberId)
+//					return "Succes";
+//				else if(userRole.compareTo("N")==0) {
+//					//nurse can delete member only there is no patient in the group
+////					if(memberDao.checkPatientCount(connection,groupId) != 0)
+////						return "Only the patient can delete the member";
+//					if(memberRole.compareTo("S")==0)
+//						return "Nurse cannot delete the support member";
+//					else if(memberRole.compareTo("N")==0)
+//						return "Nurse cannot delete another nurse";
+//					else return "Succes";
+//				}
+//				else if(userRole.compareTo("S")==0)
+//					return "Action Not Allowed";
+//				}
+//				return "The user/member is invalid";
+//				
+//			}
+//			catch (Exception e) {
+//				throw e;
+//			}
+//		}
 	
 	
 	public void saveMember(long groupId, long accountId, String emailId, long roleId) throws Exception {
