@@ -92,6 +92,13 @@ public class AppointmentController {
 				throw new ValidationFailException("Account does not exist");
 			}
 			
+			// check if appointment name already exists
+			List<Appointment> appointments = new ArrayList<Appointment>();
+			appointments = appointmentService.findByHql("from Appointment WHERE appointmentname='" + appointmentName + "'");
+			if(appointments.size() > 0) {
+				throw new ValidationFailException("Appointment Name Already Exists");
+			}
+			
 			Appointment appointment=new Appointment();
 			AppointmentAccountRef aaf=new AppointmentAccountRef();
 			appointment.setTime(new Date());
@@ -140,12 +147,13 @@ public class AppointmentController {
 			}
 			
 			//update the relationship in database
-			Account account=accountService.getAccbyAppointmentId(appointment.getId());
-			Member member=new Member();
-			member.setAccountId(account.getId());
-			member.setGroupId(group.getId());
-			memberService.add(member);
-			
+			List<Account> accounts=accountService.getAccbyAppointmentId(appointment.getId());
+			for(Account account:accounts){
+				Member member=new Member();
+				member.setAccountId(account.getId());
+				member.setGroupId(group.getId());
+				memberService.add(member);
+			}
 		} catch(Exception e){
 			e.printStackTrace();
 		}

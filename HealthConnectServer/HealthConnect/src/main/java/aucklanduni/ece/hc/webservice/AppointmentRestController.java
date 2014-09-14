@@ -17,11 +17,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import aucklanduni.ece.hc.repository.model.Account;
 import aucklanduni.ece.hc.repository.model.Appointment;
+import aucklanduni.ece.hc.repository.model.AppointmentAccountRef;
 import aucklanduni.ece.hc.repository.model.Dictionary;
 import aucklanduni.ece.hc.repository.model.Group;
+import aucklanduni.ece.hc.repository.model.Member;
 import aucklanduni.ece.hc.service.AccountService;
+import aucklanduni.ece.hc.service.AppointmentAccountRefService;
 import aucklanduni.ece.hc.service.AppointmentService;
 import aucklanduni.ece.hc.service.DictionaryService;
+import aucklanduni.ece.hc.service.GroupService;
+import aucklanduni.ece.hc.service.MemberService;
 import aucklanduni.ece.hc.webservice.model.HCMessage;
 import aucklanduni.ece.hc.webservice.model.ValidationFailException;
 
@@ -34,6 +39,12 @@ public class AppointmentRestController {
 	private DictionaryService roleService;
 	@Autowired
 	private AccountService accountService;
+	@Autowired
+	private AppointmentAccountRefService aafService;
+	@Autowired
+	private GroupService groupService;
+	@Autowired
+	private MemberService memberService;
 	
 
 	@RequestMapping(value="/createAppointment",method = RequestMethod.POST
@@ -41,20 +52,19 @@ public class AppointmentRestController {
 			)
 	public HCMessage createAppointment(HttpServletRequest request, HttpServletResponse response
 			,@RequestParam(value="accountId") long accountId
-			,@RequestParam("appointmentTime") Date appointmentTime
+			,@RequestParam(value="roleId") long roleId
+//			,@RequestParam("appointmentTime") Date appointmentTime
 			,@RequestParam("appointmentName") String appointmentName
 			,@RequestParam("appointmentLocation") String appointmentLocation
 			) {
 		HCMessage message = new  HCMessage();
 		try {
-			/*Dictionary role = null;
+			Dictionary role = null;
 			role = roleService.findById(roleId);
-
-			// Only Patient or Nurse can create a Group
-			if(! (role.getValue().compareTo("P")==0 
-					|| role.getValue().compareTo("N")==0)) {
-				throw new ValidationFailException("Only Patient or Nurse can create a Group");
-			}*/ //do not need to use roleId here.
+			// check if the current user is a nurse
+			if(! (role.getValue().compareTo("N")==0 ) ) {
+				throw new ValidationFailException("Only Nurse can create an appointment");
+			}
 
 			Account account = null;
 			// check if given accountId exists
@@ -63,14 +73,77 @@ public class AppointmentRestController {
 				throw new ValidationFailException("Account does not exist");
 			}
 
-			// check if group name already exists
+			// check if appointment name already exists
 			List<Appointment> appointments = new ArrayList<Appointment>();
 			appointments = appointmentService.findByHql("from Appointment WHERE appointmentname='" + appointmentName + "'");
 			if(appointments.size() > 0) {
 				throw new ValidationFailException("Appointment Name Already Exists");
 			}
+			
+			Appointment appointment=new Appointment();
+			AppointmentAccountRef aaf=new AppointmentAccountRef();
+			appointment.setTime(new Date());
+			appointment.setName(appointmentName);
+			appointment.setLocation(appointmentLocation);
+			appointmentService.add(appointment);
+			
+			//update the reference table
+			aaf.setAccountId(accountId);
+			aaf.setAppointmentId(appointment.getId());
+			aafService.add(aaf);
 
-			appointmentService.createNewAppointment(accountId, appointmentTime, appointmentName, appointmentLocation);
+//			appointmentService.createNewAppointment(accountId, appointmentTime, appointmentName, appointmentLocation);
+
+		}catch(ValidationFailException ve) {
+			message.setFail("404", ve.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			message.setFail("400", e.getMessage());
+		}
+
+		return message;
+	}
+	
+	/**
+	 * This method is used to handle /Appointment/shareAppointment request, which share an appointment to a
+	 * group. 
+	 * @param request
+	 * @param response
+	 * @param groupId
+	 * @param appointmentId
+	 * @return
+	 */
+	@RequestMapping(value="/shareAppointment",method = RequestMethod.POST
+			,headers="Accept=application/json"
+			)
+	public HCMessage shareAppointment(HttpServletRequest request, HttpServletResponse response
+			,@RequestParam(value="groupId") long groupId
+			,@RequestParam(value="appointmentId") long appointmentId
+			) {
+		HCMessage message = new  HCMessage();
+		try {
+			Appointment appointment=null;
+			// check if given appointment exists
+			appointment=appointmentService.findById(appointmentId);
+			if(appointment==null){
+				throw new ValidationFailException("such appointment does not exist");
+			}
+
+			Group group=null;
+			// check if given group exists
+			group=groupService.findById(groupId);
+			if(group==null){
+				throw new ValidationFailException("such group does not exist");
+			}
+			
+			//update the relationship in database
+			List<Account> accounts=accountService.getAccbyAppointmentId(appointment.getId());
+			for(Account account:accounts){
+				Member member=new Member();
+				member.setAccountId(account.getId());
+				member.setGroupId(group.getId());
+				memberService.add(member);
+			}
 
 		}catch(ValidationFailException ve) {
 			message.setFail("404", ve.getMessage());

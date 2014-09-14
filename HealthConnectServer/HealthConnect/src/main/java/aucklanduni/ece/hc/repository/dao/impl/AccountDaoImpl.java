@@ -3,6 +3,7 @@ package aucklanduni.ece.hc.repository.dao.impl;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.List;
 
 import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
@@ -107,12 +108,13 @@ public class AccountDaoImpl  extends BaseDaoImpl<Account> implements AccountDao{
 	}
 	
 	//Wu
-	public Account getAccbyAppointmentId(long appointmentId) throws Exception {
+	public List<Account> getAccbyAppointmentId(long appointmentId) throws Exception {
 		Session s=getSession();
-		String hql="from Account acc, AppointmentAccountRef ref, Appointment app "+
-		"where app.id=? and app.id=ref.appointmentId and acc.id=ref.accountId";
-		Account account = (Account) s.createQuery(hql).setParameter(0, appointmentId);
-		return account;
+		String hql="select acc "+
+				"from Account acc, AppointmentAccountRef ref, Appointment app "+
+				"where app.id=? and app.id=ref.appointmentId and acc.id=ref.accountId";
+		List<Account> accounts = (List<Account>) s.createQuery(hql).setParameter(0, appointmentId).list();
+		return accounts;
 	}
 	
 }

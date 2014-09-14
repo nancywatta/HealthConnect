@@ -1,6 +1,7 @@
 package aucklanduni.ece.hc.repository.dao;
 
 import java.sql.Connection;
+import java.util.List;
 
 import aucklanduni.ece.hc.repository.model.Account;
 
@@ -19,6 +20,6 @@ public interface AccountDao  extends BaseDao<Account> {
 	public String getEmailByAccountId(Connection connection, long accountId) throws Exception;
     
 	//Wu
-	public Account getAccbyAppointmentId(long appointmentId) throws Exception;
+	public List<Account> getAccbyAppointmentId(long appointmentId) throws Exception;
 	
 }

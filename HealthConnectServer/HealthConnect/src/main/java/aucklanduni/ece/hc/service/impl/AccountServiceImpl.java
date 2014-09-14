@@ -1,6 +1,7 @@
 package aucklanduni.ece.hc.service.impl;
 
 import java.sql.Connection;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -77,9 +78,9 @@ public class AccountServiceImpl extends BaseServiceImpl<Account> implements Acco
 		}
 	}
 
-	public Account getAccbyAppointmentId(long appointmentId) throws Exception {
-		Account account=accountDao.getAccbyAppointmentId(appointmentId);
-		return account;
+	public List<Account> getAccbyAppointmentId(long appointmentId) throws Exception {
+		List<Account> accounts=accountDao.getAccbyAppointmentId(appointmentId);
+		return accounts;
 	}
 
 }
