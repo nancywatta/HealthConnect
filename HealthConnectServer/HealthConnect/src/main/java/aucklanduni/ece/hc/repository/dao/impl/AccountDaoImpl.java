@@ -110,7 +110,7 @@ public class AccountDaoImpl  extends BaseDaoImpl<Account> implements AccountDao{
 	public Account getAccbyAppointmentId(long appointmentId) throws Exception {
 		Session s=getSession();
 		String hql="from Account acc, AppointmentAccountRef ref, Appointment app "+
-		"where app.id=? and app.id=ref.appointment_id and acc.id=ref.account_id";
+		"where app.id=? and app.id=ref.appointmentId and acc.id=ref.accountId";
 		Account account = (Account) s.createQuery(hql).setParameter(0, appointmentId);
 		return account;
 	}

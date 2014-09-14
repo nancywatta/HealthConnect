@@ -123,7 +123,6 @@ public class AppointmentController {
 	@ResponseBody
 	public String shareGroup(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam(value="groupId") long groupId,
-			@RequestParam(value="memberId") long memberId,
 			@RequestParam(value="appointmentId") long appointmentId){
 		try{
 			Appointment appointment=null;
