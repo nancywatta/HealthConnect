@@ -54,21 +54,22 @@ public class MemberAdapter extends BaseAdapter {
 
         Member member = result.get(position);
 
-        if(member.getUserName().compareTo("")!=0) {
+        if(member.getUserName() == null ||
+                member.getUserName().compareTo("")==0) {
+            if(accountId == member.getAccountId()) {
+                holder.text.setTextColor(Color.parseColor("#9d0c0f"));
+                holder.text.setText(member.getEmail() + "(Me)");
+            }
+            else
+                holder.text.setText(member.getEmail());
+        }
+        else {
             if(accountId == member.getAccountId()) {
                 holder.text.setTextColor(Color.parseColor("#9d0c0f"));
                 holder.text.setText(member.getUserName() + "(Me)");
             }
             else
                 holder.text.setText(member.getUserName());
-        }
-        else {
-            if(accountId == member.getAccountId()) {
-                holder.text.setTextColor(Color.parseColor("#9d0c0f"));
-                holder.text.setText(member.getEmail() + "(Me)");
-            }
-            else
-               holder.text.setText(member.getEmail());
         }
         holder.text1.setText(member.getRole().getName());
 
@@ -78,5 +79,9 @@ public class MemberAdapter extends BaseAdapter {
     static class ViewHolder {
         TextView text;
         TextView text1;
+    }
+
+    public synchronized   void refreshAdapter() {
+        notifyDataSetChanged();
     }
 }

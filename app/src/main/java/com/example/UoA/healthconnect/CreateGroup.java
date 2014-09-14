@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,10 +15,15 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TabHost;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.UoA.healthconnect.ResponseModel.HCMessage;
+import com.google.gson.Gson;
 
 import org.json.JSONObject;
 import org.springframework.http.converter.FormHttpMessageConverter;
@@ -41,22 +47,54 @@ public class CreateGroup extends ActionBarActivity {
     private static final String TAG = CreateGroup.class.getSimpleName();
     private RoleSpinAdapter adapter;
     Spinner roleSpinner;
+    Spinner roleSpinner2;
     long accountId;
     long roleId;
+    long memberRoleId;
+    String memberRole;
     Button saveButton;
     EditText groupName;
     Intent intent;
+    EditText emailText;
+    ListView list;
+    MemberAdapter memberAdapter;
+    ArrayList<Member> memberArray = new ArrayList<Member>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_group);
 
+        InputMethodManager inputManager = (InputMethodManager)
+                getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                InputMethodManager.HIDE_NOT_ALWAYS);
+
         intent = getIntent();
         accountId = intent.getLongExtra("ACCOUNTID",0);
 
         groupName = (EditText)findViewById(R.id.et_groupName);
         saveButton = (Button)findViewById(R.id.button_create_group);
+        emailText = (EditText) findViewById(R.id.et_email_invite_user);
+        list = (ListView)findViewById(R.id.list);
+        memberAdapter = new MemberAdapter(CreateGroup.this, memberArray, accountId);
+
+        TabHost tabs = (TabHost)findViewById(R.id.TabHost01);
+        tabs.setup();
+        TabHost.TabSpec spec1 = tabs.newTabSpec("tag1");
+
+        spec1.setContent(R.id.myMemberList);
+
+        View tabIndicator = LayoutInflater.from(this).inflate(R.layout.tab_indicator, tabs.getTabWidget(), false);
+        ((TextView) tabIndicator.findViewById(R.id.title)).setText(R.string.TabInvite);
+        ((ImageView) tabIndicator.findViewById(R.id.icon)).setImageResource(android.R.drawable.ic_menu_myplaces);
+
+        spec1.setIndicator(tabIndicator);
+
+        tabs.addTab(spec1);
+
+
         saveButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 try {
@@ -73,6 +111,42 @@ public class CreateGroup extends ActionBarActivity {
         });
 
         roleSpinner = (Spinner)findViewById(R.id.spinner_role);
+        roleSpinner2 = (Spinner)findViewById(R.id.spinner_role2);
+
+        roleSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view,
+                                       int position, long id) {
+                roleId = adapter.getItem(position).getId();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapter) {  }
+        });
+
+        roleSpinner2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view,
+                                       int position, long id) {
+                memberRoleId = adapter.getItem(position).getId();
+                memberRole = adapter.getItem(position).getName();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapter) {  }
+        });
+
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+
+                memberArray.remove(position);
+                refreshYourAdapter();
+            }
+        });
+
         getRoles();
     }
 
@@ -196,18 +270,7 @@ public class CreateGroup extends ActionBarActivity {
                     roleList);
 
             roleSpinner.setAdapter(adapter);
-            roleSpinner.setAdapter(adapter);
-
-            roleSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-
-                @Override
-                public void onItemSelected(AdapterView<?> adapterView, View view,
-                                           int position, long id) {
-                    roleId = adapter.getItem(position).getId();
-                }
-                @Override
-                public void onNothingSelected(AdapterView<?> adapter) {  }
-            });
+            roleSpinner2.setAdapter(adapter);
         }
     }
 
@@ -240,6 +303,11 @@ public class CreateGroup extends ActionBarActivity {
                 map.add("accountId", Long.toString(accountId));
                 map.add("groupName", groupName.getText().toString());
                 map.add("roleId", Long.toString(roleId));
+
+                if(memberArray!=null) {
+                    Gson gson = new Gson();
+                    map.add("members", gson.toJson(memberArray));
+                }
 
                 restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 
@@ -284,5 +352,35 @@ public class CreateGroup extends ActionBarActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void onClickAddMember(View view) {
+        InputMethodManager inputManager = (InputMethodManager)
+                getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                InputMethodManager.HIDE_NOT_ALWAYS);
+
+        if(TextUtils.isEmpty(emailText.getText())) {
+            Toast.makeText(CreateGroup.this, "Enter Email Id", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Log.d(TAG, "email "+ emailText.getText().toString());
+        Member member = new Member(emailText.getText().toString(), memberRoleId, memberRole);
+        memberArray.add(member);
+
+        refreshYourAdapter();
+        list.setAdapter(memberAdapter);
+
+        emailText.setText("");
+    }
+
+    private void refreshYourAdapter() {
+        runOnUiThread(new Runnable() {
+            public void run() {
+                memberAdapter.refreshAdapter();
+            }
+        });
     }
 }

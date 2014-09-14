@@ -3,4 +3,8 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="my_spinner_textsize">20dip</dimen>
+    <dimen name="corner_radius">4dp</dimen>
+    <dimen name="tab_space_top">4dp</dimen>
+    <dimen name="tab_space">2dp</dimen>
+    <dimen name="tab_space_plus1">3dp</dimen>
 </resources>

@@ -17,6 +17,11 @@ public class Member {
         this.role = role;
     }
 
+    public Member(String email, long roleId, String memberRole) {
+        this.email = email;
+        this.role = new Dictionary(roleId, memberRole);
+    }
+
     public String getUserName() { return userName; }
 
     public Dictionary getRole() { return role; }
@@ -24,4 +29,6 @@ public class Member {
     public String getEmail() { return email; }
 
     public long getAccountId() {  return accountId; }
+
+    public  void setEmail(String email) { this.email = email; }
 }

@@ -54,6 +54,7 @@ public class InviteFragment extends Fragment {
                 container, false);
 
         context = container.getContext();
+
         groupId = ManageUsers.getGroupId();
         accountId = ManageUsers.getAccountId();
         groupName = ManageUsers.getGroupName();

@@ -2,4 +2,8 @@
 <resources>
     <color name="cyan">#10bcc9</color>
     <color name="my_spinner_text_color">#808080</color>
+    <color name="app_background">#fff5f5f5</color>
+    <color name="dark_red">#9d0c0f</color>
+    <color name="light_red">#ba0305</color>
+    <color name="green">#088A08</color>
 </resources>

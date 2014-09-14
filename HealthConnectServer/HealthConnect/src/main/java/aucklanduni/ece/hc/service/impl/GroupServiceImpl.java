@@ -177,7 +177,7 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 
 			// Support Member cannot invite any user in Group
 			if(roleValue.compareTo("S")==0)
-				throw new ValidationFailException("Action Not Allowed");
+				throw new ValidationFailException("Support Member cannot Invite Member to Group");
 
 			// Fetch Role of user being Invited
 			Dictionary role = dictionaryService.findById(new Long(roleId));
@@ -192,18 +192,16 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 
 				// Nurse can only invite patient in Group
 				if(role.getValue().compareTo("P")!=0)
-					throw new ValidationFailException("Action Not Allowed");
+					throw new ValidationFailException("Nurse can Invite only Patient to Group");
 
 				// Check if Patient already exists in Group
 				List<Member> members = new ArrayList<Member>();
-				members = memberDao.findByHql(
-						"from Member m "
-								+ "INNER JOIN DICTIONARY d "
-								+ "ON "
-								+ "m.role_id=d.id "
-								+ "and m.group_id= " + groupId
-								+ " and d.type = 'Role' "
-								+ "and d.value = 'P' ");
+				members = memberDao.findByHql("select m from Member m, Dictionary d "
+						+ "WHERE "
+						+ "m.roleId=d.id "
+						+ "and m.groupId= " + groupId
+						+ " and d.type = 'Role' "
+						+ "and d.value = 'P' ");
 
 				// If patient already exists, Nurse cannot invite any more patient
 				if(members.size() >= 1)
@@ -221,17 +219,15 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 
 				// Check if the invited member is already member of the input Group
 				List<Dictionary> roles = new ArrayList<Dictionary>();
-				roles = dictionaryService.findByHql(
-						"from Dictionary d "
-								+ "INNER JOIN MEMBER m "
-								+ "ON "
-								+ "m.role_id=d.id "
-								+ "and m.group_id= " + groupId
-								+ " and m.account_id= " + accountId);
+				roles = dictionaryService.findByHql("select d from Dictionary d, Member m "
+						+ "WHERE "
+						+ "m.roleId=d.id "
+						+ "and m.groupId= " + groupId
+						+ " and m.accountId= " + accounts.get(0).getId());
 
 				// throw error if invited member is already member of the input Group
 				if(roles.size() >= 1)
-					throw new ValidationFailException("Already a member in this Group");
+					throw new ValidationFailException(emailId + " is already a member in this Group");
 			}
 		}
 		catch (Exception e) {

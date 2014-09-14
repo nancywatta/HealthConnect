@@ -12,7 +12,16 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.UoA.healthconnect.ResponseModel.HCMessage;
+
 import org.json.JSONObject;
+import org.springframework.http.converter.FormHttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -240,6 +249,53 @@ public class MemberFragment extends Fragment implements
     }
 
     public void deleteMember() {
+        new HttpRequestTask().execute();
         Log.d(TAG, "deleteMember in Fragment");
     }
+
+    private class HttpRequestTask extends AsyncTask<Void, Void, HCMessage> {
+        @Override
+        protected HCMessage doInBackground(Void... params) {
+            try {
+                final String url = "http://" + getString(R.string.IPAddress) +
+                        ":8080/HealthConnect/service/group/deleteMember";
+                Log.d(TAG, "url: " + url);
+                RestTemplate restTemplate = new RestTemplate();
+
+                HttpMessageConverter formHttpMessageConverter = new FormHttpMessageConverter();
+                HttpMessageConverter stringHttpMessageConverternew = new StringHttpMessageConverter();
+
+                restTemplate.getMessageConverters().add(formHttpMessageConverter);
+                restTemplate.getMessageConverters().add(stringHttpMessageConverternew);
+
+                MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
+                map.add("accountId", Long.toString(accountId));
+                map.add("groupId", Long.toString(groupId));
+                map.add("memberId", Long.toString(memberDetails.getAccountId()));
+
+                restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+
+                HCMessage message = restTemplate.postForObject(url, map, HCMessage.class);
+                return message;
+            } catch (Exception e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(HCMessage message) {
+
+            if(message.getError() != null) {
+                Toast.makeText(context, message.getError(), Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Toast.makeText(context, message.getResponse().toString(), Toast.LENGTH_SHORT).show();
+            getMembers();
+        }
+
+    }
+
 }
