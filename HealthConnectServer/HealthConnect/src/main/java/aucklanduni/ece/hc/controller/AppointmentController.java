@@ -73,7 +73,7 @@ public class AppointmentController {
 	public String createAppointment(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam(value="accountId") long accountId,
 			@RequestParam(value="roleId") long roleId,
-			@RequestParam(value="appointmentTime") Date appointmentTime,
+//			@RequestParam(value="appointmentTime") Date appointmentTime,
 			@RequestParam(value="appointmentName") String appointmentName,
 			@RequestParam(value="appointmentLocation") String appointmentLocation) {
 		
@@ -94,15 +94,15 @@ public class AppointmentController {
 			
 			Appointment appointment=new Appointment();
 			AppointmentAccountRef aaf=new AppointmentAccountRef();
-			appointment.setTime(appointmentTime);
+			appointment.setTime(new Date());
 			appointment.setName(appointmentName);
 			appointment.setLocation(appointmentLocation);
+			appointmentService.add(appointment);
 			
 			//update the reference table
 			aaf.setAccountId(accountId);
 			aaf.setAppointmentId(appointment.getId());
 			aafService.add(aaf);
-			appointmentService.add(appointment);
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
