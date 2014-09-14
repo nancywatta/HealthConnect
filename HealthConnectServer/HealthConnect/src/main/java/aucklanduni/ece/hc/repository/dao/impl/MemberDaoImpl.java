@@ -107,6 +107,28 @@ public class MemberDaoImpl extends BaseDaoImpl<Member> implements MemberDao{
 		}
 	}
 	
+	public int checkMemberCount(Connection connection, long groupId) throws Exception {
+		try
+		{
+			PreparedStatement ps = connection.prepareStatement(
+					"SELECT COUNT(*) "
+					+ "FROM MEMBER m "
+					+ "WHERE "
+					+ "m.group_id= " + groupId
+					);
+			ResultSet rs = ps.executeQuery();
+			while(rs.next())
+			{
+				return rs.getInt(1);
+			}
+			return 0;
+		}
+		catch(Exception e)
+		{
+			throw e;
+		}
+	}
+	
 	public void saveMember(Connection connection, long groupId, long accountId, String emailId, long roleId) throws Exception {
 		try
 		{
@@ -129,7 +151,7 @@ public class MemberDaoImpl extends BaseDaoImpl<Member> implements MemberDao{
 		}
 	}
 	
-	//Ben 09/2014
+
 	public void deleteMember(Connection connection, long groupId, long memberId) throws Exception {
 		try
 		{

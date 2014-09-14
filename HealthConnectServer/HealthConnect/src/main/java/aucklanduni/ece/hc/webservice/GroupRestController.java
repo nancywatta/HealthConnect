@@ -309,7 +309,7 @@ public class GroupRestController {
 	@RequestMapping(value="/deleteGroup",method = RequestMethod.POST
 			,headers="Accept=application/json"
 			)
-	public HCMessage createGroup(HttpServletRequest request, HttpServletResponse response
+	public HCMessage deleteGroup(HttpServletRequest request, HttpServletResponse response
 			,@RequestParam("accountId") long accountId
 			,@RequestParam("groupId") long groupId) {
 		HCMessage message = new  HCMessage();
@@ -355,7 +355,7 @@ public class GroupRestController {
 	
 	@RequestMapping(value="/deleteMember",method = RequestMethod.POST
 			,headers="Accept=application/json")
-	public HCMessage deleteUser(HttpServletRequest request, HttpServletResponse response,
+	public HCMessage deleteMember(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam("accountId") long accountId,
 			@RequestParam("groupId") long groupId,
 			@RequestParam("memberId") long memberId) {
