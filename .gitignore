@@ -42,3 +42,15 @@ HealthConnectServer/HealthConnect/target/classes/aucklanduni/ece/hc/service/Grou
 
 HealthConnectServer/HealthConnect/target/classes/aucklanduni/ece/hc/service/impl/AppointmentServiceImpl.class
 HealthConnectServer/HealthConnect/target/classes/aucklanduni/ece/hc/repository/model/Appointment.class
+
+HealthConnectServer/HealthConnect/target/classes/aucklanduni/ece/hc/repository/dao/AccountDao.class
+
+*.class
+
+HealthConnectServer/HealthConnect/target/classes/aucklanduni/ece/hc/repository/dao/impl/AccountDaoImpl.class
+
+HealthConnectServer/HealthConnect/target/classes/aucklanduni/ece/hc/repository/dao/impl/MemberDaoImpl.class
+
+HealthConnectServer/HealthConnect/target/classes/aucklanduni/ece/hc/repository/dao/MemberDao.class
+
+HealthConnectServer/HealthConnect/target/classes/aucklanduni/ece/hc/service/impl/AccountServiceImpl.class
