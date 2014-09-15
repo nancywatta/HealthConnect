@@ -107,6 +107,8 @@ public class AppointmentController {
 			appointment.setTime(new Date());
 			appointment.setName(appointmentName);
 			appointment.setLocation(appointmentLocation);
+			appointment.setCreateDate(new Date());
+			appointment.setUpdatedDate(new Date());
 			appointmentService.add(appointment);
 			
 			//update the reference table
@@ -183,49 +185,48 @@ public class AppointmentController {
 		return "shareAppointment/ok";
 	}
 
-	/*
+	
 	@RequestMapping("/viewAppointment")//As nurses or patients, they can view the appointments.
 	@ResponseBody
 	public String viewAppointment(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam("accountId") long accountId){
 		System.out.println(">>>>>>>>>>>>>>>>>viewAppointment"+accountId);
-		String appointments=null;
 		try{
-			Map<String, ArrayList<Appointment>> appointmentList=appointmentService.showAllAppointment(accountId);
-			Gson gson = new Gson();
-			appointments = gson.toJson(appointmentList);
-			System.out.println(appointments);
+			List<Appointment> appointments=appointmentService.findAllByAccountId(accountId);
+			for(Appointment appointment:appointments){
+				System.out.println("appointmentName="+appointment.getName()+"   appointmentLocation="+appointment.getLocation());
+			}
 		}
 		catch(Exception e){
 			e.printStackTrace();
 		}
-		return appointments;
+		return "viewAppointment/ok";
 	}
-	*/ 
-	
-	@RequestMapping(value="/viewAppointments")
-	@ResponseBody
-	public String viewAppointments(HttpServletRequest request, HttpServletResponse response,
-			@RequestParam("accountId") long accountId){
-		String appointments = null;
-		List<Appointment> appointmentList = new ArrayList<Appointment>();
-		Map<String, ArrayList<Appointment>> appointmentArray = new HashMap<String, ArrayList<Appointment>>();
-		try {
-			appointmentList = appointmentService.findByHql("select distinct g from Appointment g, "
-					+ "inner join app_acc_ref aar "
-					+ "on "
-					+ "g.id = arr.appointment_id"
-					+ "inner join account ac"
-					+ "on"
-					+ "ac.id=aar.account_id "
-					+ "and aar.account_id= " + accountId);
-			appointmentArray.put("appointments", (ArrayList<Appointment>)appointmentList);
-			appointments = gson.toJson(appointmentArray);
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return appointments;
-	}
+	
+//	@RequestMapping(value="/viewAppointments")
+//	@ResponseBody
+//	public String viewAppointments(HttpServletRequest request, HttpServletResponse response,
+//			@RequestParam("accountId") long accountId){
+//		String appointments = null;
+//		List<Appointment> appointmentList = new ArrayList<Appointment>();
+//		Map<String, ArrayList<Appointment>> appointmentArray = new HashMap<String, ArrayList<Appointment>>();
+//		try {
+//			appointmentList = appointmentService.findByHql("select distinct g from Appointment g, "
+//					+ "inner join app_acc_ref aar "
+//					+ "on "
+//					+ "g.id = arr.appointment_id"
+//					+ "inner join account ac"
+//					+ "on"
+//					+ "ac.id=aar.account_id "
+//					+ "and aar.account_id= " + accountId);
+//			appointmentArray.put("appointments", (ArrayList<Appointment>)appointmentList);
+//			appointments = gson.toJson(appointmentArray);
+//
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return appointments;
+//	}
 	
 }

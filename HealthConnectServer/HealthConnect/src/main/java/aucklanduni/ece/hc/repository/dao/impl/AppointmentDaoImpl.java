@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
 
@@ -71,4 +72,15 @@ public class AppointmentDaoImpl  extends BaseDaoImpl<Appointment> implements App
 		}
 
 
-}}
+}
+
+	public List<Appointment> findAllByAccountId(long accountId)
+			throws Exception {
+		Session s=getSession();
+		String hql="select app "+
+				"from Appointment app, Account acc, AppointmentAccountRef aaf "+
+				"where acc.id=? and acc.id=aaf.accountId and app.id=aaf.appointmentId";
+		List<Appointment> appointments=(List<Appointment>)s.createQuery(hql).setParameter(0, accountId).list();
+		return appointments;
+	}
+}

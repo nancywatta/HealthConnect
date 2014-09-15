@@ -83,7 +83,9 @@ public class AppointmentServiceImpl  extends BaseServiceImpl<Appointment> implem
 		
 		
 	}
-		
+	public List<Appointment> findAllByAccountId(long accountId) throws Exception{
+		return appointmentDao.findAllByAccountId(accountId);
 	}
+}
 	
 

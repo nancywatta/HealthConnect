@@ -18,7 +18,8 @@ public interface AppointmentService  extends BaseService<Appointment> {
     //View the target appointments according to the account id.
 
 	public void createNewAppointment(long accountId, Date appointmentTime,
-			String appointmentName, String appointmentLocation) throws Exception; 
-	      
+			String appointmentName, String appointmentLocation) throws Exception;
 
+	public List<Appointment> findAllByAccountId(long accountId) throws Exception; 
+	      
 }
