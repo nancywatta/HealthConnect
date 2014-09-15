@@ -1,5 +1,6 @@
 package aucklanduni.ece.hc.webservice;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import aucklanduni.ece.hc.repository.dao.MemberDao;
 import aucklanduni.ece.hc.repository.model.Account;
+import aucklanduni.ece.hc.repository.model.Database;
 import aucklanduni.ece.hc.repository.model.Dictionary;
 import aucklanduni.ece.hc.repository.model.Group;
 import aucklanduni.ece.hc.service.AccountService;
@@ -48,6 +51,8 @@ public class GroupRestController {
 	private AccountService accountService;
 	@Autowired
 	private NotifyService notifyService;
+	@Autowired
+	private MemberDao memberDao;
 
 	/**
 	 * 
@@ -343,6 +348,7 @@ public class GroupRestController {
 	 * 3. Nurse can delete the patient.
 	 * 4. Nurse or Support Member can delete itself.
 	 * 5. Nurse or Support Member cannot delete another nurse or support member.
+	 * 6. If the last member delete itself, the group will be deleted automatically 
 	 *  
 	 * @param request
 	 * @param response
@@ -363,11 +369,26 @@ public class GroupRestController {
 		try {
 			boolean checkValidation = false;
 			checkValidation = groupService.deleteMemberValidation(accountId, groupId, memberId);
+			
+			Database database= new Database();
+			Connection connection = database.Get_Connection();
+			
 			  if(checkValidation) 
 			  {
 				  groupService.deleteMember(groupId,memberId);
-				  notifyService.notify(memberId, "You have been deleted from group", "email");
-				  message.setSuccess("member ("+memberId+") has been deleted from group ("+groupId+")");}
+				  int memberCount=memberDao.checkMemberCount(connection, groupId);
+				  if (memberCount>0){
+					  notifyService.notify(memberId, "You have been deleted from group", "email");
+					  message.setSuccess("member ("+memberId+") has been deleted from group ("+groupId+")");
+				  }
+				  //if there is no member in the group, the group will be deleted
+				  else if (memberCount==0){
+					  groupService.deleteGroup(groupId);
+					  notifyService.notify(memberId, "You have been deleted from group", "email");
+					  message.setSuccess("group ("+groupId+") has been deleted");
+				  }
+			  
+			  }
 
 			}catch(ValidationFailException ve) {
 				message.setFail("404", ve.getMessage());
