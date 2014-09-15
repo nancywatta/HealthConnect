@@ -6,7 +6,6 @@ import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
 import org.hibernate.Query;
-import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.metadata.ClassMetadata;
@@ -15,7 +14,16 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import aucklanduni.ece.hc.repository.dao.BaseDao;
 
-
+/**
+ * 
+* @ClassName: BaseDaoImpl 
+* @Description: This is a implementation class having the actural code to 
+* access database 
+* @author Zhao Yuan
+* @date 2014年9月15日 下午8:57:12 
+* 
+* @param <T>
+ */
 public class BaseDaoImpl<T> implements BaseDao<T>{
 
 	@Autowired  
@@ -60,7 +68,6 @@ public class BaseDaoImpl<T> implements BaseDao<T>{
 	@SuppressWarnings("unchecked")
 	public List<T> findAll() throws Exception {
 		String hql = "from " + getEntityClassName();
-		System.out.println(getEntityClassName());
 		Query query = sessionFactory.getCurrentSession().createQuery(hql);
 		return query.list();
 		

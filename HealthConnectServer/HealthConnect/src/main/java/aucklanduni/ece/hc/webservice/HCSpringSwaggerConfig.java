@@ -8,7 +8,15 @@ import com.mangofactory.swagger.configuration.SpringSwaggerConfig;
 import com.mangofactory.swagger.plugin.EnableSwagger;
 import com.mangofactory.swagger.plugin.SwaggerSpringMvcPlugin;
 import com.wordnik.swagger.model.ApiInfo;
- 
+ /**
+  * 
+ * @ClassName: HCSpringSwaggerConfig 
+ * @Description: This is the configuration for swagger ui
+ * This defines all the services we want to expose:/service/.*
+ * @author Zhao Yuan
+ * @date 2014年9月15日 下午9:23:13 
+ *
+  */
 @Configuration
 @EnableSwagger
 public class HCSpringSwaggerConfig {

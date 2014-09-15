@@ -3,6 +3,16 @@ package aucklanduni.ece.hc.repository.dao;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * 
+* @ClassName: BaseDao 
+* @Description: This is a Base class supporting basic DB actions
+* usually we need your own Dao classes extending this baseDao
+* @author Zhao Yuan
+* @date 2014年9月15日 下午8:54:15 
+* 
+* @param <T>
+ */
 public interface BaseDao<T> {
 	public void add(T t) throws Exception;
 

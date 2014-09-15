@@ -19,7 +19,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import aucklanduni.ece.hc.repository.dao.BaseDao;
 import aucklanduni.ece.hc.service.BaseService;
 
-
+/**
+ * 
+* @ClassName: BaseServiceImpl 
+* @Description: This is a base class implementing base service
+* @author Zhao Yuan
+* @date 2014年9月15日 下午9:12:38 
+* 
+* @param <T>
+ */
 public class BaseServiceImpl<T> implements BaseService<T> {
 	@Autowired
 	private BaseDao<T> baseDao;

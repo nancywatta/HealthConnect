@@ -10,7 +10,15 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
-
+/**
+ * 
+* @ClassName: Dictionary 
+* @Description: This is an Entity class relating to actural database table
+* Dictionary refers to static system parameters
+* @author Zhao Yuan
+* @date 2014年9月15日 下午9:02:34 
+*
+ */
 @Entity
 @Table(name = "DICTIONARY")
 public class Dictionary  implements Serializable{

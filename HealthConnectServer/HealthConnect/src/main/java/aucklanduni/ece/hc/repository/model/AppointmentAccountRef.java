@@ -10,7 +10,15 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
-
+/**
+ * 
+* @ClassName: AppointmentAccountRef 
+* @Description: This is an Entity class relating to actural database table
+* This is to contain the relationship between Appointment and Account 
+* @author Zhao Yuan
+* @date 2014年9月15日 下午9:00:12 
+*
+ */
 @Entity
 @Table(name = "APP_ACC_REF")
 public class AppointmentAccountRef implements Serializable {

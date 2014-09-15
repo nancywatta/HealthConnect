@@ -5,7 +5,15 @@ import java.io.Serializable;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 
 import aucklanduni.ece.hc.util.Constants;
-
+/**
+ * 
+* @ClassName: HCMessageHeader 
+* @Description: This is the header for HCMessage
+* Note that timestamp usually is to control the validation of the information
+* @author Zhao Yuan
+* @date 2014年9月15日 下午9:25:51 
+*
+ */
 public class HCMessageHeader  implements Serializable{
 
 	private static final long serialVersionUID = 428374590978195708L;

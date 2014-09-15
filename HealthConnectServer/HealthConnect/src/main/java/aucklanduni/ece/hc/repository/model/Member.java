@@ -13,7 +13,15 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
-
+/**
+ * 
+* @ClassName: Member 
+* @Description: This is an Entity class relating to actural database table
+* Memeber is the reference table connecting Group and Account
+* @author Zhao Yuan
+* @date 2014年9月15日 下午9:06:44 
+*
+ */
 @Entity
 @Table(name = "MEMBER")
 public class Member  implements Serializable {

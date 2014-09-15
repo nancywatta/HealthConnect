@@ -5,7 +5,15 @@ import java.io.Serializable;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 
 import aucklanduni.ece.hc.util.Constants;
-
+/**
+ * 
+* @ClassName: HCMessage 
+* @Description: This is the web service message object used to wrapp
+* actual object we want to pass to client
+* @author Zhao Yuan
+* @date 2014年9月15日 下午9:24:58 
+*
+ */
 public class HCMessage implements Serializable{
 
 	private static final long serialVersionUID = 2621571331747201741L;

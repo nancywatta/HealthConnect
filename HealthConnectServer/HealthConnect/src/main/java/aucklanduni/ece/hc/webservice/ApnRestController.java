@@ -17,6 +17,16 @@ import com.wordnik.swagger.annotations.Api;
 import aucklanduni.ece.hc.repository.model.ApnUser;
 import aucklanduni.ece.hc.service.ApnUserService;
 import aucklanduni.ece.hc.webservice.model.HCMessage;
+/**
+ * 
+* @ClassName: ApnRestController 
+* @Description: This is a demo showing how to create a REST service
+* Note that annotation @API is for swagger ui
+* All the return object will be wrapped into HCMessage
+* @author Zhao Yuan
+* @date 2014年9月15日 下午9:15:50 
+*
+ */
 @Api(value = "apnuser", description = "Apnuser Demo")
 @RestController
 @RequestMapping("/service/apnuser/")
@@ -25,6 +35,10 @@ public class ApnRestController {
 	private ApnUserService apnUserService;
 	Logger log = Logger.getLogger(ApnRestController.class);
 	
+	/**
+	 * This is to get ApnUser resource, path variable is id
+	 * 
+	 */
 	@RequestMapping(value="/{id}",method = RequestMethod.GET
 			,headers="Accept=application/json"
 			)
@@ -46,6 +60,10 @@ public class ApnRestController {
         return message;
     }
 	
+	/**
+	 * This is to list ApnUser resource
+	 * 
+	 */
 	@RequestMapping(value="/",method = RequestMethod.GET
 			,headers="Accept=application/json"
 			)
@@ -61,8 +79,11 @@ public class ApnRestController {
 		}
         return message;
     }
-	
-	@RequestMapping(value="/add",method = RequestMethod.POST
+	/**
+	 * This is to create ApnUser resource
+	 * 
+	 */
+	@RequestMapping(value="/",method = RequestMethod.POST
 			,headers="Accept=application/json"
 			)
 	public HCMessage addApnUser(@RequestParam(value="email",required = true) String email
@@ -88,8 +109,11 @@ public class ApnRestController {
         return message;
     }
 	
-
-	@RequestMapping(value="/{id}/update",method = RequestMethod.POST
+	/**
+	 * This is to update ApnUser resource
+	 * 
+	 */
+	@RequestMapping(value="/{id}",method = RequestMethod.PUT
 			,headers="Accept=application/json"
 			)
 	public HCMessage updateApnUser(@PathVariable long id
@@ -123,8 +147,11 @@ public class ApnRestController {
         return message;
     }
 	
-
-	@RequestMapping(value="/{id}/delete",method = RequestMethod.GET
+	/**
+	 * This is to delete ApnUser resource
+	 * 
+	 */
+	@RequestMapping(value="/{id}",method = RequestMethod.DELETE
 			,headers="Accept=application/json"
 			)
 	public HCMessage deleteApnUser(@PathVariable long id) {

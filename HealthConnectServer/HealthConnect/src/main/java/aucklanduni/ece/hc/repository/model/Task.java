@@ -13,7 +13,15 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
-
+/**
+ * 
+* @ClassName: Task 
+* @Description: This is an Entity class relating to actural database table
+* Task means TO_DO things 
+* @author Zhao Yuan
+* @date 2014年9月15日 下午9:07:17 
+*
+ */
 @Entity
 @Table(name = "TASK")
 public class Task implements Serializable {

@@ -14,7 +14,15 @@ import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 
-
+/**
+ * 
+* @ClassName: ApnUser 
+* @Description: This is an Entity class relating to actural database table
+* ApnUser is to contain Push Notification Users
+* @author Zhao Yuan
+* @date 2014年9月15日 下午8:59:50 
+*
+ */
 @Entity
 @Table(name = "APN_USER")
 public class ApnUser  implements Serializable {

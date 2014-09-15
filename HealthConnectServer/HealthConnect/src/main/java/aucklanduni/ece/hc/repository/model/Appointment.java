@@ -13,7 +13,15 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
-
+/**
+ * 
+* @ClassName: Appointment 
+* @Description: This is an Entity class relating to actural database table
+* This is to contain information of all Appintment
+* @author Zhao Yuan
+* @date 2014年9月15日 下午9:00:02 
+*
+ */
 @Entity
 @Table(name = "APPOINTMENT")
 public class Appointment implements Serializable {

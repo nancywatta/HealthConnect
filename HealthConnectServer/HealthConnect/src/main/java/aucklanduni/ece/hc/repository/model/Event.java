@@ -13,6 +13,15 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+/**
+ * 
+* @ClassName: Event 
+* @Description: This is an Entity class relating to actural database table
+* Event means activities happened in this application
+* @author Zhao Yuan
+* @date 2014年9月15日 下午9:03:32 
+*
+ */
 @Entity
 @Table(name = "Event")
 public class Event  implements Serializable {

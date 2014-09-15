@@ -13,7 +13,15 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
-
+/**
+ * 
+* @ClassName: Group 
+* @Description: This is an Entity class relating to actural database table
+* Group refers to one group of people with only one patient
+* @author Zhao Yuan
+* @date 2014年9月15日 下午9:04:09 
+*
+ */
 @Entity
 @Table(name = "GROUP_INFO")
 public class Group implements Serializable {

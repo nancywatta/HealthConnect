@@ -5,7 +5,7 @@ import java.util.GregorianCalendar;
 /**
  * 
 * @ClassName: CommonTool 
-* @Description: 
+* @Description: This is for the use of some common static methods
 * @author Zhao Yuan
 * @date 2014年8月10日 下午7:44:56 
 *

@@ -14,7 +14,15 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
-
+/**
+ * 
+* @ClassName: Account 
+* @Description: This is an Entity class relating to actural database table 
+* Account object is to contain information of application users
+* @author Zhao Yuan
+* @date 2014年9月15日 下午8:58:46 
+*
+ */
 @Entity
 @Table(name = "ACCOUNT")
 public class Account implements Serializable {

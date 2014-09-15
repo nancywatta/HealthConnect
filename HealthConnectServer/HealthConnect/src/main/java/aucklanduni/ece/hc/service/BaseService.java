@@ -4,6 +4,16 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
+/**
+ * 
+* @ClassName: BaseService 
+* @Description: This is a base class for all service classes
+* only containing basic methods
+* @author Zhao Yuan
+* @date 2014年9月15日 下午9:10:01 
+* 
+* @param <T>
+ */
 @Transactional
 public interface BaseService<T> {
 	public void add(T t) throws Exception;
