@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -91,7 +92,8 @@ public class AppointmentRestController {
 			aaf.setAccountId(accountId);
 			aaf.setAppointmentId(appointment.getId());
 			aafService.add(aaf);
-
+			
+			message.setSuccess();
 //			appointmentService.createNewAppointment(accountId, appointmentTime, appointmentName, appointmentLocation);
 
 		}catch(ValidationFailException ve) {
@@ -106,7 +108,9 @@ public class AppointmentRestController {
 	
 	/**
 	 * This method is used to handle /Appointment/shareAppointment request, which share an appointment to a
-	 * group. 
+	 * group.
+	 * The parameter members is a String of all account's email address that you wish to share the
+	 * appointment, and these addresses are separated by ",". For example: wuke12@gg,Ben18@hg,gajing@kk 
 	 * @param request
 	 * @param response
 	 * @param groupId
@@ -119,6 +123,7 @@ public class AppointmentRestController {
 	public HCMessage shareAppointment(HttpServletRequest request, HttpServletResponse response
 			,@RequestParam(value="groupId") long groupId
 			,@RequestParam(value="appointmentId") long appointmentId
+			,@RequestParam(value="members",required=false) String members
 			) {
 		HCMessage message = new  HCMessage();
 		try {
@@ -136,14 +141,31 @@ public class AppointmentRestController {
 				throw new ValidationFailException("such group does not exist");
 			}
 			
-			//update the relationship in database
-			List<Account> accounts=accountService.getAccbyAppointmentId(appointment.getId());
-			for(Account account:accounts){
-				Member member=new Member();
-				member.setAccountId(account.getId());
-				member.setGroupId(group.getId());
-				memberService.add(member);
+			if(members==null){
+				//update the relationship in database
+				List<Account> accounts=accountService.getAccbyAppointmentId(appointment.getId());
+				for(Account account:accounts){
+					Member member=new Member();
+					member.setAccountId(account.getId());
+					member.setGroupId(group.getId());
+					memberService.add(member);
+				}
 			}
+			
+			else{
+				StringTokenizer st=new StringTokenizer(members,",");
+				while(st.hasMoreTokens()){
+					String memberEmail=st.nextToken();
+					if(memberService.isMember(accountService.getAccIdByEmail(memberEmail),group.getId())){
+						Member member=new Member();
+						member.setAccountId(accountService.getAccIdByEmail(memberEmail));
+						member.setGroupId(group.getId());
+						memberService.add(member);
+					}
+				}
+			}
+			
+			message.setSuccess();
 
 		}catch(ValidationFailException ve) {
 			message.setFail("404", ve.getMessage());

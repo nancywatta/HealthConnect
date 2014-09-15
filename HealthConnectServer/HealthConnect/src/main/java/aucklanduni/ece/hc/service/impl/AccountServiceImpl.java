@@ -83,4 +83,8 @@ public class AccountServiceImpl extends BaseServiceImpl<Account> implements Acco
 		return accounts;
 	}
 
+	public long getAccIdByEmail(String memberEmail) throws Exception {
+		return accountDao.getAccIdByEmail(memberEmail);
+	}
+
 }

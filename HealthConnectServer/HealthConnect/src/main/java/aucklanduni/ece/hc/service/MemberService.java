@@ -6,5 +6,6 @@ import aucklanduni.ece.hc.repository.model.Member;
 
 @Transactional
 public interface MemberService extends BaseService<Member> {
+	public boolean isMember(long accountId, long groupId) throws Exception;
 
 }

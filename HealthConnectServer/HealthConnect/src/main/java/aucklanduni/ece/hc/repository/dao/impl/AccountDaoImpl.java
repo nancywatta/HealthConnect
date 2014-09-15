@@ -116,5 +116,13 @@ public class AccountDaoImpl  extends BaseDaoImpl<Account> implements AccountDao{
 		List<Account> accounts = (List<Account>) s.createQuery(hql).setParameter(0, appointmentId).list();
 		return accounts;
 	}
+
+	public long getAccIdByEmail(String memberEmail) throws Exception {
+		Session s=getSession();
+		String hql="select acc.id "+
+				"from Account acc "+
+				"where acc.email=?";
+		return (Long)s.createQuery(hql).setParameter(0, memberEmail).uniqueResult();
+	}
 	
 }

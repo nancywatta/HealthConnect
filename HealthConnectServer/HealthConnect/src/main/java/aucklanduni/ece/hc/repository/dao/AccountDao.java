@@ -21,5 +21,7 @@ public interface AccountDao  extends BaseDao<Account> {
     
 	//Wu
 	public List<Account> getAccbyAppointmentId(long appointmentId) throws Exception;
+	//wu
+	public long getAccIdByEmail(String memberEmail) throws Exception;
 	
 }

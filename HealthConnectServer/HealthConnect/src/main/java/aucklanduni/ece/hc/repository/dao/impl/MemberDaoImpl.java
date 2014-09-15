@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
+import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 
 import aucklanduni.ece.hc.repository.dao.MemberDao;
@@ -188,6 +189,14 @@ public class MemberDaoImpl extends BaseDaoImpl<Member> implements MemberDao{
 		{
 			throw e;
 		}
+	}
+
+	public boolean isMember(long accountId, long groupId) throws Exception {
+		Session s=getSession();
+		String hql="select member "+
+				"from Account acc, Group group, Member member "+
+				"where acc.id=? and group.id=? and acc.id=member.accountId and group.id=member.groupId";		
+		return (Boolean) s.createQuery(hql).setParameter(0, accountId).setParameter(1, groupId).uniqueResult();
 	}
 		
 }

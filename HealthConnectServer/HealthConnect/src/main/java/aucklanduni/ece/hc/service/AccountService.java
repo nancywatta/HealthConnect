@@ -21,4 +21,6 @@ public interface AccountService extends BaseService<Account>{
     
 	//Wu
 	public List<Account> getAccbyAppointmentId(long appointmentId) throws Exception;
+    //wu
+	public long getAccIdByEmail(String memberEmail) throws Exception;
 }

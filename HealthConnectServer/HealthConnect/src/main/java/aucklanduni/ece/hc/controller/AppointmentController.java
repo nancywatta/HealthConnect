@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Date;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -95,11 +96,11 @@ public class AppointmentController {
 			}
 			
 			// check if appointment name already exists
-			List<Appointment> appointments = new ArrayList<Appointment>();
-			appointments = appointmentService.findByHql("from Appointment WHERE appointmentname='" + appointmentName + "'");
-			if(appointments.size() > 0) {
-				throw new ValidationFailException("Appointment Name Already Exists");
-			}
+//			List<Appointment> appointments = new ArrayList<Appointment>();
+//			appointments = appointmentService.findByHql("from Appointment app WHERE app.name="+ appointmentName);
+//			if(appointments.size() > 0) {
+//				throw new ValidationFailException("Appointment Name Already Exists");
+//			}
 			
 			Appointment appointment=new Appointment();
 			AppointmentAccountRef aaf=new AppointmentAccountRef();
@@ -121,6 +122,8 @@ public class AppointmentController {
 	/**
 	 * This method is used to handle /Appointment/shareAppointment request, which share an appointment to a
 	 * group. 
+	 * The parameter members is a String of all account's email address that you wish to share the
+	 * appointment, and these addresses are separated by ",". For example: wuke12@gg,Ben18@hg,gajing@kk
 	 * @param request
 	 * @param response
 	 * @param groupId
@@ -132,7 +135,9 @@ public class AppointmentController {
 	@ResponseBody
 	public String shareGroup(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam(value="groupId") long groupId,
-			@RequestParam(value="appointmentId") long appointmentId){
+			@RequestParam(value="appointmentId") long appointmentId,
+			@RequestParam(value="members",required=false) String members){
+		
 		try{
 			Appointment appointment=null;
 			// check if given appointment exists
@@ -140,7 +145,7 @@ public class AppointmentController {
 			if(appointment==null){
 				throw new ValidationFailException("such appointment does not exist");
 			}
-			
+		
 			Group group=null;
 			// check if given group exists
 			group=groupService.findById(groupId);
@@ -148,13 +153,29 @@ public class AppointmentController {
 				throw new ValidationFailException("such group does not exist");
 			}
 			
-			//update the relationship in database
-			List<Account> accounts=accountService.getAccbyAppointmentId(appointment.getId());
-			for(Account account:accounts){
-				Member member=new Member();
-				member.setAccountId(account.getId());
-				member.setGroupId(group.getId());
-				memberService.add(member);
+			if(members==null){
+			
+				//update the relationship in database
+				List<Account> accounts=accountService.getAccbyAppointmentId(appointment.getId());
+				for(Account account:accounts){
+					Member member=new Member();
+					member.setAccountId(account.getId());
+					member.setGroupId(group.getId());
+					memberService.add(member);
+				}
+			}
+			
+			else{
+				StringTokenizer st=new StringTokenizer(members,",");
+				while(st.hasMoreTokens()){
+					String memberEmail=st.nextToken();
+					if(memberService.isMember(accountService.getAccIdByEmail(memberEmail),group.getId())){
+						Member member=new Member();
+						member.setAccountId(accountService.getAccIdByEmail(memberEmail));
+						member.setGroupId(group.getId());
+						memberService.add(member);
+					}
+				}
 			}
 		} catch(Exception e){
 			e.printStackTrace();
