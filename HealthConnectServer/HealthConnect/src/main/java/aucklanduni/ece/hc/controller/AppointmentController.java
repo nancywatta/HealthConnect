@@ -2,6 +2,7 @@ package aucklanduni.ece.hc.controller;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Date;
 import java.util.Map;
@@ -55,6 +56,7 @@ public class AppointmentController {
 	private AppointmentAccountRefService aafService;
 	@Autowired
 	private MemberService memberService;
+	private Gson gson = new Gson();
 	
 	/**
 	 * This method is used to handle /Appointment/createAppointment request. It create an appointment record
@@ -160,7 +162,7 @@ public class AppointmentController {
 		return "shareAppointment/ok";
 	}
 
-	
+	/*
 	@RequestMapping("/viewAppointment")//As nurses or patients, they can view the appointments.
 	@ResponseBody
 	public String viewAppointment(HttpServletRequest request, HttpServletResponse response,
@@ -177,6 +179,32 @@ public class AppointmentController {
 			e.printStackTrace();
 		}
 		return appointments;
-	} 
+	}
+	*/ 
+	
+	@RequestMapping(value="/viewAppointments")
+	@ResponseBody
+	public String viewAppointments(HttpServletRequest request, HttpServletResponse response,
+			@RequestParam("accountId") long accountId){
+		String appointments = null;
+		List<Appointment> appointmentList = new ArrayList<Appointment>();
+		Map<String, ArrayList<Appointment>> appointmentArray = new HashMap<String, ArrayList<Appointment>>();
+		try {
+			appointmentList = appointmentService.findByHql("select distinct g from Appointment g, "
+					+ "inner join app_acc_ref aar "
+					+ "on "
+					+ "g.id = arr.appointment_id"
+					+ "inner join account ac"
+					+ "on"
+					+ "ac.id=aar.account_id "
+					+ "and aar.account_id= " + accountId);
+			appointmentArray.put("appointments", (ArrayList<Appointment>)appointmentList);
+			appointments = gson.toJson(appointmentArray);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return appointments;
+	}
 	
 }
