@@ -269,6 +269,76 @@ public class GroupMockTests extends BaseContextControllerTests {
 				.andDo(print())
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.status").value("200"));
-	}	
+	}
+	
+	/**
+	 * test createGroup with correct inputs
+	 */
+	@Test  
+	public void addGroupCorrect() throws Exception {  
+
+		this.mockMvc.perform(post(URL+"/createGroup")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("accountId", "1")
+				.param("groupName", "newGroup")
+				.param("roleId", "2")
+				)
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.status").value("200"));
+	}
+
+	/**
+	 * test createGroup with invalid inputs
+	 */
+	@Test  
+	public void addGroupWrongByRole() throws Exception {  
+
+		this.mockMvc.perform(post(URL+"/createGroup")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("accountId", "1")
+				.param("groupName", "newGroup")
+				.param("roleId", "3")//forbidden
+				)
+				.andDo(print())
+				.andExpect(jsonPath("$.status").value("404"));
+	}
+
+	/**
+	 * test createGroup with invalid inputs
+	 */
+	@Test  
+	public void addGroupWrongByAccount() throws Exception {  
+
+		this.mockMvc.perform(post(URL+"/createGroup")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("accountId", "100000")//not found
+				.param("groupName", "newGroup")
+				.param("roleId", "2")
+				)
+				.andDo(print())
+				.andExpect(jsonPath("$.status").value("404"));
+	}
+	
+	/**
+	 * test createGroup with invalid inputs
+	 */
+	@Test  
+	public void addGroupWrongBySameName() throws Exception {  
+		this.mockMvc.perform(post(URL+"/createGroup")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("accountId", "1")
+				.param("groupName", "newGroup")
+				.param("roleId", "2")
+				);
+		this.mockMvc.perform(post(URL+"/createGroup")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("accountId", "1")
+				.param("groupName", "newGroup")//same name
+				.param("roleId", "2")
+				)
+				.andDo(print())
+				.andExpect(jsonPath("$.status").value("404"));
+	}
 
 }
