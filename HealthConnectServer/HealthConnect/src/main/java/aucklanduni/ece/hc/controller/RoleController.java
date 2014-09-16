@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +23,8 @@ import com.google.gson.Gson;
 @Controller
 @RequestMapping("/Dictionary")
 public class RoleController {
+
+	Logger log = Logger.getLogger(RoleController.class);
 	@Autowired
 	private DictionaryService roleService;
 
@@ -55,11 +58,11 @@ public class RoleController {
 
 	@RequestMapping(value="/showAll")
 	public String showAll(HttpServletRequest request, HttpServletResponse response){
-		System.out.println("show all");
+		log.debug("show all");
 		try {
 			List<Dictionary> list = roleService.findAll();
 
-			System.out.println(list.get(0).toString());
+			log.debug(list.get(0).toString());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

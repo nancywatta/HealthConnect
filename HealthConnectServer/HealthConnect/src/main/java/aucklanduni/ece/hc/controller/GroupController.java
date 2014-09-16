@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +22,7 @@ import aucklanduni.ece.hc.service.AccountService;
 import aucklanduni.ece.hc.service.DictionaryService;
 import aucklanduni.ece.hc.service.GroupService;
 import aucklanduni.ece.hc.service.NotifyService;
+import aucklanduni.ece.hc.webservice.ApnRestController;
 import aucklanduni.ece.hc.webservice.model.ValidationFailException;
 
 import com.google.gson.Gson;
@@ -37,6 +39,8 @@ import com.google.gson.Gson;
 @Controller
 @RequestMapping("/Group")
 public class GroupController {
+
+	Logger log = Logger.getLogger(GroupController.class);
 	@Autowired
 	private GroupService groupService;
 	@Autowired
@@ -205,7 +209,7 @@ public class GroupController {
 			@RequestParam("groupId") long groupId,
 			@RequestParam("memberId") long memberId){
 		String result = "fail";
-		System.out.println("deleteMember");
+		log.debug("deleteMember");
 		try {
 			boolean checkValidation = false;
 			checkValidation = groupService.deleteMemberValidation(accountId, groupId, memberId);
@@ -248,7 +252,7 @@ public class GroupController {
 			@RequestParam("accountId") long accountId
 			,@RequestParam("groupId") long groupId){
 		String result = null;
-		System.out.println("deleteGroup");
+		log.debug("deleteGroup");
 		try{
 			groupService.deleteGroupValidation(accountId, groupId);
 			groupService.deleteAllMember(groupId);

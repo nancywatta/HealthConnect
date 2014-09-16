@@ -64,7 +64,7 @@ public class APNController {
 	 */
 	@RequestMapping(value="/showAll")
 	public String showAll(HttpServletRequest request, HttpServletResponse response){
-		System.out.println("show all");
+		log.debug("show all");
 		try {
 			List<ApnUser> list = apnUserService.findAll();
 			log.debug(list.get(0).toString());

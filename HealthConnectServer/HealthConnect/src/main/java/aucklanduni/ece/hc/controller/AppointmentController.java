@@ -11,6 +11,7 @@ import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,6 +46,8 @@ import aucklanduni.ece.hc.webservice.model.ValidationFailException;
 @Controller
 @RequestMapping("/Appointment")
 public class AppointmentController {
+
+	Logger log = Logger.getLogger(AppointmentController.class);
 	@Autowired
 	private AppointmentService appointmentService;
 	@Autowired
@@ -190,11 +193,11 @@ public class AppointmentController {
 	@ResponseBody
 	public String viewAppointment(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam("accountId") long accountId){
-		System.out.println(">>>>>>>>>>>>>>>>>viewAppointment"+accountId);
+		log.debug(">>>>>>>>>>>>>>>>>viewAppointment"+accountId);
 		try{
 			List<Appointment> appointments=appointmentService.findAllByAccountId(accountId);
 			for(Appointment appointment:appointments){
-				System.out.println("appointmentName="+appointment.getName()+"   appointmentLocation="+appointment.getLocation());
+				log.debug("appointmentName="+appointment.getName()+"   appointmentLocation="+appointment.getLocation());
 			}
 		}
 		catch(Exception e){
