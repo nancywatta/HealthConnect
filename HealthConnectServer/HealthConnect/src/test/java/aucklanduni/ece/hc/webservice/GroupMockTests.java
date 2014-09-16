@@ -340,5 +340,100 @@ public class GroupMockTests extends BaseContextControllerTests {
 				.andDo(print())
 				.andExpect(jsonPath("$.status").value("404"));
 	}
+	
+	/**
+	 * test deleteGroup : patient delete group correctly
+	 */
+	@Test  
+	public void pDeleteGroupCorrect() throws Exception {  
+		this.mockMvc.perform(post(URL+"/deleteGroup")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("accountId", "1")
+				.param("groupId", "1")
+				
+				)
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.status").value("200"));
+	}
 
+	/**
+	 * test deleteGroup : nurse delete group correctly
+	 */
+	@Test  
+	public void nDeleteGroupCorrect() throws Exception { 
+		this.mockMvc.perform(post(URL+"/deleteGroup")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("accountId", "1")
+				.param("groupId", "1")
+				
+				)
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.status").value("200"));
+	}
+	
+	/**
+	 * test deleteGroup : support member cannot delete group
+	 */
+	@Test  
+	public void spDeleteGroupWrong() throws Exception { 
+		this.mockMvc.perform(post(URL+"/deleteGroup")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("accountId", "1")
+				.param("groupId", "1")
+				
+				)
+				.andDo(print())
+				.andExpect(jsonPath("$.status").value("404"))
+				.andExpect(jsonPath("$.error").value("Support Member cannot delete the Group"));
+	}
+	
+	/**
+	 * test deleteGroup : nurse delete non-empty group 
+	 */
+	@Test  
+	public void nDeleteGroupWrong() throws Exception { 
+		this.mockMvc.perform(post(URL+"/deleteGroup")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("accountId", "1")
+				.param("groupId", "1")
+				
+				)
+				.andDo(print())
+				.andExpect(jsonPath("$.status").value("404"))
+				.andExpect(jsonPath("$.error").value("Nurse can only delete empty group!"));
+	}
+	
+	/**
+	 * test deleteGroup : invalid input with accountId 
+	 */
+	@Test  
+	public void invalidAccountDeleteGroup() throws Exception { 
+		this.mockMvc.perform(post(URL+"/deleteGroup")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("accountId", "3")
+				.param("groupId", "1")
+				
+				)
+				.andDo(print())
+				.andExpect(jsonPath("$.status").value("404"))
+				.andExpect(jsonPath("$.error").value("Invalid action"));
+	}
+	
+	/**
+	 * test deleteGroup : invalid input with grouptId 
+	 */
+	@Test  
+	public void invalidGroupIdDeleteGroup() throws Exception { 
+		this.mockMvc.perform(post(URL+"/deleteGroup")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("accountId", "1")
+				.param("groupId", "4")
+				
+				)
+				.andDo(print())
+				.andExpect(jsonPath("$.status").value("404"))
+				.andExpect(jsonPath("$.error").value("Invalid action"));
+	}
 }
