@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import aucklanduni.ece.hc.repository.model.Account;
@@ -182,7 +183,7 @@ public class AppointmentRestController {
 /*
  * /**
 	 * 
-	 * @Title: showAppointments 
+	 * @Title: viewAppointments 
 	 * @Description: Service will return all the appointments of the given
 	 * accountId.
 	 *  
@@ -192,39 +193,20 @@ public class AppointmentRestController {
 	 * @return HCMessage
 	 * @throws
 	 */
+	
 	@RequestMapping(value="/viewAppointments",method = RequestMethod.GET
 			,headers="Accept=application/json"
 			)
 	public HCMessage showAppointments(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam("accountId") long accountId){
+		System.out.println(">>>>>>>>>>>>>>>>>viewAppointment"+accountId);
 		HCMessage message = new  HCMessage();
-		List<Appointment> appointmentList = new ArrayList<Appointment>();
-		Map<String, ArrayList<Appointment>> appointmentArray = new HashMap<String, ArrayList<Appointment>>();
-		try {
-			Account account = null;
-			// check if given accountId exists
-			account = accountService.findById(accountId);
-			if(account == null) {
-				throw new ValidationFailException("Account does not exist");
+		try{
+			List<Appointment> appointments=appointmentService.findAllByAccountId(accountId);
+			for(Appointment appointment:appointments){
+				System.out.println("appointmentName="+appointment.getName()+"   appointmentLocation="+appointment.getLocation());
 			}
-
-			appointmentList = appointmentService.findByHql("select distinct g from appointment g, "
-					+ "inner join app_acc_ref aar "
-					+ "on "
-					+ "g.id = arr.appointment_id"
-					+ "inner join account ac"
-					+ "on"
-					+ "ac.id=aar.account_id "
-					+ "and aar.account_id= " + accountId);
-			
-
-			// if no appointment exists for the given account
-			if(appointmentList == null || appointmentList.size() < 1) 
-				throw new ValidationFailException("No Group Exists for given Account");
-
-			appointmentArray.put("groups", (ArrayList<Appointment>)appointmentList);
-			message.setSuccess(appointmentArray);
-
+		
 		}catch(ValidationFailException ve) {
 			message.setFail("404", ve.getMessage());
 		} catch (Exception e) {
