@@ -198,5 +198,14 @@ public class MemberDaoImpl extends BaseDaoImpl<Member> implements MemberDao{
 				"where acc.id=? and group.id=? and acc.id=member.accountId and group.id=member.groupId";		
 		return (Boolean) s.createQuery(hql).setParameter(0, accountId).setParameter(1, groupId).uniqueResult();
 	}
+
+	public Member findByAccountIdAndGroupId(long accountId, long groupId)
+			throws Exception {
+		Session s=getSession();
+		String hql="select member "+
+				"from Member member "+
+				"where member.accountId=? and member.groupId=?";
+		return (Member)s.createQuery(hql).setParameter(0,accountId).setParameter(1,groupId).uniqueResult();
+	}
 		
 }

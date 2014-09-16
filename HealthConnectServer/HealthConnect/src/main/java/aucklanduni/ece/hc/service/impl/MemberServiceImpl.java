@@ -18,5 +18,9 @@ public class MemberServiceImpl extends BaseServiceImpl<Member> implements
 	public boolean isMember(long accountId, long groupId) throws Exception{
 		return memberDao.isMember(accountId,groupId);
 	}
+	public Member findByAccountIdAndGroupId(long accountId, long groupId)
+			throws Exception {
+		return memberDao.findByAccountIdAndGroupId(accountId,groupId);
+	}
 
 }

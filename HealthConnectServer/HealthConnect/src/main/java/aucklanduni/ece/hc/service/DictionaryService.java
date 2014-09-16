@@ -11,4 +11,6 @@ public interface DictionaryService  extends BaseService<Dictionary>{
 	
 	public ArrayList<Dictionary> GetSpecificRoles(long accountId, long groupId) throws Exception;
 
+	public Dictionary findRoleByAccountIdAndGroupId(long accountId, long groupId) throws Exception;
+
 }

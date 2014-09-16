@@ -54,39 +54,54 @@ public class AppointmentRestController {
 			)
 	public HCMessage createAppointment(HttpServletRequest request, HttpServletResponse response
 			,@RequestParam(value="accountId") long accountId
-			,@RequestParam(value="roleId") long roleId
+			,@RequestParam(value="groupId") long groupId
 //			,@RequestParam("appointmentTime") Date appointmentTime
 			,@RequestParam("appointmentName") String appointmentName
 			,@RequestParam("appointmentLocation") String appointmentLocation
+			,@RequestParam("isShare") String isShare
+//			,@RequestParam(value="members",required=false) String members
 			) {
 		HCMessage message = new  HCMessage();
 		try {
-			Dictionary role = null;
-			role = roleService.findById(roleId);
-			// check if the current user is a nurse
-			if(! (role.getValue().compareTo("N")==0 ) ) {
-				throw new ValidationFailException("Only Nurse can create an appointment");
-			}
-
 			Account account = null;
 			// check if given accountId exists
 			account = accountService.findById(accountId);
 			if(account == null) {
 				throw new ValidationFailException("Account does not exist");
 			}
+			
+			Group group = null;
+			//check if given groupId exists
+			group = groupService.findById(groupId);
+			if(group == null){
+				throw new ValidationFailException("Group does not exist");
+			}
+			
+			Dictionary role = null;
+			role = roleService.findRoleByAccountIdAndGroupId(accountId,groupId);
+			// check if the current user is a nurse
+			if(! (role.getValue().compareTo("N")==0 ) ) {
+				throw new ValidationFailException("Only Nurse can create an appointment");
+			}
 
 			// check if appointment name already exists
-			List<Appointment> appointments = new ArrayList<Appointment>();
-			appointments = appointmentService.findByHql("from Appointment WHERE appointmentname='" + appointmentName + "'");
-			if(appointments.size() > 0) {
-				throw new ValidationFailException("Appointment Name Already Exists");
-			}
+//			List<Appointment> appointments = new ArrayList<Appointment>();
+//			appointments = appointmentService.findByHql("from Appointment WHERE appointmentname='" + appointmentName + "'");
+//			if(appointments.size() > 0) {
+//				throw new ValidationFailException("Appointment Name Already Exists");
+//			}
 			
 			Appointment appointment=new Appointment();
 			AppointmentAccountRef aaf=new AppointmentAccountRef();
 			appointment.setTime(new Date());
 			appointment.setName(appointmentName);
 			appointment.setLocation(appointmentLocation);
+			appointment.setCreateDate(new Date());
+			appointment.setUpdatedDate(new Date());
+			if(isShare=="T")
+				appointment.setIsShared("T");
+			else
+				appointment.setIsShared("F");
 			appointmentService.add(appointment);
 			
 			//update the reference table
@@ -107,76 +122,76 @@ public class AppointmentRestController {
 		return message;
 	}
 	
-	/**
-	 * This method is used to handle /Appointment/shareAppointment request, which share an appointment to a
-	 * group.
-	 * The parameter members is a String of all account's email address that you wish to share the
-	 * appointment, and these addresses are separated by ",". For example: wuke12@gg,Ben18@hg,gajing@kk 
-	 * @param request
-	 * @param response
-	 * @param groupId
-	 * @param appointmentId
-	 * @return
-	 */
-	@RequestMapping(value="/shareAppointment",method = RequestMethod.POST
-			,headers="Accept=application/json"
-			)
-	public HCMessage shareAppointment(HttpServletRequest request, HttpServletResponse response
-			,@RequestParam(value="groupId") long groupId
-			,@RequestParam(value="appointmentId") long appointmentId
-			,@RequestParam(value="members",required=false) String members
-			) {
-		HCMessage message = new  HCMessage();
-		try {
-			Appointment appointment=null;
-			// check if given appointment exists
-			appointment=appointmentService.findById(appointmentId);
-			if(appointment==null){
-				throw new ValidationFailException("such appointment does not exist");
-			}
-
-			Group group=null;
-			// check if given group exists
-			group=groupService.findById(groupId);
-			if(group==null){
-				throw new ValidationFailException("such group does not exist");
-			}
-			
-			if(members==null){
-				//update the relationship in database
-				List<Account> accounts=accountService.getAccbyAppointmentId(appointment.getId());
-				for(Account account:accounts){
-					Member member=new Member();
-					member.setAccountId(account.getId());
-					member.setGroupId(group.getId());
-					memberService.add(member);
-				}
-			}
-			
-			else{
-				StringTokenizer st=new StringTokenizer(members,",");
-				while(st.hasMoreTokens()){
-					String memberEmail=st.nextToken();
-					if(memberService.isMember(accountService.getAccIdByEmail(memberEmail),group.getId())){
-						Member member=new Member();
-						member.setAccountId(accountService.getAccIdByEmail(memberEmail));
-						member.setGroupId(group.getId());
-						memberService.add(member);
-					}
-				}
-			}
-			
-			message.setSuccess();
-
-		}catch(ValidationFailException ve) {
-			message.setFail("404", ve.getMessage());
-		} catch (Exception e) {
-			e.printStackTrace();
-			message.setFail("400", e.getMessage());
-		}
-
-		return message;
-	}
+//	/**
+//	 * This method is used to handle /Appointment/shareAppointment request, which share an appointment to a
+//	 * group.
+//	 * The parameter members is a String of all account's email address that you wish to share the
+//	 * appointment, and these addresses are separated by ",". For example: wuke12@gg,Ben18@hg,gajing@kk 
+//	 * @param request
+//	 * @param response
+//	 * @param groupId
+//	 * @param appointmentId
+//	 * @return
+//	 */
+//	@RequestMapping(value="/shareAppointment",method = RequestMethod.POST
+//			,headers="Accept=application/json"
+//			)
+//	public HCMessage shareAppointment(HttpServletRequest request, HttpServletResponse response
+//			,@RequestParam(value="groupId") long groupId
+//			,@RequestParam(value="appointmentId") long appointmentId
+//			,@RequestParam(value="members",required=false) String members
+//			) {
+//		HCMessage message = new  HCMessage();
+//		try {
+//			Appointment appointment=null;
+//			// check if given appointment exists
+//			appointment=appointmentService.findById(appointmentId);
+//			if(appointment==null){
+//				throw new ValidationFailException("such appointment does not exist");
+//			}
+//
+//			Group group=null;
+//			// check if given group exists
+//			group=groupService.findById(groupId);
+//			if(group==null){
+//				throw new ValidationFailException("such group does not exist");
+//			}
+//			
+//			if(members==null){
+//				//update the relationship in database
+//				List<Account> accounts=accountService.getAccbyAppointmentId(appointment.getId());
+//				for(Account account:accounts){
+//					Member member=new Member();
+//					member.setAccountId(account.getId());
+//					member.setGroupId(group.getId());
+//					memberService.add(member);
+//				}
+//			}
+//			
+//			else{
+//				StringTokenizer st=new StringTokenizer(members,",");
+//				while(st.hasMoreTokens()){
+//					String memberEmail=st.nextToken();
+//					if(memberService.isMember(accountService.getAccIdByEmail(memberEmail),group.getId())){
+//						Member member=new Member();
+//						member.setAccountId(accountService.getAccIdByEmail(memberEmail));
+//						member.setGroupId(group.getId());
+//						memberService.add(member);
+//					}
+//				}
+//			}
+//			
+//			message.setSuccess();
+//
+//		}catch(ValidationFailException ve) {
+//			message.setFail("404", ve.getMessage());
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			message.setFail("400", e.getMessage());
+//		}
+//
+//		return message;
+//	}
 
 
 

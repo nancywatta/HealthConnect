@@ -67,4 +67,10 @@ public class DictionaryServiceImpl extends BaseServiceImpl<Dictionary> implement
 		return (ArrayList<Dictionary>)roles;
 	}
 
+	public Dictionary findRoleByAccountIdAndGroupId(long accountId, long groupId)
+			throws Exception {
+		
+		return dictionaryDao.findRoleByAccountIdAndGroupId(accountId, groupId);
+	}
+
 }

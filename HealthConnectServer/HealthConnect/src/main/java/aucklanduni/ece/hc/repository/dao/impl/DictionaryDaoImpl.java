@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
+import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 
 import aucklanduni.ece.hc.repository.dao.DictionaryDao;
@@ -39,6 +40,16 @@ public class DictionaryDaoImpl  extends BaseDaoImpl<Dictionary> implements Dicti
 		{
 			throw e;
 		}
+	}
+
+	public Dictionary findRoleByAccountIdAndGroupId(long accountId, long groupId)
+			throws Exception {
+		Session s=getSession();
+		String hql="select role "+
+				"from Dictionary role, Member m "+
+				"where m.accountId=? and m.groupId=? and m.roleId=role.id";
+		System.out.println(s.createQuery(hql).setParameter(0, accountId).setParameter(1, groupId).uniqueResult());
+		return (Dictionary)s.createQuery(hql).setParameter(0, accountId).setParameter(1, groupId).uniqueResult();
 	}
 	
 }
