@@ -194,7 +194,7 @@ public class AppointmentRestController {
 	 * @throws
 	 */
 	
-	@RequestMapping(value="/viewAppointments",method = RequestMethod.GET
+	@RequestMapping(value="/viewAppointment",method = RequestMethod.GET
 			,headers="Accept=application/json"
 			)
 	public HCMessage showAppointments(HttpServletRequest request, HttpServletResponse response,
