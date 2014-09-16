@@ -310,7 +310,23 @@ public class GroupRestController {
 		return message;
 	}
 	
-	
+	/**
+	 * 
+	 * @Title: deleteGroup 
+	 * @Description: Service will delete a specific group
+	 * on business validation
+	 * 1. Nurse can only delete empty group.
+	 * 2. Support Member cannot delete the group.
+	 * 3. Patient can delete a group whether it is empty or not, if it is not empty, delete members first, then 
+	 * delete the group.
+	 *  
+	 * @param request
+	 * @param response
+	 * @param accountId - account in the group
+	 * @param groupId - the group will be deleted
+	 * @return String
+	 * @throws
+	 */
 	@RequestMapping(value="/deleteGroup",method = RequestMethod.POST
 			,headers="Accept=application/json"
 			)

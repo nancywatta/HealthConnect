@@ -353,6 +353,12 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 		memberDao.add(member);
 	}
 	
+	/**
+	 * Function will perform business validations.
+	 * 1. Patient can delete the group whether it is empty or not.
+	 * 2. Nurse can delete the group only when it only has the nurse himself/herself.
+	 * 3. Support member cannot delete a group.
+	 */
 	public  void deleteGroupValidation (long accountId,long groupId) 
 			throws ValidationFailException, Exception {
 		try {
@@ -379,6 +385,9 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 		
 	}
 	
+	/**
+	 * Function will delete group details in GROUP_INFO table
+	 */
 	public void deleteGroup(long groupId) throws Exception {
 		//delete group
 		try {
@@ -392,6 +401,9 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 		
 	}
 
+	/**
+	 * Function will delete all members in the specific group from member table.
+	 */
 	public void deleteAllMember(long groupId) throws Exception {
 		//delete group
 				try {
