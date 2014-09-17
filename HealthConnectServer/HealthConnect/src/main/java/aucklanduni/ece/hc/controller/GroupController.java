@@ -168,6 +168,7 @@ public class GroupController {
 			
 			groupService.inviteUser(accountId, groupId, roleId, emailId);
 			
+			notifyService.notify(emailId, "You have been invited to the group", "email");
 			
 			return "Succes";
 

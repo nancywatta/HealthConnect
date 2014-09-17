@@ -29,6 +29,7 @@ import aucklanduni.ece.hc.service.AppointmentService;
 import aucklanduni.ece.hc.service.DictionaryService;
 import aucklanduni.ece.hc.service.GroupService;
 import aucklanduni.ece.hc.service.MemberService;
+import aucklanduni.ece.hc.service.NotifyService;
 import aucklanduni.ece.hc.webservice.model.HCMessage;
 import aucklanduni.ece.hc.webservice.model.ValidationFailException;
 
@@ -47,6 +48,8 @@ public class AppointmentRestController {
 	private GroupService groupService;
 	@Autowired
 	private MemberService memberService;
+	@Autowired
+	private NotifyService notifyService;
 	
 
 	@RequestMapping(value="/createAppointment",method = RequestMethod.POST
@@ -108,6 +111,8 @@ public class AppointmentRestController {
 			aaf.setAccountId(accountId);
 			aaf.setAppointmentId(appointment.getId());
 			aafService.add(aaf);
+			
+			notifyService.notify(accountId, "You already create an appountment", "email");
 			
 			message.setSuccess();
 //			appointmentService.createNewAppointment(accountId, appointmentTime, appointmentName, appointmentLocation);
