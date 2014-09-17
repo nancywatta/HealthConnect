@@ -60,6 +60,8 @@ public class AppointmentController {
 	private AppointmentAccountRefService aafService;
 	@Autowired
 	private MemberService memberService;
+	@Autowired
+	private NotifyService notifyService;
 	private Gson gson = new Gson();
 	
 	/**
@@ -118,9 +120,11 @@ public class AppointmentController {
 			aaf.setAccountId(accountId);
 			aaf.setAppointmentId(appointment.getId());
 			aafService.add(aaf);
+			notifyService.notify(accountId, "You already create an appountment", "email");
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
+		
 		return "createAppointment/ok";
 	}
 	
