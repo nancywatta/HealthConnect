@@ -436,4 +436,213 @@ public class GroupMockTests extends BaseContextControllerTests {
 				.andExpect(jsonPath("$.status").value("404"))
 				.andExpect(jsonPath("$.error").value("Invalid action"));
 	}
+	
+	
+	/**
+	 * test deleteMember : deleteMember with invalid inputs 
+	 */
+	@Test  
+	public void invalidInputsDeleteMember() throws Exception { 
+		this.mockMvc.perform(post(URL+"/deleteMember")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("accountId", "12345")
+				.param("groupId", "1")
+				.param("memberId", "123456")
+				
+				)
+				.andDo(print())
+				.andExpect(jsonPath("$.status").value("404"))
+				.andExpect(jsonPath("$.error").value("The user/member is invalid"));
+	}
+	
+	
+	/**
+	 * test deleteMember : Patient cannot delete itself from the group 
+	 */
+	@Test  
+	public void pDeletePWrong() throws Exception { 
+		this.mockMvc.perform(post(URL+"/deleteMember")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("accountId", "123")
+				.param("groupId", "1")
+				.param("memberId", "123")
+				
+				)
+				.andDo(print())
+				.andExpect(jsonPath("$.status").value("404"))
+				.andExpect(jsonPath("$.error").value("Cannot delete the patient in the group, please delete the group"));
+	}
+	
+	/**
+	 * test deleteMember : Patient delete nurse from the group correctly
+	 */
+	@Test  
+	public void pDeleteNCorrect() throws Exception { 
+		this.mockMvc.perform(post(URL+"/deleteMember")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("accountId", "123")
+				.param("groupId", "10")
+				.param("memberId", "456")
+				
+				)
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.status").value("200"));
+	}
+	
+	/**
+	 * test deleteMember : Patient delete support member from the group correctly
+	 */
+	@Test  
+	public void pDeleteSMCorrect() throws Exception { 
+		this.mockMvc.perform(post(URL+"/deleteMember")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("accountId", "123")
+				.param("groupId", "10")
+				.param("memberId", "789")
+				
+				)
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.status").value("200"));
+	}
+	
+	
+	/**
+	 * test deleteMember : nurse cannot delete another nurse from the group 
+	 */
+	@Test  
+	public void nDeleteNWrong() throws Exception { 
+		this.mockMvc.perform(post(URL+"/deleteMember")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("accountId", "456")
+				.param("groupId", "1")
+				.param("memberId", "222")
+				
+				)
+				.andDo(print())
+				.andExpect(jsonPath("$.status").value("404"))
+				.andExpect(jsonPath("$.error").value("Nurse cannot delete another nurse"));
+	}
+	
+	/**
+	 * test deleteMember : nurse cannot delete support member from the group 
+	 */
+	@Test  
+	public void nDeleteSMWrong() throws Exception { 
+		this.mockMvc.perform(post(URL+"/deleteMember")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("accountId", "456")
+				.param("groupId", "1")
+				.param("memberId", "789")
+				
+				)
+				.andDo(print())
+				.andExpect(jsonPath("$.status").value("404"))
+				.andExpect(jsonPath("$.error").value("Nurse cannot delete the support member"));
+	}
+	
+	/**
+	 * test deleteMember : nurse delete patient from the group correctly
+	 */
+	@Test  
+	public void nDeletePCorrect() throws Exception { 
+		this.mockMvc.perform(post(URL+"/deleteMember")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("accountId", "456")
+				.param("groupId", "11")
+				.param("memberId", "123")
+				
+				)
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.status").value("200"));
+	}
+	
+	/**
+	 * test deleteMember : nurse delete itself from the group correctly
+	 */
+	@Test  
+	public void nDeleteICorrect() throws Exception { 
+		this.mockMvc.perform(post(URL+"/deleteMember")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("accountId", "456")
+				.param("groupId", "11")
+				.param("memberId", "456")
+				
+				)
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.status").value("200"));
+	}
+	
+	
+	/**
+	 * test deleteMember : support member cannot delete patient from the group 
+	 */
+	@Test  
+	public void sMDeletePWrong() throws Exception { 
+		this.mockMvc.perform(post(URL+"/deleteMember")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("accountId", "789")
+				.param("groupId", "1")
+				.param("memberId", "123")
+				
+				)
+				.andDo(print())
+				.andExpect(jsonPath("$.status").value("404"))
+				.andExpect(jsonPath("$.error").value("Support Member can only delete itself"));
+	}
+	
+	/**
+	 * test deleteMember : support member cannot delete nurse from the group 
+	 */
+	@Test  
+	public void sMDeleteNWrong() throws Exception { 
+		this.mockMvc.perform(post(URL+"/deleteMember")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("accountId", "789")
+				.param("groupId", "1")
+				.param("memberId", "456")
+				
+				)
+				.andDo(print())
+				.andExpect(jsonPath("$.status").value("404"))
+				.andExpect(jsonPath("$.error").value("Support Member can only delete itself"));
+	}
+	
+	/**
+	 * test deleteMember : support member cannot delete another support member from the group 
+	 */
+	@Test  
+	public void sMDeleteSMWrong() throws Exception { 
+		this.mockMvc.perform(post(URL+"/deleteMember")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("accountId", "789")
+				.param("groupId", "1")
+				.param("memberId", "333")
+				
+				)
+				.andDo(print())
+				.andExpect(jsonPath("$.status").value("404"))
+				.andExpect(jsonPath("$.error").value("Support Member can only delete itself"));
+	}
+	
+	
+	/**
+	 * test deleteMember : support member delete itself from the group correctly
+	 */
+	@Test  
+	public void sMDeleteICorrect() throws Exception { 
+		this.mockMvc.perform(post(URL+"/deleteMember")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("accountId", "789")
+				.param("groupId", "12")
+				.param("memberId", "789")
+				
+				)
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.status").value("200"));
+	}
 }
