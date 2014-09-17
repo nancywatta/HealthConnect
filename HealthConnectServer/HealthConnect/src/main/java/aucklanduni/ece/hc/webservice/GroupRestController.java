@@ -297,6 +297,8 @@ public class GroupRestController {
 
 			// save invited member details in the MEMBER table.
 			groupService.inviteUser(accountId, groupId, roleId, emailId);
+			
+			notifyService.notify(emailId, "You have been invited to the group", "email");
 
 			message.setSuccess();
 

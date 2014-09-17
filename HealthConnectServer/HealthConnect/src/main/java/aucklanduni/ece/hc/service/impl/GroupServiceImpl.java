@@ -89,7 +89,7 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 
 			saveNewMember(newMember);
 			
-			notifyService.notify(emailId,"You have been invited to a group","yy");
+			notifyService.notify(emailId,"You have been invited to a group","email");
 			
 		}catch (ValidationFailException ve) {
 			throw ve;
@@ -149,6 +149,8 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 					newMember.setRoleId(member.getRole().getId());
 
 					saveNewMember(newMember);
+					
+					notifyService.notify(member.getEmail(), "You have been invited to the group", "email");
 				}
 			}
 		}catch (ValidationFailException ve) {

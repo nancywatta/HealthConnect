@@ -90,3 +90,11 @@ HealthConnectServer/HealthConnect/target/classes/aucklanduni/ece/hc/repository/m
 HealthConnectServer/HealthConnect/target/classes/aucklanduni/ece/hc/repository/dao/impl/BaseDaoImpl.class
 
 HealthConnectServer/HealthConnect/target/classes/aucklanduni/ece/hc/repository/dao/impl/ApnUserDaoImpl.class
+
+HealthConnectServer/HealthConnect/target/classes/aucklanduni/ece/hc/repository/dao/DictionaryDao.class
+
+HealthConnectServer/HealthConnect/target/classes/aucklanduni/ece/hc/repository/dao/impl/DictionaryDaoImpl.class
+
+HealthConnectServer/HealthConnect/target/classes/aucklanduni/ece/hc/service/DictionaryService.class
+
+HealthConnectServer/HealthConnect/target/classes/aucklanduni/ece/hc/service/impl/DictionaryServiceImpl.class

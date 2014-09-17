@@ -57,6 +57,13 @@ public class ManageGroup extends ActionBarActivity implements
         getGroups();
     }
 
+    @Override
+    protected void onRestart() {
+        getGroups();
+        spinner = (Spinner) findViewById(R.id.spinner_group);
+        super.onRestart();
+    }
+
     private void getGroups() {
         String url = "http://" + getString(R.string.IPAddress) +
                 ":8080/HealthConnect/Group/showGroups";
