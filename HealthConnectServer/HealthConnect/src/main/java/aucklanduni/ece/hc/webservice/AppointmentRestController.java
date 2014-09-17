@@ -202,6 +202,13 @@ public class AppointmentRestController {
 		System.out.println(">>>>>>>>>>>>>>>>>viewAppointment"+accountId);
 		HCMessage message = new  HCMessage();
 		try{
+			Account account = null;
+			// check if given accountId exists
+			account = accountService.findById(accountId);
+			if(account == null) {
+				throw new ValidationFailException("Account does not exist");
+			}
+			
 			List<Appointment> appointments=appointmentService.findAllByAccountId(accountId);
 			for(Appointment appointment:appointments){
 				System.out.println("appointmentName="+appointment.getName()+"   appointmentLocation="+appointment.getLocation());

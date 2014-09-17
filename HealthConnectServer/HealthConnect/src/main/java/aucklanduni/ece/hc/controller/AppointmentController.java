@@ -195,6 +195,14 @@ public class AppointmentController {
 			@RequestParam("accountId") long accountId){
 		log.debug(">>>>>>>>>>>>>>>>>viewAppointment"+accountId);
 		try{
+			
+			Account account = null;
+			// check if given accountId exists
+			account = accountService.findById(accountId);
+			if(account == null) {
+				throw new ValidationFailException("Account does not exist");
+			}
+			
 			List<Appointment> appointments=appointmentService.findAllByAccountId(accountId);
 			for(Appointment appointment:appointments){
 				log.debug("appointmentName="+appointment.getName()+"   appointmentLocation="+appointment.getLocation());
