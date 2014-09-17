@@ -168,6 +168,7 @@ public class GroupController {
 			
 			groupService.inviteUser(accountId, groupId, roleId, emailId);
 			
+			
 			return "Succes";
 
 		}catch(ValidationFailException ve) {
@@ -230,6 +231,7 @@ public class GroupController {
 	/**
 	 * 
 	 * @Title: deleteGroup 
+	 * @author Yalu You, Pengyi Li
 	 * @Description: Service will delete a specific group
 	 * on business validation
 	 * 1. Nurse can only delete empty group.
@@ -244,7 +246,7 @@ public class GroupController {
 	 * @return String
 	 * @throws
 	 */
-	//Yalu , Pengyi
+
 	// http://localhost:8080/HealthConnect/Group/deleteGroup?accountId=2&groupId=1
 	@RequestMapping(value="/deleteGroup")
 	@ResponseBody

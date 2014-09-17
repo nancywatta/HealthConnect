@@ -315,6 +315,7 @@ public class GroupRestController {
 	/**
 	 * 
 	 * @Title: deleteGroup 
+	 * @author Yalu You,Pengyi Li
 	 * @Description: Service will delete a specific group
 	 * on business validation
 	 * 1. Nurse can only delete empty group.
