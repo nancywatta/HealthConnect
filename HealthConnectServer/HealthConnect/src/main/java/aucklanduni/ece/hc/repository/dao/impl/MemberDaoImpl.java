@@ -107,6 +107,31 @@ public class MemberDaoImpl extends BaseDaoImpl<Member> implements MemberDao{
 			throw e;
 		}
 	}
+
+	public int checkSupportMemberCount(Connection connection, long groupId) throws Exception {
+		try
+		{
+			PreparedStatement ps = connection.prepareStatement(
+					"SELECT COUNT(*) "
+					+ "FROM MEMBER m "
+					+ "INNER JOIN DICTIONARY d "
+					+ "ON "
+					+ "m.role_id=d.id "
+					+ "and m.group_id= " + groupId
+					+ " and d.type = 'Role' "
+					+ "and d.value = 'S' ");
+			ResultSet rs = ps.executeQuery();
+			while(rs.next())
+			{
+				return rs.getInt(1);
+			}
+			return 0;
+		}
+		catch(Exception e)
+		{
+			throw e;
+		}
+	}
 	
 	public int checkMemberCount(Connection connection, long groupId) throws Exception {
 		try
