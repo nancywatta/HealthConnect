@@ -274,6 +274,10 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 				//Nurse can delete itself.
 				if(accountId == memberId)
 					return true;
+				//Nurse can delete patient only when there is not any support member in the group
+				else if(memberRole.compareTo("P")==0)
+					if(memberDao.checkSupportMemberCount(connection, groupId) != 0)
+						throw new ValidationFailException("Nurse can delete patient only when there is not any support member in the group");
 				//Nurse cannot delete support member.
 				else if(memberRole.compareTo("S")==0)
 					throw new ValidationFailException("Nurse cannot delete the support member");
