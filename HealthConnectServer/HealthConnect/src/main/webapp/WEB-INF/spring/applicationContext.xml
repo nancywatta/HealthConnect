@@ -1,118 +1,133 @@
-<?xml version="1.0" encoding="UTF-8"?>   
-<beans xmlns="http://www.springframework.org/schema/beans"  
- xmlns:aop="http://www.springframework.org/schema/aop" 
- xmlns:context="http://www.springframework.org/schema/context"  
- xmlns:p="http://www.springframework.org/schema/p" 
- xmlns:tx="http://www.springframework.org/schema/tx"  
- xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
- xsi:schemaLocation="
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-   http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">  
+   http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
 
-<!-- Properties -->
-	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="ignoreUnresolvablePlaceholders" value="true"/>
-        <property name="locations">
-            <list>
-            	<value>classpath*:/jdbc.properties</value>
-            	<value>classpath*:/common.properties</value>
-            </list>
-        </property>
-    </bean>
-
-<!-- Configuration for RestTemplate -->
-     <!--Http client Factory-->  
-     <bean id="httpClientFactory" class="org.springframework.http.client.SimpleClientHttpRequestFactory">  
-         <property name="connectTimeout"  value="${connectTimeout}"/>
-         <property name="readTimeout"  value="${readTimeout}"/>
-     </bean>  
-        
-     <!--RestTemplate-->  
-     <bean id="restTemplate" class="org.springframework.web.client.RestTemplate">  
-         <constructor-arg ref="httpClientFactory"/>  
-         <property name="messageConverters">
-            <list>
-                <bean id="stringHttpMessageConverter" class="org.springframework.http.converter.StringHttpMessageConverter">
-				      <constructor-arg value="UTF-8"/>
-				</bean>
-				<bean id="formHttpMessageConverter" class="org.springframework.http.converter.FormHttpMessageConverter"/>
-				<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
-            </list>
-         </property>
-     </bean>
-    
-      <!--  
-            maps handler methods based on HTTP paths
-      -->  
-      <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">  
-           <property name="messageConverters">
-            <list>
-                <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
-            </list>
-        </property>
-      </bean>  
- 
-	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-	    <property name="driverClassName" value="${jdbc.driverClassName}"/>
-	    <property name="url" value="${jdbc.url}"/>
-	    <property name="username" value="${jdbc.username}"/>
-	    <property name="password" value="${jdbc.password}"/>
+	<!-- Properties -->
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+		<property name="locations">
+			<list>
+				<value>classpath*:/jdbc.properties</value>
+				<value>classpath*:/common.properties</value>
+			</list>
+		</property>
 	</bean>
-	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+
+	<!-- Configuration for RestTemplate -->
+	<!--Http client Factory -->
+	<bean id="httpClientFactory"
+		class="org.springframework.http.client.SimpleClientHttpRequestFactory">
+		<property name="connectTimeout" value="${connectTimeout}" />
+		<property name="readTimeout" value="${readTimeout}" />
+	</bean>
+
+	<!--RestTemplate -->
+	<bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
+		<constructor-arg ref="httpClientFactory" />
+		<property name="messageConverters">
+			<list>
+				<bean id="stringHttpMessageConverter"
+					class="org.springframework.http.converter.StringHttpMessageConverter">
+					<constructor-arg value="UTF-8" />
+				</bean>
+				<bean id="formHttpMessageConverter"
+					class="org.springframework.http.converter.FormHttpMessageConverter" />
+				<bean
+					class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
+			</list>
+		</property>
+	</bean>
+
+	<!-- maps handler methods based on HTTP paths -->
+	<bean
+		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<bean
+					class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driverClassName}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+	</bean>
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
 		<property name="dataSource" ref="dataSource" />
 		<property name="packagesToScan">
 			<list>
 				<value>aucklanduni.ece.hc.repository.model</value>
 			</list>
 		</property>
-	    <property name="hibernateProperties">
-	     <props>
+		<property name="hibernateProperties">
+			<props>
 				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
-				<prop key="hibernate.hbm2ddl.auto">false</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
 				<prop key="hibernate.show_sql">false</prop>
-	             <prop key="hibernate.format_sql">true</prop>
-    	         <prop key="hibernate.current_session_context_class">org.springframework.orm.hibernate4.SpringSessionContext</prop>
+				<prop key="hibernate.format_sql">true</prop>
+				<prop key="hibernate.current_session_context_class">org.springframework.orm.hibernate4.SpringSessionContext
+				</prop>
 			</props>
-	    </property>
-  	</bean>
-  	<bean id="hibernateTemplate" class="org.springframework.orm.hibernate4.HibernateTemplate">
+		</property>
+	</bean>
+
+	<bean id="hibernateTemplate" class="org.springframework.orm.hibernate4.HibernateTemplate">
 		<property name="sessionFactory" ref="sessionFactory"></property>
 	</bean>
 
 	<context:annotation-config />
-	 <context:component-scan base-package="aucklanduni.ece.hc" use-default-filters="false">  
-	 </context:component-scan>
+	<context:component-scan base-package="aucklanduni.ece.hc"
+		use-default-filters="false">
+	</context:component-scan>
 
-	<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 	<tx:advice id="baseServiceAdvice" transaction-manager="transactionManager">
-	   <tx:attributes>
-	      <tx:method name="add*" propagation="REQUIRED" rollback-for="java.lang.Exception" />
-			<tx:method name="save" propagation="REQUIRED"	rollback-for="java.lang.Exception" />
-			<tx:method name="save*" propagation="REQUIRED"	rollback-for="java.lang.Exception" />
+		<tx:attributes>
+			<tx:method name="add*" propagation="REQUIRED" rollback-for="java.lang.Exception" />
+			<tx:method name="save" propagation="REQUIRED" rollback-for="java.lang.Exception" />
+			<tx:method name="save*" propagation="REQUIRED"
+				rollback-for="java.lang.Exception" />
 			<tx:method name="del*" propagation="REQUIRED" rollback-for="java.lang.Exception" />
 			<tx:method name="ex*" propagation="REQUIRED" rollback-for="java.lang.Exception" />
 			<tx:method name="up*" propagation="REQUIRED" rollback-for="java.lang.Exception" />
 			<tx:method name="sub*" propagation="REQUIRED" rollback-for="java.lang.Exception" />
-			<tx:method name="make*" propagation="REQUIRED" rollback-for="java.lang.Exception" />
+			<tx:method name="make*" propagation="REQUIRED"
+				rollback-for="java.lang.Exception" />
 			<tx:method name="to*" propagation="REQUIRED" rollback-for="java.lang.Exception" />
-			<tx:method name="discard*" propagation="REQUIRED" rollback-for="java.lang.Exception" />
-			<tx:method name="pass*" propagation="REQUIRED" rollback-for="java.lang.Exception" />
-			<tx:method name="amend*" propagation="REQUIRED" rollback-for="java.lang.Exception" />
+			<tx:method name="discard*" propagation="REQUIRED"
+				rollback-for="java.lang.Exception" />
+			<tx:method name="pass*" propagation="REQUIRED"
+				rollback-for="java.lang.Exception" />
+			<tx:method name="amend*" propagation="REQUIRED"
+				rollback-for="java.lang.Exception" />
 			<tx:method name="no*" propagation="REQUIRED" rollback-for="java.lang.Exception" />
-			<tx:method name="get*" propagation="SUPPORTS" read-only="true" />  
-	        <tx:method name="count*" propagation="SUPPORTS" read-only="true" />  
-	        <tx:method name="find*" propagation="SUPPORTS" read-only="true" />  
-	        <tx:method name="list*" propagation="SUPPORTS" read-only="true" />  
-	        <tx:method name="*" propagation="SUPPORTS" read-only="true" />
-	   </tx:attributes>
+			<tx:method name="get*" propagation="SUPPORTS" read-only="true" />
+			<tx:method name="count*" propagation="SUPPORTS" read-only="true" />
+			<tx:method name="find*" propagation="SUPPORTS" read-only="true" />
+			<tx:method name="list*" propagation="SUPPORTS" read-only="true" />
+			<tx:method name="*" propagation="SUPPORTS" read-only="true" />
+		</tx:attributes>
 	</tx:advice>
 
-	 <aop:config proxy-target-class="true">
-		<aop:pointcut id="tradeCuts" expression="execution(* aucklanduni.ece.hc.service.impl.*.*(..))" />
+	<aop:config proxy-target-class="true">
+		<aop:pointcut id="tradeCuts"
+			expression="execution(* aucklanduni.ece.hc.service.impl.*.*(..))" />
 		<aop:advisor advice-ref="baseServiceAdvice" pointcut-ref="tradeCuts" />
 	</aop:config>
 

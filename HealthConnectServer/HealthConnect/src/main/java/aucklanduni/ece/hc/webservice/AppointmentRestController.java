@@ -83,7 +83,7 @@ public class AppointmentRestController {
 			Dictionary role = null;
 			role = roleService.findRoleByAccountIdAndGroupId(accountId,groupId);
 			// check if the current user is a nurse
-			if(! (role.getValue().compareTo("N")==0 ) ) {
+			if( !(role.getValue().compareTo("N")==0 ) ) {
 				throw new ValidationFailException("Only Nurse can create an appointment");
 			}
 
@@ -101,7 +101,7 @@ public class AppointmentRestController {
 			appointment.setLocation(appointmentLocation);
 			appointment.setCreateDate(new Date());
 			appointment.setUpdatedDate(new Date());
-			if(isShare=="T")
+			if(isShare.compareTo("T")==0)
 				appointment.setIsShared("T");
 			else
 				appointment.setIsShared("F");
@@ -114,7 +114,7 @@ public class AppointmentRestController {
 			
 			notifyService.notify(accountId, "You already create an appountment", "email");
 			
-			message.setSuccess();
+			message.setSuccess(appointment);
 //			appointmentService.createNewAppointment(accountId, appointmentTime, appointmentName, appointmentLocation);
 
 		}catch(ValidationFailException ve) {
@@ -233,6 +233,8 @@ public class AppointmentRestController {
 			for(Appointment appointment:appointments){
 				System.out.println("appointmentName="+appointment.getName()+"   appointmentLocation="+appointment.getLocation());
 			}
+			
+			message.setSuccess(appointments);
 		
 		}catch(ValidationFailException ve) {
 			message.setFail("404", ve.getMessage());

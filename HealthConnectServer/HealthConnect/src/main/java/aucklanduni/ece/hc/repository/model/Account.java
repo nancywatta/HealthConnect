@@ -14,6 +14,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+import org.hibernate.envers.Audited;
 /**
  * 
 * @ClassName: Account 
@@ -24,6 +25,7 @@ import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 *
  */
 @Entity
+@Audited
 @Table(name = "ACCOUNT")
 public class Account implements Serializable {
 

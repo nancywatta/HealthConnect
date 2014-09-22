@@ -89,6 +89,11 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 
 			saveNewMember(newMember);
 			
+			//update column updated_date of GROUP_INFO table
+			Group group = groupDao.findById(groupId);
+			group.setUpdatedDate(new Date());
+			groupDao.update(group);
+			
 			notifyService.notify(emailId,"You have been invited to a group","email");
 			
 		}catch (ValidationFailException ve) {
@@ -324,6 +329,11 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 			Database database= new Database();
 			Connection connection = database.Get_Connection();
 			memberDao.deleteMember(connection,groupId,memberId);
+			
+			// update column updated_date of GROUP_INFO table 
+			Group group = groupDao.findById(groupId);
+			group.setUpdatedDate(new Date());
+			groupDao.update(group);
 		}
 		catch (Exception e) {
 			throw e;
@@ -339,7 +349,7 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 		// create group
 		groupDao.add(group);
 		
-		//add default memeber
+		//add default member
 		Member owner = new Member();
 		owner.setAccountId(account.getId());
 		owner.setGroupId(group.getId());

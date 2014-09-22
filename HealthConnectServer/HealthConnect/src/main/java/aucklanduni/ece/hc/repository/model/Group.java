@@ -13,6 +13,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+import org.hibernate.envers.Audited;
 /**
  * 
 * @ClassName: Group 
@@ -23,6 +24,7 @@ import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 *
  */
 @Entity
+@Audited
 @Table(name = "GROUP_INFO")
 public class Group implements Serializable {
 

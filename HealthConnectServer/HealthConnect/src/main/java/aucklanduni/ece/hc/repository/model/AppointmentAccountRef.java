@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+import org.hibernate.envers.Audited;
 /**
  * 
 * @ClassName: AppointmentAccountRef 
@@ -20,6 +21,7 @@ import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 *
  */
 @Entity
+@Audited
 @Table(name = "APP_ACC_REF")
 public class AppointmentAccountRef implements Serializable {
 

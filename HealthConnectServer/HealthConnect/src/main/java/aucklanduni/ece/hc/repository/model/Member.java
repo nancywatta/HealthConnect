@@ -13,6 +13,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+import org.hibernate.envers.Audited;
 /**
  * 
 * @ClassName: Member 
@@ -23,6 +24,7 @@ import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 *
  */
 @Entity
+@Audited
 @Table(name = "MEMBER")
 public class Member  implements Serializable {
 

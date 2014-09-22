@@ -103,6 +103,9 @@ public class GroupRestController {
 		try {
 			Dictionary role = null;
 			role = roleService.findById(roleId);
+			
+			if(role == null)
+				throw new ValidationFailException("No Roles exists in Database");
 
 			// Only Patient or Nurse can create a Group
 			if(! (role.getValue().compareTo("P")==0 
