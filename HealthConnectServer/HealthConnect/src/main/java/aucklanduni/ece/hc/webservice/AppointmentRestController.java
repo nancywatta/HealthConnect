@@ -10,8 +10,11 @@ import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.fortuna.ical4j.model.Calendar;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import aucklanduni.ece.hc.repository.model.Account;
+import aucklanduni.ece.hc.repository.model.ApnUser;
 import aucklanduni.ece.hc.repository.model.Appointment;
 import aucklanduni.ece.hc.repository.model.AppointmentAccountRef;
 import aucklanduni.ece.hc.repository.model.Dictionary;
@@ -32,6 +36,7 @@ import aucklanduni.ece.hc.service.DictionaryService;
 import aucklanduni.ece.hc.service.GroupService;
 import aucklanduni.ece.hc.service.MemberService;
 import aucklanduni.ece.hc.service.NotifyService;
+import aucklanduni.ece.hc.util.ICalendarTool;
 import aucklanduni.ece.hc.webservice.model.HCMessage;
 import aucklanduni.ece.hc.webservice.model.ValidationFailException;
 
@@ -55,6 +60,36 @@ public class AppointmentRestController {
 	private MemberService memberService;
 	@Autowired
 	private NotifyService notifyService;
+	
+	/**
+	 *  getICal4J object 
+	 */
+	@RequestMapping(value="/getICal4J/{appointmentId}",method = RequestMethod.GET
+			,headers="Accept=application/json"
+			)
+	public HCMessage getICal4J(HttpServletRequest request, HttpServletResponse response,
+			@PathVariable long appointmentId) {
+		HCMessage message = new  HCMessage();
+		
+		try {
+			Appointment app =  appointmentService.findById(appointmentId);
+			List<Account> accList = accountService.getAccbyAppointmentId(appointmentId);
+			
+        	if(app == null){
+        		message.setFail("404", "No valid appointmentId");
+        		return message;
+        	}
+
+        	Calendar ical = ICalendarTool.getICal4J(app, accList);
+    		message.setSuccess(ical);
+        	log.debug(ical);
+        	
+		} catch (Exception e) {
+			e.printStackTrace();
+			message.setFail("400", e.getMessage());
+		}
+        return message;
+	}
 	
 	/**
 	 * This is for passing Json object to the method
