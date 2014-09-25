@@ -10,7 +10,9 @@ import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,6 +38,9 @@ import aucklanduni.ece.hc.webservice.model.ValidationFailException;
 @RestController
 @RequestMapping("/service/appointment/")
 public class AppointmentRestController {
+
+	Logger log = Logger.getLogger(AppointmentRestController.class);
+	
 	@Autowired
 	private AppointmentService appointmentService;
 	@Autowired
@@ -51,6 +56,23 @@ public class AppointmentRestController {
 	@Autowired
 	private NotifyService notifyService;
 	
+	/**
+	 * This is for passing Json object to the method
+	 */
+	@RequestMapping(value="/createAppointmentByObj",method = RequestMethod.POST
+			,headers="Accept=application/json"
+			)
+	public HCMessage createAppointmentByObj(HttpServletRequest request, HttpServletResponse response,
+			@RequestParam(value="accountId") long accountId
+			,@RequestParam(value="groupId") long groupId
+			,@RequestBody Appointment appointment) {
+
+		log.debug(appointment.getTime());
+		return this.createAppointment(request, response
+				, accountId, groupId
+				, appointment.getName(), appointment.getLocation()
+				, appointment.getIsShared());
+	}
 
 	@RequestMapping(value="/createAppointment",method = RequestMethod.POST
 			,headers="Accept=application/json"
@@ -82,9 +104,9 @@ public class AppointmentRestController {
 			
 			Dictionary role = null;
 			role = roleService.findRoleByAccountIdAndGroupId(accountId,groupId);
-			// check if the current user is a nurse
-			if( !(role.getValue().compareTo("N")==0 ) ) {
-				throw new ValidationFailException("Only Nurse can create an appointment");
+			// check if the current user is a nurse or patient
+			if( (role.getValue().compareTo("S")==0 ) ) {
+				throw new ValidationFailException("Supportive members are not allowed to create an appointment");
 			}
 
 			// check if appointment name already exists

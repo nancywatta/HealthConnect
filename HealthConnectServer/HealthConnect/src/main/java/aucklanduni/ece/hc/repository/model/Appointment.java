@@ -13,7 +13,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
-import org.hibernate.envers.Audited;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 /**
  * 
 * @ClassName: Appointment 
@@ -24,7 +25,6 @@ import org.hibernate.envers.Audited;
 *
  */
 @Entity
-@Audited
 @Table(name = "APPOINTMENT")
 public class Appointment implements Serializable {
 
@@ -77,6 +77,7 @@ public class Appointment implements Serializable {
 		this.name = name;
 	}
 
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")  
 	public Date getTime() {
 		return time;
 	}
@@ -116,7 +117,7 @@ public class Appointment implements Serializable {
 	public void setIsShared(String isShared) {
 		this.isShared = isShared;
 	}
-
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")  
 	public Date getCreateDate() {
 		return createDate;
 	}
@@ -124,7 +125,7 @@ public class Appointment implements Serializable {
 	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
 	}
-
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")  
 	public Date getUpdatedDate() {
 		return updatedDate;
 	}
