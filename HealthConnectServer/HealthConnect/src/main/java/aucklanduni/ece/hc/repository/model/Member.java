@@ -47,6 +47,13 @@ public class Member  implements Serializable {
 	@Column(name = "created_date")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date createDate;
+	
+	@Column(name = "expiration_date")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date expirationDate;
+	
+	@Column(name = "isActive", nullable = false)
+	private String isActive;
 
 	public long getId() {
 		return id;
@@ -87,6 +94,23 @@ public class Member  implements Serializable {
 	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
 	}
+	
+	public Date getExpirationDate() {
+		return expirationDate;
+	}
+
+	public void setExpirationDate(Date expirationDate) {
+		this.expirationDate = expirationDate;
+	}
+	
+	public String getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(String isActive) {
+		this.isActive = isActive;
+	}
+
 	@Override
 	public String toString() {
 		return ReflectionToStringBuilder.toString(this);

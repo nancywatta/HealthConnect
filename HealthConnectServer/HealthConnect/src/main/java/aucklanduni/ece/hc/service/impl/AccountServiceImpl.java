@@ -9,8 +9,6 @@ import org.springframework.stereotype.Service;
 import aucklanduni.ece.hc.repository.dao.AccountDao;
 import aucklanduni.ece.hc.repository.model.Account;
 import aucklanduni.ece.hc.repository.model.Database;
-import aucklanduni.ece.hc.repository.model.Group;
-import aucklanduni.ece.hc.repository.model.Member;
 import aucklanduni.ece.hc.service.AccountService;
 
 @Service
@@ -18,13 +16,13 @@ public class AccountServiceImpl extends BaseServiceImpl<Account> implements Acco
 	@Autowired
 	private AccountDao accountDao;
 		
-	public Account getAccountbyEmail(String emailId)throws Exception {
+	public List<Account> getAccountbyEmail(String emailId)throws Exception {
 		try {
-			Database database= new Database();
-			Connection connection = database.Get_Connection();
-
-			Account account = accountDao.getAccountByEmail(connection,emailId);
-			return account;
+			List<Account> memberAccs = accountDao.findByHql(
+					"from Account a "
+							+ "WHERE "
+							+ "a.email='" + emailId + "'");
+			return memberAccs;
 		}
 		catch (Exception e) {
 			throw e;
@@ -44,13 +42,16 @@ public class AccountServiceImpl extends BaseServiceImpl<Account> implements Acco
 
 	}
 	
-	public Account getAccbyEmailPswd(String emailId, String password)throws Exception{
+	public List<Account> getAccbyEmailPswd(String emailId, String password)throws Exception{
 		try {
-			Database database= new Database();
-			Connection connection = database.Get_Connection();
-
-			Account account = accountDao.getAccbyEmailPswd(connection,emailId, password);
-			return account;
+			
+			List<Account> memberAccs = accountDao.findByHql(
+					"from Account a "
+							+ "WHERE "
+							+ "a.email='" + emailId + "'"
+							+ " and a.password='" + 
+							password + "'");
+			return memberAccs;
 		}
 		catch (Exception e) {
 			throw e;

@@ -1,6 +1,7 @@
 package aucklanduni.ece.hc.service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +14,10 @@ public interface GroupService extends BaseService<Group>{
 	
 	public ArrayList<Account> GetMembers(long accountId,long groupId)throws Exception;
 	
+	public List<Group> getGroupByName(String groupName)throws Exception;
+	
+	public List<Group> getGroupByAccId(long accountId)throws Exception;
+	
 	public  void inviteUser (long accountId, 
 			long groupId, long roleId, String emailId) throws ValidationFailException, Exception;
 	
@@ -23,9 +28,9 @@ public interface GroupService extends BaseService<Group>{
 			throws ValidationFailException,Exception;
 	
 	public  boolean deleteMemberValidation (long accountId,long groupId, long memberId)
-			throws Exception;
+			throws ValidationFailException, Exception;
 	
-	public void deleteMember(long groupId, long memberId) throws Exception;
+	public void expireMember(long groupId, long memberId) throws ValidationFailException, Exception;
 	
 	public void createGroup(Group group, Account account,long roleId) throws Exception;
 	
@@ -34,8 +39,10 @@ public interface GroupService extends BaseService<Group>{
 	public  void deleteGroupValidation (long accountId,long groupId) 
 			throws ValidationFailException, Exception;
 	
-	public void deleteGroup(long groupId) throws Exception;
+	public void expireGroup(long groupId) throws Exception;
 
-	public void deleteAllMember(long groupId) throws Exception;
+	public void expireAllMember(long groupId) throws Exception;
+	
+	public List<Member> getEffectiveMembers(long groupId) throws Exception;
 	 
 }

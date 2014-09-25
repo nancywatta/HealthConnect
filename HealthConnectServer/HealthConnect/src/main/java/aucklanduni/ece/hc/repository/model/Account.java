@@ -57,6 +57,10 @@ public class Account implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastLoginDate;
 	
+	@Column(name = "expiration_date")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date expirationDate;
+	
 	@Transient
 	private Dictionary role;
 
@@ -124,6 +128,14 @@ public class Account implements Serializable {
 		return role;
 	}
 	
+	public Date getExpirationDate() {
+		return expirationDate;
+	}
+
+	public void setExpirationDate(Date expirationDate) {
+		this.expirationDate = expirationDate;
+	}
+
 	@Override
 	public String toString() {
 		return ReflectionToStringBuilder.toString(this);

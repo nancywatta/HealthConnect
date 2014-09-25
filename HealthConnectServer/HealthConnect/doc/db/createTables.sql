@@ -8,6 +8,7 @@ CREATE TABLE `ACCOUNT` (
   `created_date` datetime DEFAULT NULL,
   `updated_date` datetime DEFAULT NULL,
   `last_login_date` datetime DEFAULT NULL,
+  `expiration_date` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8
@@ -18,6 +19,7 @@ CREATE TABLE `GROUP_INFO` (
   `groupname` varchar(64) NOT NULL,
   `created_date` datetime DEFAULT NULL,
   `updated_date` datetime DEFAULT NULL,
+  `expiration_date` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8
 ;
@@ -28,6 +30,8 @@ CREATE TABLE `MEMBER` (
   `group_id` bigint(20) NOT NULL,
   `role_id` bigint(20) NOT NULL,
   `created_date` datetime DEFAULT NULL,
+  `expiration_date` datetime DEFAULT NULL,
+  `isActive` varchar(4) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `mem_acc_fk` (`account_id`),
   KEY `mem_group_fk` (`group_id`),
@@ -35,7 +39,6 @@ CREATE TABLE `MEMBER` (
   CONSTRAINT `mem_acc_fk` FOREIGN KEY (`account_id`) REFERENCES `account` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8
 ;
-
 
 CREATE TABLE `APPOINTMENT` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -45,16 +48,21 @@ CREATE TABLE `APPOINTMENT` (
   `desciption` varchar(256) DEFAULT NULL,
   `status` varchar(4) DEFAULT NULL,
   `isShared` varchar(4) DEFAULT NULL,
+  `group_id` bigint(20) DEFAULT NULL,
   `created_date` datetime DEFAULT NULL,
   `updated_date` datetime DEFAULT NULL,
+  `expiration_date` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
+  KEY `app_group_fk` (`group_id`),
+  CONSTRAINT `app_group_fk` FOREIGN KEY (`group_id`) REFERENCES `group_info` (`id`),
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8
-;
+; 
 
 CREATE TABLE `APP_ACC_REF` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `appointment_id` bigint(20) NOT NULL,
   `account_id` bigint(20) NOT NULL,
+  `expiration_date` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `appaccref_acc_fk` (`account_id`),
   KEY `appaccref_app_fk` (`appointment_id`),
@@ -62,7 +70,6 @@ CREATE TABLE `APP_ACC_REF` (
   CONSTRAINT `appaccref_acc_fk` FOREIGN KEY (`account_id`) REFERENCES `account` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8
 ;
-
 
 CREATE TABLE `TASK` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,

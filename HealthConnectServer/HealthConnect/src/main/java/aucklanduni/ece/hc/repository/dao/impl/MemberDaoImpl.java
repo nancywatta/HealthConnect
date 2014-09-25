@@ -119,7 +119,8 @@ public class MemberDaoImpl extends BaseDaoImpl<Member> implements MemberDao{
 					+ "m.role_id=d.id "
 					+ "and m.group_id= " + groupId
 					+ " and d.type = 'Role' "
-					+ "and d.value = 'S' ");
+					+ "and d.value = 'S' "
+					+ "and m.isActive = 'Y'");
 			ResultSet rs = ps.executeQuery();
 			while(rs.next())
 			{

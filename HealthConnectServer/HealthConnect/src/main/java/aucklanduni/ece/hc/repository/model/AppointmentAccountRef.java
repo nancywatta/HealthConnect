@@ -1,6 +1,7 @@
 package aucklanduni.ece.hc.repository.model;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,6 +9,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.hibernate.envers.Audited;
@@ -37,6 +40,10 @@ public class AppointmentAccountRef implements Serializable {
 	
 	@Column(name = "account_id", nullable = false, precision = 20, scale = 0)
 	private long accountId;
+	
+	@Column(name = "expiration_date")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date expirationDate;
 
 	public long getId() {
 		return id;
@@ -60,6 +67,14 @@ public class AppointmentAccountRef implements Serializable {
 
 	public void setAccountId(long accountId) {
 		this.accountId = accountId;
+	}
+
+	public Date getExpirationDate() {
+		return expirationDate;
+	}
+
+	public void setExpirationDate(Date expirationDate) {
+		this.expirationDate = expirationDate;
 	}
 
 	@Override

@@ -14,6 +14,8 @@ import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.hibernate.envers.Audited;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 /**
  * 
 * @ClassName: Appointment 
@@ -52,6 +54,9 @@ public class Appointment implements Serializable {
 	
 	@Column(name = "isShared")
 	private String isShared;
+	
+	@Column(name = "group_id", nullable = false, precision = 20, scale = 0)
+	private long groupId;
 
 	@Column(name = "created_date")
 	@Temporal(TemporalType.TIMESTAMP)
@@ -60,6 +65,10 @@ public class Appointment implements Serializable {
 	@Column(name = "updated_date")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedDate;
+	
+	@Column(name = "expiration_date")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date expirationDate;
 
 	public long getId() {
 		return id;
@@ -77,6 +86,7 @@ public class Appointment implements Serializable {
 		this.name = name;
 	}
 
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	public Date getTime() {
 		return time;
 	}
@@ -117,6 +127,15 @@ public class Appointment implements Serializable {
 		this.isShared = isShared;
 	}
 
+	public long getGroupId() {
+		return groupId;
+	}
+
+	public void setGroupId(long groupId) {
+		this.groupId = groupId;
+	}
+
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	public Date getCreateDate() {
 		return createDate;
 	}
@@ -125,12 +144,22 @@ public class Appointment implements Serializable {
 		this.createDate = createDate;
 	}
 
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	public Date getUpdatedDate() {
 		return updatedDate;
 	}
 
 	public void setUpdatedDate(Date updatedDate) {
 		this.updatedDate = updatedDate;
+	}
+
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+	public Date getExpirationDate() {
+		return expirationDate;
+	}
+
+	public void setExpirationDate(Date expirationDate) {
+		this.expirationDate = expirationDate;
 	}
 
 	@Override

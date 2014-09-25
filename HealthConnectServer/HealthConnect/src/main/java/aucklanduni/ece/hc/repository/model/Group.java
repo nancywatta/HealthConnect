@@ -45,6 +45,10 @@ public class Group implements Serializable {
 	@Column(name = "updated_date")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedDate;
+	
+	@Column(name = "expiration_date")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date expirationDate;
 
 	public long getId() {
 		return id;
@@ -78,6 +82,14 @@ public class Group implements Serializable {
 		this.updatedDate = updatedDate;
 	}
 	
+	public Date getExpirationDate() {
+		return expirationDate;
+	}
+
+	public void setExpirationDate(Date expirationDate) {
+		this.expirationDate = expirationDate;
+	}
+
 	@Override
 	public String toString() {
 		return ReflectionToStringBuilder.toString(this);

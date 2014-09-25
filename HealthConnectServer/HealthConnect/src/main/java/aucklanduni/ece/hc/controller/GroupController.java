@@ -22,7 +22,6 @@ import aucklanduni.ece.hc.service.AccountService;
 import aucklanduni.ece.hc.service.DictionaryService;
 import aucklanduni.ece.hc.service.GroupService;
 import aucklanduni.ece.hc.service.NotifyService;
-import aucklanduni.ece.hc.webservice.ApnRestController;
 import aucklanduni.ece.hc.webservice.model.ValidationFailException;
 
 import com.google.gson.Gson;
@@ -217,7 +216,7 @@ public class GroupController {
 			checkValidation = groupService.deleteMemberValidation(accountId, groupId, memberId);
 			  if(checkValidation) 
 			  {
-				  groupService.deleteMember(groupId,memberId);
+				  groupService.expireMember(groupId,memberId);
 				  notifyService.notify(memberId, "You have been deleted from group", "email");
 				  result = "success";
 				  return result;
@@ -258,8 +257,8 @@ public class GroupController {
 		log.debug("deleteGroup");
 		try{
 			groupService.deleteGroupValidation(accountId, groupId);
-			groupService.deleteAllMember(groupId);
-			groupService.deleteGroup(groupId);
+			groupService.expireAllMember(groupId);
+			groupService.expireGroup(groupId);
 			return "Succes";
 			
 		} catch (ValidationFailException ve) {

@@ -66,13 +66,8 @@ public class AccountRestController {
 
 			// Check if account exist with given email and (given password or Default password)
 			String pswd = (password == null) ? "healthConnect" : password;
-			memberAccs = accountService.findByHql(
-					"from Account a "
-							+ "WHERE "
-							+ "a.email='" + emailId + "'"
-							+ " and a.password='" + 
-							pswd + "'");
-
+			memberAccs = accountService.getAccbyEmailPswd(emailId, pswd);
+			
 			if(password==null) {
 				// If no then return false, so that user puts his own password
 				if(memberAccs == null || memberAccs.size() <1) {
@@ -89,10 +84,7 @@ public class AccountRestController {
 			else {
 				// if No, check if the email already exist in DB
 				if(memberAccs == null || memberAccs.size() < 1) {
-					memberAccs = accountService.findByHql(
-							"from Account a "
-									+ "WHERE "
-									+ "a.email='" + emailId + "'");
+					memberAccs = accountService.getAccountbyEmail(emailId);
 
 					// if email id exists, it means wrong password entered
 					if(memberAccs.size() > 0)

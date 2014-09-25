@@ -16,6 +16,7 @@ import aucklanduni.ece.hc.repository.model.Database;
 import aucklanduni.ece.hc.repository.model.Dictionary;
 import aucklanduni.ece.hc.repository.model.Group;
 import aucklanduni.ece.hc.repository.model.Member;
+import aucklanduni.ece.hc.service.AccountService;
 import aucklanduni.ece.hc.service.DictionaryService;
 import aucklanduni.ece.hc.service.GroupService;
 import aucklanduni.ece.hc.service.NotifyService;
@@ -32,6 +33,8 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 	private MemberDao memberDao;
 	@Autowired
 	private AccountDao accountDao;
+	@Autowired
+	private AccountService accountService;
 	@Autowired
 	private GroupDao groupDao;
 	@Autowired
@@ -55,6 +58,20 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 	}
 	
 	/**
+	 * Function will get return group details based on groupName.
+	 */
+	public List<Group> getGroupByName(String groupName)throws Exception {
+		try {
+			List<Group> groups = new ArrayList<Group>();
+			groups = groupDao.findByHql("from Group WHERE groupname='" + groupName + "'");
+			return groups;
+		}
+		catch (Exception e) {
+			throw e;
+		}
+	}
+	
+	/**
 	 * Function will save member details in MEMBER table for the given accountId
 	 * and emailId. if the invited member does not exist in database, account will be registered
 	 *  and emailId and default password will be saved in the ACCOUNT table.
@@ -64,10 +81,8 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 		long accId;
 		List<Account> accounts = new ArrayList<Account>();
 		try {
-			accounts = accountDao.findByHql(
-					"from Account a "
-							+ "WHERE "
-							+ "a.email='" + emailId + "'");
+			accounts = accountService.getAccountbyEmail(emailId);
+					
 			if(accounts == null || accounts.size() < 1) {
 				Account memberAcc = new Account();
 				memberAcc.setCreateDate(new Date());
@@ -86,6 +101,7 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 			newMember.setCreateDate(new Date());
 			newMember.setGroupId(groupId);
 			newMember.setRoleId(roleId);
+			newMember.setIsActive("Y");
 
 			saveNewMember(newMember);
 			
@@ -127,10 +143,7 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 							newGroup.getId(), member.getRole().getId(), member.getEmail());
 
 					List<Account> memberAccs = new ArrayList<Account>();
-					memberAccs = accountDao.findByHql(
-							"from Account a "
-									+ "WHERE "
-									+ "a.email='" + member.getEmail() + "'");
+					memberAccs = accountService.getAccountbyEmail(member.getEmail());
 					long memberAccId;
 
 					// if invited account does not exist, create the account with default password
@@ -152,6 +165,7 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 					newMember.setCreateDate(new Date());
 					newMember.setGroupId(newGroup.getId());
 					newMember.setRoleId(member.getRole().getId());
+					newMember.setIsActive("Y");
 
 					saveNewMember(newMember);
 					
@@ -202,13 +216,18 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 					throw new ValidationFailException("Nurse can Invite only Patient to Group");
 
 				// Check if Patient already exists in Group
+				long time = System.currentTimeMillis();
+				java.sql.Timestamp timestamp = new java.sql.Timestamp(time);
 				List<Member> members = new ArrayList<Member>();
 				members = memberDao.findByHql("select m from Member m, Dictionary d "
 						+ "WHERE "
 						+ "m.roleId=d.id "
 						+ "and m.groupId= " + groupId
 						+ " and d.type = 'Role' "
-						+ "and d.value = 'P' ");
+						+ "and d.value = 'P' "
+						+ "and ( m.expirationDate IS NULL "
+						+ "or m.expirationDate > '" 
+						+ timestamp + "')");
 
 				// If patient already exists, Nurse cannot invite any more patient
 				if(members.size() >= 1)
@@ -217,20 +236,13 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 
 			// Check if the invited member is already registered user
 			List<Account> accounts = new ArrayList<Account>();
-			accounts = accountDao.findByHql(
-					"from Account a "
-							+ "WHERE "
-							+ "a.email='" + emailId + "'");
+			accounts = accountService.getAccountbyEmail(emailId); 
 
 			if(accounts.size() >=1) {
 
 				// Check if the invited member is already member of the input Group
 				List<Dictionary> roles = new ArrayList<Dictionary>();
-				roles = dictionaryService.findByHql("select d from Dictionary d, Member m "
-						+ "WHERE "
-						+ "m.roleId=d.id "
-						+ "and m.groupId= " + groupId
-						+ " and m.accountId= " + accounts.get(0).getId());
+				roles = dictionaryService.getRolesByGroupIdAccId(accounts.get(0).getId(),groupId );
 
 				// throw error if invited member is already member of the input Group
 				if(roles.size() >= 1)
@@ -244,6 +256,24 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 	}
 	
 	/**
+	 * Function will get return all groups of input accountId.
+	 */
+	public List<Group> getGroupByAccId(long accountId)throws Exception {
+		List<Group> groupList = new ArrayList<Group>();
+		try {
+			groupList = groupDao.findByHql("select distinct g from Group g, "
+					+ "Member m "
+					+ "WHERE "
+					+ "g.id=m.groupId "
+					+ "and m.accountId= " + accountId);
+			return groupList;
+		}
+		catch (Exception e) {
+			throw e;
+		}
+	}
+	
+	/**
 	 * Function will perform business validations.
 	 * 1. Patient can delete nurse and support member.
 	 * 2. Patient cannot delete itself.
@@ -251,13 +281,28 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 	 * 4. Nurse or Support Member can delete itself.
 	 * 5. Nurse or Support Member cannot delete another nurse or support member.
 	 */ 
-	public  boolean deleteMemberValidation (long accountId,long groupId, long memberId)throws Exception {
+	public  boolean deleteMemberValidation (long accountId,long groupId, long memberId) 
+			throws ValidationFailException, Exception {
 		try {
 			Database database= new Database();
 			Connection connection = database.Get_Connection();
 			
-			String userRole = memberDao.GetMemberRole(connection, accountId, groupId);
-			String memberRole = memberDao.GetMemberRole(connection, memberId, groupId);
+			List<Dictionary> roles = new ArrayList<Dictionary>();
+			roles = dictionaryService.getRolesByGroupIdAccId(accountId, groupId);
+
+			if(roles == null || roles.size() < 1) {
+				throw new ValidationFailException("Invalid Inputs");
+			}
+			
+			List<Dictionary> memberRoles = new ArrayList<Dictionary>();
+			memberRoles = dictionaryService.getRolesByGroupIdAccId(memberId, groupId);
+
+			if(memberRoles == null || memberRoles.size() < 1) {
+				throw new ValidationFailException("Invalid Inputs");
+			}
+			
+			String userRole = roles.get(0).getValue();
+			String memberRole = memberRoles.get(0).getValue();
 			
 			// Check if both member are valid
 			if(userRole== "" || memberRole == "")
@@ -277,29 +322,46 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 			else if(userRole.compareTo("N")==0) {
 				
 				//Nurse can delete itself.
-				if(accountId == memberId)
+				if(accountId == memberId) {
 					return true;
+				}
 				//Nurse can delete patient only when there is not any support member in the group
-				else if(memberRole.compareTo("P")==0)
+				else if(memberRole.compareTo("P")==0) {
 					if(memberDao.checkSupportMemberCount(connection, groupId) != 0)
 						throw new ValidationFailException("Nurse can delete patient only when there is not any support member in the group");
+					else {
+						List<Member> nurses = new ArrayList<Member>();
+						nurses = memberDao.findByHql("select m from Member m, Dictionary d WHERE "
+								+ "m.groupId=" + groupId
+								+ "and m.isActive='Y' "
+								+ "and m.roleId=d.id "
+								+ "and d.value='N' "
+								+ "and d.type='Role'");
+						if(nurses.size() > 1)
+							throw new ValidationFailException("Nurse can delete patient only when there is no other member in the group");
+						else
+							return true;
+					}
+				}
 				//Nurse cannot delete support member.
 				else if(memberRole.compareTo("S")==0)
 					throw new ValidationFailException("Nurse cannot delete the support member");
 				//Nurse cannot delete another nurse.
-				else if(memberRole.compareTo("N")==0)
+				else if(memberRole.compareTo("N")==0) {
 					throw new ValidationFailException("Nurse cannot delete another nurse");
+				}
 				
 				else return true;
 			}
 			
 			// The current user is Support Member
-			else if(userRole.compareTo("S")==0)
+			else if(userRole.compareTo("S")==0) {
 				
 				//Support Member can only delete itself
 				if(accountId == memberId)
 					return true;
 				else throw new ValidationFailException("Support Member can only delete itself");
+			}
 			
 			return false;
 			
@@ -326,13 +388,24 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 	}
 	
 	/**
-	 * Function will delete a specific member from a specific group
+	 * Function will expire a specific member from a specific group
 	 */
-	public void deleteMember(long groupId, long memberId) throws Exception {
+	public void expireMember(long groupId, long memberId) throws ValidationFailException, Exception {
 		try {
-			Database database= new Database();
-			Connection connection = database.Get_Connection();
-			memberDao.deleteMember(connection,groupId,memberId);
+			
+			List<Member> members = new ArrayList<Member>();
+			members = memberDao.findByHql("from Member m WHERE "
+					+ "m.accountId=" + memberId
+					+ " and m.groupId=" + groupId
+					+ " and m.isActive='Y'");
+			
+			if(members == null || members.size() < 1)
+				throw new ValidationFailException("Invalid Input");
+			
+			//expire the member entry in MEMBER table and set isActive as N
+			members.get(0).setIsActive("N");
+			members.get(0).setExpirationDate(new Date());
+			memberDao.update(members.get(0));
 			
 			// update column updated_date of GROUP_INFO table 
 			Group group = groupDao.findById(groupId);
@@ -359,6 +432,7 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 		owner.setGroupId(group.getId());
 		owner.setRoleId(roleId);
 		owner.setCreateDate(new Date());
+		owner.setIsActive("Y");
 		memberDao.add(owner);
 	}
 	
@@ -378,38 +452,62 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 	public  void deleteGroupValidation (long accountId,long groupId) 
 			throws ValidationFailException, Exception {
 		try {
-			Database database= new Database();
-			Connection connection = database.Get_Connection();
-			
-			String userRole = memberDao.GetMemberRole(connection, accountId, groupId);
-			if(userRole != ""){
+
+			List<Dictionary> roles = new ArrayList<Dictionary>();
+			roles = dictionaryService.getRolesByGroupIdAccId(accountId,groupId );
+
+			if(roles == null || roles.size() < 1) {
+				throw new ValidationFailException("Invalid action");
+			}
+			else {
+
+				String userRole = roles.get(0).getValue();
+				
+				// Support Member cannot delete group
 				if(userRole.compareTo("S")==0){
 					throw new ValidationFailException("Support Member cannot delete the Group");
-				} else if(userRole.compareTo("N")==0){
-					ArrayList<Account> members = null;
-					members=memberDao.GetMembers(connection,groupId);
+				} // Nurse should be able to delete only empty group 
+				else if(userRole.compareTo("N")==0){
+					List<Member> members = null;
+					// count the no of effective members in the group
+					members=getEffectiveMembers(groupId);
 					if(members.size() > 1){
 						throw new ValidationFailException("Nurse can only delete empty group!");
 					} 
 				}
-			} else{
-				throw new ValidationFailException("Invalid action");
-			}
+			} 
 		} catch (Exception e) {
 			throw e;
 		} 
-		
+
 	}
 	
 	/**
+	 * Function will get all active members of the group
+	 */
+	public List<Member> getEffectiveMembers(long groupId) throws Exception {
+		try {
+			List<Member> members = new ArrayList<Member>();
+			members = memberDao.findByHql("from Member m WHERE "
+					+ "m.groupId=" + groupId
+					+ " and m.isActive='Y'");
+			return members;
+
+		}catch (Exception e) {
+			throw e;
+		} 
+	}
+
+	/**
 	 * Function will delete group details in GROUP_INFO table
 	 */
-	public void deleteGroup(long groupId) throws Exception {
-		//delete group
+	public void expireGroup(long groupId) throws Exception {
+		//expire group
 		try {
-			Database database= new Database();
-			Connection connection = database.Get_Connection();
-			groupDao.deleteGroup(connection, groupId);
+			
+			Group group = groupDao.findById(groupId);
+			group.setExpirationDate(new Date());
+			groupDao.update(group);
 		}
 		catch (Exception e) {
 			throw e;
@@ -418,18 +516,27 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 	}
 
 	/**
-	 * Function will delete all members in the specific group from member table.
+	 * Function will expire all members in the specific group from member table.
 	 */
-	public void deleteAllMember(long groupId) throws Exception {
+	public void expireAllMember(long groupId) throws Exception {
 		//delete group
-				try {
-					Database database= new Database();
-					Connection connection = database.Get_Connection();
-					memberDao.deleteAllMember(connection,groupId);
+		try {
+			List<Member> members = null;
+			// get all effective members
+			members=getEffectiveMembers(groupId);
+			
+			if(!(members == null || members.size() < 1)) {
+				// Expire all the members and set them as inactive in MEMBER table
+				for(Member member: members) {
+					member.setIsActive("N");
+					member.setExpirationDate(new Date());
+					memberDao.update(member);
 				}
-				catch (Exception e) {
-					throw e;
-				}
+			}
+		}
+		catch (Exception e) {
+			throw e;
+		}
 	}
 
 

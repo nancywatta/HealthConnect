@@ -72,5 +72,21 @@ public class DictionaryServiceImpl extends BaseServiceImpl<Dictionary> implement
 		
 		return dictionaryDao.findRoleByAccountIdAndGroupId(accountId, groupId);
 	}
+	
+	public List<Dictionary> getRolesByGroupIdAccId(long accountId, long groupId) throws Exception {
+		try {
+			List<Dictionary> roles = new ArrayList<Dictionary>();
+			roles = dictionaryDao.findByHql(
+					"select d from Dictionary d, Member m "
+							+ "WHERE "
+							+ "m.roleId=d.id "
+							+ "and m.groupId= " + groupId
+							+ " and m.accountId= " + accountId
+							+ " and m.isActive='Y'");
+			return roles;
+		} catch (Exception e) {
+			throw e;
+		}
+	}
 
 }

@@ -2,6 +2,7 @@ package aucklanduni.ece.hc.webservice;
 
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import aucklanduni.ece.hc.repository.dao.MemberDao;
@@ -21,6 +21,7 @@ import aucklanduni.ece.hc.repository.model.Account;
 import aucklanduni.ece.hc.repository.model.Database;
 import aucklanduni.ece.hc.repository.model.Dictionary;
 import aucklanduni.ece.hc.repository.model.Group;
+import aucklanduni.ece.hc.repository.model.Member;
 import aucklanduni.ece.hc.service.AccountService;
 import aucklanduni.ece.hc.service.DictionaryService;
 import aucklanduni.ece.hc.service.GroupService;
@@ -122,8 +123,10 @@ public class GroupRestController {
 
 			// check if group name already exists
 			List<Group> groups = new ArrayList<Group>();
-			groups = groupService.findByHql("from Group WHERE groupname='" + groupName + "'");
-			if(groups.size() > 0) {
+			groups = groupService.getGroupByName(groupName);
+			if(groups.size() > 0 && 
+					( groups.get(0).getExpirationDate() == null || 
+					  groups.get(0).getExpirationDate().compareTo(new Date()) > 0)) {
 				throw new ValidationFailException("Group Name Already Exists");
 			}
 
@@ -169,11 +172,7 @@ public class GroupRestController {
 				throw new ValidationFailException("Account does not exist");
 			}
 
-			groupList = groupService.findByHql("select distinct g from Group g, "
-					+ "Member m "
-					+ "WHERE "
-					+ "g.id=m.groupId "
-					+ "and m.accountId= " + accountId);
+			groupList = groupService.getGroupByAccId(accountId);
 
 			// if no group exists for the given account
 			if(groupList == null || groupList.size() < 1) 
@@ -283,12 +282,7 @@ public class GroupRestController {
 			}
 
 			List<Dictionary> roles = new ArrayList<Dictionary>();
-			roles = roleService.findByHql(
-					"select d from Dictionary d, Member m "
-							+ "WHERE "
-							+ "m.roleId=d.id "
-							+ "and m.groupId= " + groupId
-							+ " and m.accountId= " + accountId);
+			roles = roleService.getRolesByGroupIdAccId(accountId, groupId);
 
 			// if the input accountId and GroupId does not exist in database
 			if(roles== null || roles.size() < 1) {
@@ -342,8 +336,8 @@ public class GroupRestController {
 		HCMessage message = new  HCMessage();
 		try {
 			  groupService.deleteGroupValidation(accountId, groupId);
-				groupService.deleteAllMember(groupId);
-				groupService.deleteGroup(groupId);
+				groupService.expireAllMember(groupId);
+				groupService.expireGroup(groupId);
 
 				message.setSuccess();
 
@@ -391,38 +385,35 @@ public class GroupRestController {
 		try {
 			boolean checkValidation = false;
 			checkValidation = groupService.deleteMemberValidation(accountId, groupId, memberId);
-			
-			Database database= new Database();
-			Connection connection = database.Get_Connection();
-			
-			  if(checkValidation) 
-			  {
-				  groupService.deleteMember(groupId,memberId);
-				  int memberCount=memberDao.checkMemberCount(connection, groupId);
-				  if (memberCount>0){
-					  notifyService.notify(memberId, "You have been deleted from group", "email");
-					  message.setSuccess("member ("+memberId+") has been deleted from group ("+groupId+")");
-				  }
-				  //if there is no member in the group, the group will be deleted
-				  else if (memberCount==0){
-					  groupService.deleteGroup(groupId);
-					  notifyService.notify(memberId, "You have been deleted from group", "email");
-					  message.setSuccess("group ("+groupId+") has been deleted");
-				  }
-			  
-			  }
 
-			}catch(ValidationFailException ve) {
-				message.setFail("404", ve.getMessage());
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-				message.setFail("400", e.getMessage());
-			}
-			return message;
-		}	
+			if(checkValidation) 
+			{
+				groupService.expireMember(groupId,memberId);
+				List<Member> members = null;
+				members = groupService.getEffectiveMembers(groupId);
 
-	
-	
+				//if there is no effective member in the group, the group will be expired
+				if (members == null || members.size() < 1){
+					groupService.expireGroup(groupId);
+					notifyService.notify(memberId, "You have been deleted from group", "email");
+					message.setSuccess("group ("+groupId+") has been deleted");
+
+				}
+				else{
+					notifyService.notify(memberId, "You have been deleted from group", "email");
+					message.setSuccess("member ("+memberId+") has been deleted from group ("+groupId+")");
+				}
+			}
+
+		}catch(ValidationFailException ve) {
+			message.setFail("404", ve.getMessage());
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			message.setFail("400", e.getMessage());
+		}
+		return message;
+	}	
+		
 	
 }
