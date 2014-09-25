@@ -13,7 +13,10 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+<<<<<<< HEAD
 import org.hibernate.envers.Audited;
+=======
+>>>>>>> FETCH_HEAD
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 /**
@@ -26,7 +29,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 *
  */
 @Entity
-@Audited
 @Table(name = "APPOINTMENT")
 public class Appointment implements Serializable {
 
@@ -86,7 +88,11 @@ public class Appointment implements Serializable {
 		this.name = name;
 	}
 
+<<<<<<< HEAD
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+=======
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")  
+>>>>>>> FETCH_HEAD
 	public Date getTime() {
 		return time;
 	}
@@ -126,6 +132,7 @@ public class Appointment implements Serializable {
 	public void setIsShared(String isShared) {
 		this.isShared = isShared;
 	}
+<<<<<<< HEAD
 
 	public long getGroupId() {
 		return groupId;
@@ -136,6 +143,9 @@ public class Appointment implements Serializable {
 	}
 
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+=======
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")  
+>>>>>>> FETCH_HEAD
 	public Date getCreateDate() {
 		return createDate;
 	}
@@ -143,8 +153,12 @@ public class Appointment implements Serializable {
 	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
 	}
+<<<<<<< HEAD
 
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+=======
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")  
+>>>>>>> FETCH_HEAD
 	public Date getUpdatedDate() {
 		return updatedDate;
 	}
