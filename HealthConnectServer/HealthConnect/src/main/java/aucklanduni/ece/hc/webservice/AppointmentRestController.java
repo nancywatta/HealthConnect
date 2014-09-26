@@ -315,11 +315,15 @@ public class AppointmentRestController {
 		try{
 			ArrayList groupIdList = new ArrayList();
 			groupIdList = memberService.getGroupIdOfNurse(accountId, roleId);
-			System.out.println(groupIdList.get(0)+"-------------------------------------------");
+//			System.out.println(groupIdList.get(0)+"-------------------------------------------");
 			ArrayList<String> patientName = new ArrayList<String>();
 			
-			if(patientName.isEmpty()){
-				throw new ValidationFailException("invalid inout!");
+			if(groupIdList.size() < 2){
+				throw new ValidationFailException("invalid input!");
+			}
+			
+			if(roleId != 2){
+				throw new ValidationFailException("only nurse can do this action!");
 			}
 			
 			for(int i = 0; i < groupIdList.size(); i++){

@@ -241,16 +241,8 @@ public class MemberDaoImpl extends BaseDaoImpl<Member> implements MemberDao{
 		try
 		{
 			PreparedStatement ps = connection.prepareStatement(
-					"SELECT a.username"
-							+ "FROM ACCOUNT a "
-							+ "INNER JOIN MEMBER m "
-							+ "ON "
-							+ "a.id=m.account_id "
-							+ "and m.group_id= " + groupId
-							+ " INNER JOIN DICTIONARY d "
-							+ "ON "
-							+ "m.role_id=d.id"
-							+ "and d.value = 'P'");
+					"SELECT a.username FROM ACCOUNT a INNER JOIN MEMBER m ON a.id=m.account_id AND m.group_id= ? AND m.role_id=1");
+			ps.setLong(1, groupId);
 			ResultSet rs = ps.executeQuery();
 			while(rs.next())
 			{
@@ -272,14 +264,9 @@ public class MemberDaoImpl extends BaseDaoImpl<Member> implements MemberDao{
 		
 		try{
 			PreparedStatement ps = connection.prepareStatement(
-					"SELECT group_id"
-							+"FROM member"
-							+ " WHERE "
-							+ "account_id = "+ accountId
-							+ " AND "
-							+ "role_id = " + roleId );
-//			ps.setLong(1, accountId);
-//			ps.setLong(2, roleId);
+					"SELECT group_id FROM member WHERE ACCOUNT_ID = ?  AND  ROLE_ID = ?" );
+			ps.setLong(1, accountId);
+			ps.setLong(2, roleId);
 			ResultSet rs = ps.executeQuery();
 			while(rs.next())
 			{
