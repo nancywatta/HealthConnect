@@ -307,21 +307,37 @@ public class AppointmentRestController {
 			,headers="Accept=application/json"
 			)
 	public HCMessage filterAppsByUsername(HttpServletRequest request, HttpServletResponse response,
+			@RequestParam("accountId") long accountId,
+			@RequestParam("roleId") long roleId,
 			@RequestParam("username") String username){
-		System.out.println(">>>>>>>>>>>>>>>>>filterAppointment"+username);
+		
 		HCMessage message = new  HCMessage();
 		try{
-			long accountId = accountService.getAccIdByUsername(username);
-			if(accountId == 0) {
-				throw new ValidationFailException("Account does not exist");
+			ArrayList groupIdList = new ArrayList();
+			groupIdList = memberService.getGroupIdOfNurse(accountId, roleId);
+			System.out.println(groupIdList.get(0)+"-------------------------------------------");
+			ArrayList<String> patientName = new ArrayList<String>();
+			
+			if(patientName.isEmpty()){
+				throw new ValidationFailException("invalid inout!");
 			}
 			
-			List<Appointment> appointments=appointmentService.findAllByAccountId(accountId);
-			for(Appointment appointment:appointments){
-				System.out.println("appointmentName="+appointment.getName()+"   appointmentLocation="+appointment.getLocation());
+			for(int i = 0; i < groupIdList.size(); i++){
+				long groupId = (Long) groupIdList.get(i);
+				String patientN = "";
+				patientN = memberService.getPatientName(groupId);
+				patientName.add(patientN);
 			}
 			
-			message.setSuccess(appointments);
+			if(patientName.contains(username)){
+				long accIdOfPatient = accountService.getAccIdByUsername(username);
+				List<Appointment> appointments=appointmentService.findAllByAccountId(accIdOfPatient);
+				message.setSuccess(appointments);
+			} else {
+				throw new ValidationFailException("invalid username!");
+			}
+			
+			
 		
 		}catch(ValidationFailException ve) {
 			message.setFail("404", ve.getMessage());
@@ -331,6 +347,8 @@ public class AppointmentRestController {
 		}
 		return message;
 	
-}
+	}
+	
+	
 
 }

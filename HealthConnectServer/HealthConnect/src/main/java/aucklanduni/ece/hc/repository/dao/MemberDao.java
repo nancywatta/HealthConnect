@@ -27,4 +27,7 @@ public interface MemberDao extends BaseDao<Member>{
 
 	public Member findByAccountIdAndGroupId(long accountId, long groupId) throws Exception;
 	
+	public String getPatientName(Connection connection, long groupId) throws Exception;
+	
+	public ArrayList getGroupIdOfNurse(Connection connection, long accountId, long roleId) throws Exception;
 }

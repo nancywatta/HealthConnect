@@ -233,5 +233,69 @@ public class MemberDaoImpl extends BaseDaoImpl<Member> implements MemberDao{
 				"where member.accountId=? and member.groupId=?";
 		return (Member)s.createQuery(hql).setParameter(0,accountId).setParameter(1,groupId).uniqueResult();
 	}
+
+	//Yalu
+	public String getPatientName(Connection connection, long groupId)
+			throws Exception {
+		String patientName = "";
+		try
+		{
+			PreparedStatement ps = connection.prepareStatement(
+					"SELECT a.username"
+							+ "FROM ACCOUNT a "
+							+ "INNER JOIN MEMBER m "
+							+ "ON "
+							+ "a.id=m.account_id "
+							+ "and m.group_id= " + groupId
+							+ " INNER JOIN DICTIONARY d "
+							+ "ON "
+							+ "m.role_id=d.id"
+							+ "and d.value = 'P'");
+			ResultSet rs = ps.executeQuery();
+			while(rs.next())
+			{
+				patientName = rs.getString("username");
+				
+			}
+			return patientName;
+		}
+		catch(Exception e)
+		{
+			throw e;
+		}
+		
+	}
+
+	public ArrayList<Long> getGroupIdOfNurse(Connection connection,long accountId, long roleId)
+			throws Exception {
+		ArrayList<Long> groupIdList = new ArrayList<Long>();
+		
+		try{
+			PreparedStatement ps = connection.prepareStatement(
+					"SELECT group_id"
+							+"FROM member"
+							+ " WHERE "
+							+ "account_id = "+ accountId
+							+ " AND "
+							+ "role_id = " + roleId );
+//			ps.setLong(1, accountId);
+//			ps.setLong(2, roleId);
+			ResultSet rs = ps.executeQuery();
+			while(rs.next())
+			{
+				long groupId = 0;
+				groupId = rs.getLong("group_id");
+				groupIdList.add(groupId);
+			}
+			return groupIdList;
+		}
+		catch(Exception e)
+		{
+			throw e;
+		}
+		
+	}
+	
+	
 		
 }
