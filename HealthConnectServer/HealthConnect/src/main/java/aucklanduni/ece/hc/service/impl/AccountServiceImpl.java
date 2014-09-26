@@ -88,4 +88,18 @@ public class AccountServiceImpl extends BaseServiceImpl<Account> implements Acco
 		return accountDao.getAccIdByEmail(memberEmail);
 	}
 
+	public long getAccIdByUsername(String username) throws Exception {
+		try {
+			Database database= new Database();
+			Connection connection = database.Get_Connection();
+
+			long accountId = accountDao.getAccIdByUserName(connection, username);
+			return accountId;
+		}
+		catch (Exception e) {
+			throw e;
+		}
+		
+	}
+
 }

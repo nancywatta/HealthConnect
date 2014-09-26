@@ -86,6 +86,23 @@ public class AppointmentServiceImpl  extends BaseServiceImpl<Appointment> implem
 	public List<Appointment> findAllByAccountId(long accountId) throws Exception{
 		return appointmentDao.findAllByAccountId(accountId);
 	}
+	
+	//Yalu
+	public List<Appointment> filterByUsername(String username) throws Exception {
+		
+		try {
+			Database database= new Database();
+			Connection connection = database.Get_Connection();
+
+			long accountId = accountDao.getAccIdByUserName(connection, username);
+			
+			return appointmentDao.findAllByAccountId(accountId);
+		}
+		catch (Exception e) {
+			throw e;
+		}
+		
+	}
 }
 	
 

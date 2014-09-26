@@ -83,4 +83,9 @@ public class AppointmentDaoImpl  extends BaseDaoImpl<Appointment> implements App
 		List<Appointment> appointments=(List<Appointment>)s.createQuery(hql).setParameter(0, accountId).list();
 		return appointments;
 	}
+
+//	public List<Appointment> filterByUserName(long accountId) throws Exception {
+//		
+//		return null;
+//	}
 }

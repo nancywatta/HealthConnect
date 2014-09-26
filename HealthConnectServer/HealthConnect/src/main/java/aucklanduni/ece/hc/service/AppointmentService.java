@@ -21,5 +21,8 @@ public interface AppointmentService  extends BaseService<Appointment> {
 			String appointmentName, String appointmentLocation) throws Exception;
 
 	public List<Appointment> findAllByAccountId(long accountId) throws Exception; 
+	
+	//Yalu
+	public List<Appointment> filterByUsername(String username) throws Exception;
 	      
 }

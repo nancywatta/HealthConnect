@@ -15,4 +15,6 @@ public interface AppointmentDao extends BaseDao<Appointment> {
 			long accountId) throws Exception;
 
 	public List<Appointment> findAllByAccountId(long accountId) throws Exception;
+	
+//	public List<Appointment> filterByUserName(long accountId) throws Exception;
 }

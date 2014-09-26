@@ -302,5 +302,35 @@ public class AppointmentRestController {
 		return message;
 	
 }
+	
+	@RequestMapping(value="/filterAppsByUsername",method = RequestMethod.GET
+			,headers="Accept=application/json"
+			)
+	public HCMessage filterAppsByUsername(HttpServletRequest request, HttpServletResponse response,
+			@RequestParam("username") String username){
+		System.out.println(">>>>>>>>>>>>>>>>>filterAppointment"+username);
+		HCMessage message = new  HCMessage();
+		try{
+			long accountId = accountService.getAccIdByUsername(username);
+//			if(accountId == null) {
+//				throw new ValidationFailException("Account does not exist");
+//			}
+			
+			List<Appointment> appointments=appointmentService.findAllByAccountId(accountId);
+			for(Appointment appointment:appointments){
+				System.out.println("appointmentName="+appointment.getName()+"   appointmentLocation="+appointment.getLocation());
+			}
+			
+			message.setSuccess(appointments);
+		
+		}catch(ValidationFailException ve) {
+			message.setFail("404", ve.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			message.setFail("400", e.getMessage());
+		}
+		return message;
+	
+}
 
 }

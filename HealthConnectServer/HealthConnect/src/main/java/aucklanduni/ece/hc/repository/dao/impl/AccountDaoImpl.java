@@ -124,5 +124,28 @@ public class AccountDaoImpl  extends BaseDaoImpl<Account> implements AccountDao{
 				"where acc.email=?";
 		return (Long)s.createQuery(hql).setParameter(0, memberEmail).uniqueResult();
 	}
+
+	public long getAccIdByUserName(Connection connection, String username) throws Exception {
+		
+		try
+		{
+			PreparedStatement ps = connection.prepareStatement(
+					"SELECT a.* "
+							+ "FROM ACCOUNT a "
+							+ "WHERE "
+							+ "a.username='" + username + "'");
+			ResultSet rs = ps.executeQuery();
+			long accountId = 0;
+			while(rs.next())
+			{accountId = rs.getLong("id");}
+			return accountId;
+		}
+		catch(Exception e)
+		{
+			throw e;
+		}
+	}
+
+
 	
 }

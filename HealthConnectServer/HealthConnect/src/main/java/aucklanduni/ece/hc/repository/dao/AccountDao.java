@@ -24,4 +24,7 @@ public interface AccountDao  extends BaseDao<Account> {
 	//wu
 	public long getAccIdByEmail(String memberEmail) throws Exception;
 	
+	//Yalu
+	public long getAccIdByUserName(Connection connection,String username) throws Exception;
+	
 }
