@@ -312,9 +312,9 @@ public class AppointmentRestController {
 		HCMessage message = new  HCMessage();
 		try{
 			long accountId = accountService.getAccIdByUsername(username);
-//			if(accountId == null) {
-//				throw new ValidationFailException("Account does not exist");
-//			}
+			if(accountId == 0) {
+				throw new ValidationFailException("Account does not exist");
+			}
 			
 			List<Appointment> appointments=appointmentService.findAllByAccountId(accountId);
 			for(Appointment appointment:appointments){
