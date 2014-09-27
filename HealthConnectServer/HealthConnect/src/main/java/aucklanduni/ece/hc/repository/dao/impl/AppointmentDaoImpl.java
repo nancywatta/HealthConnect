@@ -93,7 +93,7 @@ public class AppointmentDaoImpl  extends BaseDaoImpl<Appointment> implements App
 		{
 			PreparedStatement ps = connection.prepareStatement(
 					"SELECT app.* FROM appointment app  "
-					+ "INNER JOIN app_acc_ref aar ON app.id = aar.appointment_id AND aar.account_id= "
+					+ "INNER JOIN app_acc_ref aar ON app.id = aar.appointment_id AND aar.account_id=?"
 					+ " WHERE app.created_date BETWEEN ? AND ?");
 			ps.setLong(1, accountId);
 			ps.setDate(2, (java.sql.Date) startDate);

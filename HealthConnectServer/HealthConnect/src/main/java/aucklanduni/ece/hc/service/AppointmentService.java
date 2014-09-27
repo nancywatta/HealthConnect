@@ -24,5 +24,8 @@ public interface AppointmentService  extends BaseService<Appointment> {
 	
 	//Yalu
 	public List<Appointment> filterByUsername(String username) throws Exception;
+	
+	public List<Appointment> filterByDate(long accountId, Date startDate, Date endDate) throws Exception;
+	
 	      
 }

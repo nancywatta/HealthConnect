@@ -103,6 +103,18 @@ public class AppointmentServiceImpl  extends BaseServiceImpl<Appointment> implem
 		}
 		
 	}
+	
+	public List<Appointment> filterByDate(long accountId, Date startDate, Date endDate) throws Exception{
+		
+		try {
+			Database database= new Database();
+			Connection connection = database.Get_Connection();
+			return appointmentDao.filterByDate(connection,accountId, startDate, endDate);
+		}
+		catch (Exception e) {
+			throw e;
+		}
+	}
 }
 	
 
