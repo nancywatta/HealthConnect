@@ -318,7 +318,7 @@ public class AppointmentRestController {
 //			System.out.println(groupIdList.get(0)+"-------------------------------------------");
 			ArrayList<String> patientName = new ArrayList<String>();
 			
-			if(groupIdList.size() < 2){
+			if(groupIdList.size() == 0){
 				throw new ValidationFailException("invalid input!");
 			}
 			
