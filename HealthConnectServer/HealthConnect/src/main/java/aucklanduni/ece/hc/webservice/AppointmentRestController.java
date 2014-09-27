@@ -143,19 +143,13 @@ public class AppointmentRestController {
 			if( (role.getValue().compareTo("S")==0 ) ) {
 				throw new ValidationFailException("Supportive members are not allowed to create an appointment");
 			}
-
-			// check if appointment name already exists
-//			List<Appointment> appointments = new ArrayList<Appointment>();
-//			appointments = appointmentService.findByHql("from Appointment WHERE appointmentname='" + appointmentName + "'");
-//			if(appointments.size() > 0) {
-//				throw new ValidationFailException("Appointment Name Already Exists");
-//			}
 			
 			Appointment appointment=new Appointment();
 			AppointmentAccountRef aaf=new AppointmentAccountRef();
 			appointment.setTime(new Date());
 			appointment.setName(appointmentName);
 			appointment.setLocation(appointmentLocation);
+			appointment.setGroupId(groupId);
 			appointment.setCreateDate(new Date());
 			appointment.setUpdatedDate(new Date());
 			if(isShare.compareTo("T")==0)
@@ -165,9 +159,12 @@ public class AppointmentRestController {
 			appointmentService.add(appointment);
 			
 			//update the reference table
-			aaf.setAccountId(accountId);
+			List<Account> accLists=memberService.findAllMembersInGroup(groupId);
+			for(Account acc:accLists){
+			aaf.setAccountId(acc.getId());
 			aaf.setAppointmentId(appointment.getId());
 			aafService.add(aaf);
+			}
 			
 			notifyService.notify(accountId, "You already create an appountment", "email");
 			
@@ -183,6 +180,74 @@ public class AppointmentRestController {
 
 		return message;
 	}
+
+	/**
+	 * This method handle updateAppointment request, only nurse and patient can update appointment.
+	 * @param request
+	 * @param response
+	 * @param accountId
+	 * @param groupId
+	 * @param appointmentName
+	 * @param appointmentLocation
+	 * @param isShare
+	 * @return
+	 */
+	@RequestMapping(value="/updateAppointment",method = RequestMethod.POST
+			,headers="Accept=application/json"
+			)
+	public HCMessage updateAppointment(HttpServletRequest request, HttpServletResponse response
+			,@RequestParam(value="accountId") long accountId
+			,@RequestParam(value="groupId") long groupId
+//			,@RequestParam("appointmentTimeNew") Date appointmentTimeNew
+			,@RequestParam("appointmentId") long appointmentId
+			,@RequestParam("appointmentLocationNew") String appointmentLocationNew
+			) {
+		HCMessage message = new  HCMessage();
+		try {
+			Appointment appointment = null;
+			// check if given appointment exists
+			appointment = appointmentService.findById(appointmentId);
+			if(appointment == null){
+				throw new ValidationFailException("Appointment does not exist");
+			}
+			
+			Account account = null;
+			// check if given accountId exists
+			account = accountService.findById(accountId);
+			if(account == null) {
+				throw new ValidationFailException("Account does not exist");
+			}
+			
+			Group group = null;
+			//check if given groupId exists
+			group = groupService.findById(groupId);
+			if(group == null){
+				throw new ValidationFailException("Group does not exist");
+			}
+			
+			Dictionary role = null;
+			role = roleService.findRoleByAccountIdAndGroupId(accountId,groupId);
+			// check if the current user is a nurse or patient
+			if( (role.getValue().compareTo("S")==0 ) ) {
+				throw new ValidationFailException("Supportive members are not allowed to update an appointment");
+			}
+			
+			appointment.setTime(new Date());
+			appointment.setUpdatedDate(new Date());
+			appointment.setLocation(appointmentLocationNew);
+			appointmentService.update(appointment);
+			
+			message.setSuccess(appointment);
+		}catch(ValidationFailException ve) {
+			message.setFail("404", ve.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			message.setFail("400", e.getMessage());
+		}
+
+		return message;
+	}
+		
 	
 //	/**
 //	 * This method is used to handle /Appointment/shareAppointment request, which share an appointment to a
