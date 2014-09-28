@@ -324,7 +324,7 @@ public class GroupRestController {
 	 * @param response
 	 * @param accountId - account in the group
 	 * @param groupId - the group will be deleted
-	 * @return String
+	 * @return HCMessage
 	 * @throws
 	 */
 	@RequestMapping(value="/deleteGroup",method = RequestMethod.POST
