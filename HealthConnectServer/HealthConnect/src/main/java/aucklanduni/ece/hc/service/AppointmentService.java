@@ -22,10 +22,14 @@ public interface AppointmentService  extends BaseService<Appointment> {
 
 	public List<Appointment> findAllByAccountId(long accountId) throws Exception; 
 	
+	public List<Appointment> findAllByGroupShared(long accountId)throws Exception;
+	
 	//Yalu
 	public List<Appointment> filterByUsername(String username) throws Exception;
 	
 	public List<Appointment> filterByDate(long accountId, Date startDate, Date endDate) throws Exception;
+
+	
 	
 	      
 }

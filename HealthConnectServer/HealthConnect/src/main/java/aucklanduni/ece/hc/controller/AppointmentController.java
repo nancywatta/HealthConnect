@@ -209,37 +209,22 @@ public class AppointmentController {
 				throw new ValidationFailException("Account does not exist");
 			}
 			//add nurse and patient can view appointment
-			/*
-			 * String groups = null;
-		List<Group> groupList = new ArrayList<Group>();
-		Map<String, ArrayList<Group>> groupArray = new HashMap<String, ArrayList<Group>>();
-		try {
-			groupList = groupService.findByHql("select distinct g from Group g, "
-					+ "Member m "
-					+ "WHERE "
-					+ "g.id=m.groupId "
-					+ "and m.accountId= " + accountId);
-			groupArray.put("groups", (ArrayList<Group>)groupList);
-			groups = gson.toJson(groupArray);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return groups;
-	}
-
-			 */
-			Dictionary role = null;
-			role = roleService.findRoleByAccountIdAndGroupId(accountId,groupId);
-			// check if the current user is a nurse or patient
-			if( (role.getValue().compareTo("N")==0 )||(role.getValue().compareTo("P")==0) ) {
-				//throw new ValidationFailException("Supportive members are not allowed to create an appointment")
-				
+			
+			
+			// print out the appointments that the user created.
+			    System.out.println("These are the appointments that you create");
 				List<Appointment> appointments=appointmentService.findAllByAccountId(accountId);
 				for(Appointment appointment:appointments){
 					log.debug("appointmentName="+appointment.getName()+"   appointmentLocation="+appointment.getLocation());
+			// print out the appointments that being shared in groups.
+				System.out.println("These are the appointments that being shared in your group");	
+				List<Appointment> appointments2=appointmentService.findAllByGroupShared(accountId);
+				for(Appointment appointment2:appointments2){
+					log.debug("appointmentName="+appointment2.getName()+"   appointmentLocation="+appointment2.getLocation());
+				}
+					
 				};
-			}
+			
 			
 			//List<Appointment> appointments=appointmentService.findAllByAccountId(accountId);
 			//for(Appointment appointment:appointments){
