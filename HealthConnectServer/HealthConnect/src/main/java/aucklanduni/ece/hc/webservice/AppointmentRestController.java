@@ -443,7 +443,7 @@ public class AppointmentRestController {
 		
 		HCMessage message = new  HCMessage();
 		try{
-			ArrayList groupIdList = new ArrayList();
+			ArrayList groupIdList = new ArrayList();//get
 			groupIdList = memberService.getGroupIdOfNurse(accountId, roleId);
 //			System.out.println(groupIdList.get(0)+"-------------------------------------------");
 			ArrayList<String> patientName = new ArrayList<String>();
@@ -483,6 +483,58 @@ public class AppointmentRestController {
 	
 	}
 	
+	@RequestMapping(value="/filterByByDate",method = RequestMethod.GET
+			,headers="Accept=application/json"
+			)
+	public HCMessage filterByDate(HttpServletRequest request, HttpServletResponse response,
+			@RequestParam("accountId") long accountId,
+			@RequestParam("roleId") long roleId,
+			@RequestParam("username") String username,
+			@RequestParam("startDate") Date startDate,
+			@RequestParam("endDate") Date endDate){
+		
+		HCMessage message = new  HCMessage();
+		try{
+			ArrayList groupIdList = new ArrayList();
+			groupIdList = memberService.getGroupIdOfNurse(accountId, roleId);
+//			System.out.println(groupIdList.get(0)+"-------------------------------------------");
+			ArrayList<String> patientName = new ArrayList<String>();
+			
+			if(groupIdList.size() == 0){
+				throw new ValidationFailException("invalid input!");
+			}
+			
+			if(roleId != 2){
+				throw new ValidationFailException("only nurse can do this action!");
+			}
+			
+			for(int i = 0; i < groupIdList.size(); i++){
+				long groupId = (Long) groupIdList.get(i);
+				String patientN = "";
+				patientN = memberService.getPatientName(groupId);
+				patientName.add(patientN);
+			}
+			
+			if(patientName.contains(username)){
+				long accIdOfPatient = accountService.getAccIdByUsername(username);
+				List<Appointment> appointments=appointmentService.filterByDate(accIdOfPatient, startDate, endDate);
+				message.setSuccess(appointments);
+			} else {
+				throw new ValidationFailException("invalid username!");
+			}
+			
+			
+			
+		
+		}catch(ValidationFailException ve) {
+			message.setFail("404", ve.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			message.setFail("400", e.getMessage());
+		}
+		return message;
+	
+	}
 	
 
 }
