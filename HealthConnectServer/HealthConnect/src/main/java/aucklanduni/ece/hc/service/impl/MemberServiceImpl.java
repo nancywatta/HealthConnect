@@ -3,10 +3,13 @@ package aucklanduni.ece.hc.service.impl;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import aucklanduni.ece.hc.repository.dao.MemberDao;
+import aucklanduni.ece.hc.repository.model.Account;
 import aucklanduni.ece.hc.repository.model.Database;
 import aucklanduni.ece.hc.repository.model.Member;
 import aucklanduni.ece.hc.service.MemberService;
@@ -51,6 +54,9 @@ public class MemberServiceImpl extends BaseServiceImpl<Member> implements
 		catch (Exception e) {
 			throw e;
 		}
+	}
+	public List<Account> findAllMembersInGroup(long groupId) throws Exception {
+		return memberDao.findAllMembersInGroup(groupId);
 	}
 	
 	

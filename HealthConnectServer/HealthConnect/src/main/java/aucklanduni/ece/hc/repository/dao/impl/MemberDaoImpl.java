@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
@@ -290,6 +291,15 @@ public class MemberDaoImpl extends BaseDaoImpl<Member> implements MemberDao{
 			throw e;
 		}
 		
+	}
+
+	public List<Account> findAllMembersInGroup(long groupId) throws Exception {
+		Session s=getSession();
+		String hql="select acc "
+				+"from Account acc, Member m "
+				+"where acc.id=m.accountId and m.groupId=?";
+		
+		return (List<Account>)s.createQuery(hql).setParameter(0, groupId).list();
 	}
 	
 	

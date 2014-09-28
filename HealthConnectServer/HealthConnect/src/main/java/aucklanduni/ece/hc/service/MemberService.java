@@ -2,6 +2,7 @@ package aucklanduni.ece.hc.service;
 
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,4 +19,5 @@ public interface MemberService extends BaseService<Member> {
 	
 	public String getPatientName( long groupId) throws Exception;
 
+	public List<Account> findAllMembersInGroup(long groupId)throws Exception;
 }

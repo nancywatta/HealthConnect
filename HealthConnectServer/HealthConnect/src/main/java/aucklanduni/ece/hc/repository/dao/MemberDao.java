@@ -2,6 +2,7 @@ package aucklanduni.ece.hc.repository.dao;
 
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.List;
 
 import aucklanduni.ece.hc.repository.model.Account;
 import aucklanduni.ece.hc.repository.model.Member;
@@ -30,4 +31,6 @@ public interface MemberDao extends BaseDao<Member>{
 	public String getPatientName(Connection connection, long groupId) throws Exception;
 	
 	public ArrayList getGroupIdOfNurse(Connection connection, long accountId, long roleId) throws Exception;
+
+	public List<Account> findAllMembersInGroup(long groupId) throws Exception;
 }
