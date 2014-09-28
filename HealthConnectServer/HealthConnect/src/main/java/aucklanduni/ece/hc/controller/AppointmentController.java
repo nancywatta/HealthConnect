@@ -237,6 +237,53 @@ public class AppointmentController {
 		return "viewAppointment/ok";
 	}
 
+	@RequestMapping("/viewAppointmentByGroup")//As nurses or patients, they can view the appointments.
+	@ResponseBody
+	public String viewAppointmentByGroup(HttpServletRequest request, HttpServletResponse response,
+			@RequestParam("accountId") long accountId,
+			@RequestParam(value="groupId") long groupId){
+		log.debug(">>>>>>>>>>>>>>>>>viewAppointment"+accountId+"by"+groupId);
+		try{
+			
+			Account account = null;
+			// check if given accountId exists
+			account = accountService.findById(accountId);
+			if(account == null) {
+				throw new ValidationFailException("Account does not exist");
+			}
+			//add nurse and patient can view appointment
+			Group group=null;
+			// check if given group exists
+			group=groupService.findById(groupId);
+			if(group==null){
+				throw new ValidationFailException("such group does not exist");
+			}
+			
+			// print out the appointments that the user created.
+			    //System.out.println("These are the appointments that you create");
+				List<Appointment> appointments=appointmentService.findAllByGroupId(accountId,groupId);
+				for(Appointment appointment:appointments){
+					log.debug("appointmentName="+appointment.getName()+"   appointmentLocation="+appointment.getLocation());
+					// print out the appointments that being shared in groups.
+					//System.out.println("These are the appointments that being shared in your group");	
+					//List<Appointment> appointments2=appointmentService.findAllByGroupShared(accountId);
+					//for(Appointment appointment2:appointments2){
+						//log.debug("appointmentName="+appointment2.getName()+"   appointmentLocation="+appointment2.getLocation());
+					//}
+						
+					};
+				
+				
+				//List<Appointment> appointments=appointmentService.findAllByAccountId(accountId);
+				//for(Appointment appointment:appointments){
+				//	log.debug("appointmentName="+appointment.getName()+"   appointmentLocation="+appointment.getLocation());
+				//}
+			}
+			catch(Exception e){
+				e.printStackTrace();
+			}
+			return "viewAppointmentByGroup/ok";
+		}
 	
 //	@RequestMapping(value="/viewAppointments")
 //	@ResponseBody

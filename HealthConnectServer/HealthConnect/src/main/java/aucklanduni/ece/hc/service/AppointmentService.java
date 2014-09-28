@@ -29,6 +29,8 @@ public interface AppointmentService  extends BaseService<Appointment> {
 	
 	public List<Appointment> filterByDate(long accountId, Date startDate, Date endDate) throws Exception;
 
+	public List<Appointment> findAllByGroupId(long accountId, long groupId)throws Exception;
+
 	
 	
 	      

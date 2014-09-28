@@ -372,6 +372,65 @@ public class AppointmentRestController {
 		return message;
 	
 }
+	/*
+	 * /**
+		 * 
+		 * @Title: viewAppointmentsBuGroup 
+		 * @Description: Service will return all the appointments of the given
+		 * accountId and groupId.
+		 *  
+		 * @param request
+		 * @param response
+		 * @param accountId 
+		 * @return HCMessage
+		 * @throws
+		 */
+		
+		@RequestMapping(value="/viewAppointmentByGroup",method = RequestMethod.GET
+				,headers="Accept=application/json"
+				)
+		public HCMessage showAppointmentsByGroup(HttpServletRequest request, HttpServletResponse response,
+				@RequestParam("accountId") long accountId,
+				@RequestParam(value="groupId") long groupId){
+			System.out.println(">>>>>>>>>>>>>>>>>viewAppointment"+accountId+"by"+groupId);
+			HCMessage message = new  HCMessage();
+			try{
+				Account account = null;
+				// check if given accountId exists
+				account = accountService.findById(accountId);
+				if(account == null) {
+					throw new ValidationFailException("Account does not exist");
+				}
+				
+				Group group=null;
+				// check if given group exists
+				group=groupService.findById(groupId);
+				if(group==null){
+					throw new ValidationFailException("such group does not exist");
+				}
+				
+				//System.out.println("These are the appointments that you created");
+				List<Appointment> appointments=appointmentService.findAllByGroupId(accountId,groupId);
+				for(Appointment appointment:appointments){
+					System.out.println("appointmentName="+appointment.getName()+"   appointmentLocation="+appointment.getLocation());
+				}
+				//System.out.println("These are the appointments that being shared in your group");	
+				//List<Appointment> appointments2=appointmentService.findAllByGroupShared(accountId);
+				//for(Appointment appointment2:appointments2){
+					//log.debug("appointmentName="+appointment2.getName()+"   appointmentLocation="+appointment2.getLocation());
+				//}
+				message.setSuccess(appointments);
+			}catch(ValidationFailException ve) {
+				message.setFail("404", ve.getMessage());
+			} catch (Exception e) {
+				e.printStackTrace();
+				message.setFail("400", e.getMessage());
+			}
+			return message;
+		
+	}
+	
+	
 	/**
 	 * 
 	 * @Title: filterAppsByUsername
