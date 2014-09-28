@@ -170,5 +170,65 @@ public class AppointmentMockTests extends BaseContextControllerTests {
 				.andDo(print())
 				.andExpect(jsonPath("$.error").value("No groups Exists for this nurse"));
 	}
-	
+	/**
+	 * test filterAppsByUsername : Only nurse can filter appointments.
+	 */
+	@Test 
+	public void filterAppsByUserroleId() throws Exception {  
+		this.mockMvc.perform(post(URL+"/filterAppsByUsername")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("roleId", "3")
+				)
+				.andDo(print())
+				.andExpect(jsonPath("$.error").value("Only nurse can filter appointments"));
+	}
+	/**
+	 * test filterAppsByUsername : Only nurse can filter appointments.
+	 */
+	@Test 
+	public void filterAppsByUserusername() throws Exception {  
+		this.mockMvc.perform(post(URL+"/filterAppsByUsername")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("username", "lala")
+				)
+				.andDo(print())
+				.andExpect(jsonPath("$.error").value("invalid username"));
+    }	
+	/**
+	 * test filterAppsByDate : Nurse filter appointments when he/she have a group as a nurse.
+	 */
+	@Test 
+	public void filterAppsByDatenogroups() throws Exception {  
+		this.mockMvc.perform(post(URL+"/filterAppsByUsername")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("accountId", "2")
+				.param("roleId", "2")
+				)
+				.andDo(print())
+				.andExpect(jsonPath("$.error").value("No groups Exists for this nurse"));
+	}
+	/**
+	 * test filterAppsByDate : Only nurse can filter appointments.
+	 */
+	@Test 
+	public void filterAppsByDateroleId() throws Exception {  
+		this.mockMvc.perform(post(URL+"/filterAppsByUsername")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("roleId", "3")
+				)
+				.andDo(print())
+				.andExpect(jsonPath("$.error").value("Only nurse can filter appointments"));
+	}
+	/**
+	 * test filterAppsByDate : Only nurse can filter appointments.
+	 */
+	@Test 
+	public void filterAppsByDateusername() throws Exception {  
+		this.mockMvc.perform(post(URL+"/filterAppsByUsername")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("username", "lala")
+				)
+				.andDo(print())
+				.andExpect(jsonPath("$.error").value("invalid username"));
+    }	
 }
