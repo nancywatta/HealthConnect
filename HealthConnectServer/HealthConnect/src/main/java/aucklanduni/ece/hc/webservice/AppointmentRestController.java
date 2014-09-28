@@ -285,12 +285,16 @@ public class AppointmentRestController {
 			if(account == null) {
 				throw new ValidationFailException("Account does not exist");
 			}
-			
+			System.out.println("These are the appointments that you created");
 			List<Appointment> appointments=appointmentService.findAllByAccountId(accountId);
 			for(Appointment appointment:appointments){
 				System.out.println("appointmentName="+appointment.getName()+"   appointmentLocation="+appointment.getLocation());
 			}
-			
+			System.out.println("These are the appointments that being shared in your group");	
+			List<Appointment> appointments2=appointmentService.findAllByGroupShared(accountId);
+			for(Appointment appointment2:appointments2){
+				log.debug("appointmentName="+appointment2.getName()+"   appointmentLocation="+appointment2.getLocation());
+			}
 			message.setSuccess(appointments);
 		
 		}catch(ValidationFailException ve) {
