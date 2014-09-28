@@ -217,11 +217,11 @@ public class AppointmentController {
 				for(Appointment appointment:appointments){
 					log.debug("appointmentName="+appointment.getName()+"   appointmentLocation="+appointment.getLocation());
 			// print out the appointments that being shared in groups.
-				System.out.println("These are the appointments that being shared in your group");	
-				List<Appointment> appointments2=appointmentService.findAllByGroupShared(accountId);
-				for(Appointment appointment2:appointments2){
-					log.debug("appointmentName="+appointment2.getName()+"   appointmentLocation="+appointment2.getLocation());
-				}
+				//System.out.println("These are the appointments that being shared in your group");	
+				//List<Appointment> appointments2=appointmentService.findAllByGroupShared(accountId);
+				//for(Appointment appointment2:appointments2){
+					//log.debug("appointmentName="+appointment2.getName()+"   appointmentLocation="+appointment2.getLocation());
+				//}
 					
 				};
 			

@@ -87,9 +87,9 @@ public class AppointmentServiceImpl  extends BaseServiceImpl<Appointment> implem
 		return appointmentDao.findAllByAccountId(accountId);
 	}
 	
-	public List<Appointment> findAllByGroupShared(long accountId)throws Exception{
-		return appointmentDao.findAllByGroupShared(accountId);
-	}
+	//public List<Appointment> findAllByGroupShared(long accountId)throws Exception{
+		//return appointmentDao.findAllByGroupShared(accountId);
+	//}
 	
 	//Yalu
 	public List<Appointment> filterByUsername(String username) throws Exception {
