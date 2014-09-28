@@ -180,7 +180,8 @@ public class AppointmentMockTests extends BaseContextControllerTests {
 				.param("roleId", "3")
 				)
 				.andDo(print())
-				.andExpect(jsonPath("$.error").value("Only nurse can filter appointments"));
+				.andExpect(jsonPath("$.error").value("Only nurse can filter appointments"))
+				.andExpect(jsonPath("$.status").value("404"));
 	}
 	/**
 	 * test filterAppsByUsername : Only nurse can filter appointments.
@@ -192,7 +193,8 @@ public class AppointmentMockTests extends BaseContextControllerTests {
 				.param("username", "lala")
 				)
 				.andDo(print())
-				.andExpect(jsonPath("$.error").value("invalid username"));
+				.andExpect(jsonPath("$.error").value("invalid username"))
+				.andExpect(jsonPath("$.status").value("404"));
     }	
 	/**
 	 * test filterAppsByDate : Nurse filter appointments when he/she have a group as a nurse.
@@ -205,7 +207,8 @@ public class AppointmentMockTests extends BaseContextControllerTests {
 				.param("roleId", "2")
 				)
 				.andDo(print())
-				.andExpect(jsonPath("$.error").value("No groups Exists for this nurse"));
+				.andExpect(jsonPath("$.error").value("No groups Exists for this nurse"))
+				.andExpect(jsonPath("$.status").value("404"));
 	}
 	/**
 	 * test filterAppsByDate : Only nurse can filter appointments.
@@ -217,7 +220,8 @@ public class AppointmentMockTests extends BaseContextControllerTests {
 				.param("roleId", "3")
 				)
 				.andDo(print())
-				.andExpect(jsonPath("$.error").value("Only nurse can filter appointments"));
+				.andExpect(jsonPath("$.error").value("Only nurse can filter appointments"))
+				.andExpect(jsonPath("$.status").value("404"));
 	}
 	/**
 	 * test filterAppsByDate : Only nurse can filter appointments.
@@ -229,6 +233,7 @@ public class AppointmentMockTests extends BaseContextControllerTests {
 				.param("username", "lala")
 				)
 				.andDo(print())
-				.andExpect(jsonPath("$.error").value("invalid username"));
+				.andExpect(jsonPath("$.error").value("invalid username"))
+				.andExpect(jsonPath("$.status").value("404"));
     }	
 }
