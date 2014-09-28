@@ -79,10 +79,17 @@ public class AppointmentDaoImpl  extends BaseDaoImpl<Appointment> implements App
 			throws Exception {
 		Session s=getSession();
 		String hql="select app "+
-				"from Appointment app, Account acc, AppointmentAccountRef aaf, Member mem "+
-				"where acc.id=? "
-				+"and acc.id=aaf.accountId and app.id=aaf.appointmentId "
-				+"or mem.accountId=acc.id and mem.groupId=app.groupId and app.isShared=T";
+				"from Appointment app, Account acc, AppointmentAccountRef aaf where acc.id=? and acc.id=aaf.accountId and app.id=aaf.appointmentId ";
+				
+		List<Appointment> appointments=(List<Appointment>)s.createQuery(hql).setParameter(0, accountId).list();
+		return appointments;
+	}
+	
+	public List<Appointment> findAllByGroupId(long accountId, long groupId)throws Exception{
+		Session s=getSession();
+		String hql="select app "+
+		          "from Appointment app, AppointmentAccountRef aaf, Member mem "+
+				  "where mem.accountId=? and app.groupId=? and mem.accountId=aaf.accountId and app.id=aaf.appointmentId and mem.groupId=app.groupId";
 		List<Appointment> appointments=(List<Appointment>)s.createQuery(hql).setParameter(0, accountId).list();
 		return appointments;
 	}
