@@ -379,7 +379,7 @@ public class AppointmentRestController {
 	 * @Description: Service will filter appointments by patient's name.
 	 * on business validation
 	 * 1. Only nurse can filter appointments.
-	 * 2. Nurse cannot filter appointments when he/she does have a group as a nurse.
+	 * 2. Nurse cannot filter appointments when he/she does not have a group as a nurse.
 	 * 3. Nurse can only filter patient's appointments when the patient in one of the nurse's groups.
 	 *  
 	 * @param request
@@ -401,6 +401,10 @@ public class AppointmentRestController {
 		
 		HCMessage message = new  HCMessage();
 		try{
+			
+			if(roleId != 2){
+				throw new ValidationFailException("only nurse can do this action!");
+			}
 			ArrayList groupIdList = new ArrayList();//get
 			groupIdList = memberService.getGroupIdOfNurse(accountId, roleId);
 //			System.out.println(groupIdList.get(0)+"-------------------------------------------");
@@ -410,9 +414,7 @@ public class AppointmentRestController {
 				throw new ValidationFailException("invalid input!");
 			}
 			
-			if(roleId != 2){
-				throw new ValidationFailException("only nurse can do this action!");
-			}
+			
 			
 			for(int i = 0; i < groupIdList.size(); i++){
 				long groupId = (Long) groupIdList.get(i);
@@ -460,7 +462,7 @@ public class AppointmentRestController {
 	 * @return HCMessage
 	 * @throws
 	 */
-	@RequestMapping(value="/filterByByDate",method = RequestMethod.GET
+	@RequestMapping(value="/filterAppsByByDate",method = RequestMethod.GET
 			,headers="Accept=application/json"
 			)
 	public HCMessage filterByDate(HttpServletRequest request, HttpServletResponse response,
@@ -472,6 +474,11 @@ public class AppointmentRestController {
 		
 		HCMessage message = new  HCMessage();
 		try{
+			
+			if(roleId != 2){
+				throw new ValidationFailException("only nurse can do this action!");
+			}
+			
 			ArrayList groupIdList = new ArrayList();
 			groupIdList = memberService.getGroupIdOfNurse(accountId, roleId);
 //			System.out.println(groupIdList.get(0)+"-------------------------------------------");
@@ -481,9 +488,7 @@ public class AppointmentRestController {
 				throw new ValidationFailException("invalid input!");
 			}
 			
-			if(roleId != 2){
-				throw new ValidationFailException("only nurse can do this action!");
-			}
+			
 			
 			for(int i = 0; i < groupIdList.size(); i++){
 				long groupId = (Long) groupIdList.get(i);

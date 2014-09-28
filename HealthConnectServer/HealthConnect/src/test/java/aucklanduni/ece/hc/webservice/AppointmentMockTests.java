@@ -157,4 +157,18 @@ public class AppointmentMockTests extends BaseContextControllerTests {
 				.andExpect(jsonPath("$.status").value("404"));
 	}
 	
+	/**
+	 * test filterAppsByUsername : Nurse filter appointments when he/she have a group as a nurse.
+	 */
+	@Test 
+	public void filterAppsByUsernamenogroups() throws Exception {  
+		this.mockMvc.perform(post(URL+"/filterAppsByUsername")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("accountId", "2")
+				.param("roleId", "2")
+				)
+				.andDo(print())
+				.andExpect(jsonPath("$.error").value("No groups Exists for this nurse"));
+	}
+	
 }
