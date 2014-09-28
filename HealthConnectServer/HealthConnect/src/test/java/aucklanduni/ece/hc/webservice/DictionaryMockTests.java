@@ -39,8 +39,8 @@ public class DictionaryMockTests extends BaseContextControllerTests {
 
     	this.mockMvc.perform(get(URL+"/showRoles")
         		.contentType(MediaType.APPLICATION_JSON)  
-        		.param("groupId", "1")
-	      		.param("accountId", "1")
+        		.param("groupId", "2")
+	      		.param("accountId", "3")
         		)
         		.andDo(print())
                 .andExpect(status().isOk())
@@ -59,8 +59,8 @@ public class DictionaryMockTests extends BaseContextControllerTests {
 
     	this.mockMvc.perform(get(URL+"/showRoles")
         		.contentType(MediaType.APPLICATION_JSON)  
-        		.param("groupId", "1")
-	      		.param("accountId", "2")
+        		.param("groupId", "2")
+	      		.param("accountId", "4")
         		)
         		.andDo(print())
                 .andExpect(status().isOk())
@@ -78,8 +78,8 @@ public class DictionaryMockTests extends BaseContextControllerTests {
 
     	this.mockMvc.perform(get(URL+"/showRoles")
         		.contentType(MediaType.APPLICATION_JSON)  
-        		.param("groupId", "1")
-	      		.param("accountId", "3")
+        		.param("groupId", "2")
+	      		.param("accountId", "5")
         		)
         		.andDo(print())
                 .andExpect(status().isOk())
