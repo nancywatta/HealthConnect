@@ -74,6 +74,7 @@ public class AppointmentController {
 	 * @param appointmentTime
 	 * @param appointmentName
 	 * @param appointmentLocation
+	 * @param groupId
 	 * @return
 	 */
 	@RequestMapping("/createAppointment")//As nurses or patients, they can create appointments.
@@ -196,7 +197,8 @@ public class AppointmentController {
 	@RequestMapping("/viewAppointment")//As nurses or patients, they can view the appointments.
 	@ResponseBody
 	public String viewAppointment(HttpServletRequest request, HttpServletResponse response,
-			@RequestParam("accountId") long accountId){
+			@RequestParam("accountId") long accountId,
+			@RequestParam(value="groupId") long groupId){
 		log.debug(">>>>>>>>>>>>>>>>>viewAppointment"+accountId);
 		try{
 			
@@ -206,11 +208,43 @@ public class AppointmentController {
 			if(account == null) {
 				throw new ValidationFailException("Account does not exist");
 			}
-			
-			List<Appointment> appointments=appointmentService.findAllByAccountId(accountId);
-			for(Appointment appointment:appointments){
-				log.debug("appointmentName="+appointment.getName()+"   appointmentLocation="+appointment.getLocation());
+			//add nurse and patient can view appointment
+			/*
+			 * String groups = null;
+		List<Group> groupList = new ArrayList<Group>();
+		Map<String, ArrayList<Group>> groupArray = new HashMap<String, ArrayList<Group>>();
+		try {
+			groupList = groupService.findByHql("select distinct g from Group g, "
+					+ "Member m "
+					+ "WHERE "
+					+ "g.id=m.groupId "
+					+ "and m.accountId= " + accountId);
+			groupArray.put("groups", (ArrayList<Group>)groupList);
+			groups = gson.toJson(groupArray);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return groups;
+	}
+
+			 */
+			Dictionary role = null;
+			role = roleService.findRoleByAccountIdAndGroupId(accountId,groupId);
+			// check if the current user is a nurse or patient
+			if( (role.getValue().compareTo("N")==0 )||(role.getValue().compareTo("P")==0) ) {
+				//throw new ValidationFailException("Supportive members are not allowed to create an appointment")
+				
+				List<Appointment> appointments=appointmentService.findAllByAccountId(accountId);
+				for(Appointment appointment:appointments){
+					log.debug("appointmentName="+appointment.getName()+"   appointmentLocation="+appointment.getLocation());
+				};
 			}
+			
+			//List<Appointment> appointments=appointmentService.findAllByAccountId(accountId);
+			//for(Appointment appointment:appointments){
+			//	log.debug("appointmentName="+appointment.getName()+"   appointmentLocation="+appointment.getLocation());
+			//}
 		}
 		catch(Exception e){
 			e.printStackTrace();
