@@ -39,7 +39,7 @@ public class GroupMockTests extends BaseContextControllerTests {
 
 		this.mockMvc.perform(get(URL+"/showGroups")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "1")
+				.param("accountId", "3")
 				)
 				.andDo(print())
 				.andExpect(status().isOk())
@@ -73,7 +73,7 @@ public class GroupMockTests extends BaseContextControllerTests {
 
 		this.mockMvc.perform(get(URL+"/showGroups")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "22")
+				.param("accountId", "9")
 				)
 				.andDo(print())
 				.andExpect(status().isOk())
@@ -89,7 +89,7 @@ public class GroupMockTests extends BaseContextControllerTests {
 
 		this.mockMvc.perform(get(URL+"/showMembers")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("groupId", "1")
+				.param("groupId", "2")
 				)
 				.andDo(print())
 				.andExpect(status().isOk())
@@ -141,7 +141,7 @@ public class GroupMockTests extends BaseContextControllerTests {
 
 		this.mockMvc.perform(post(URL+"/inviteUser")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "1")
+				.param("accountId", "3")
 				.param("groupId", "199")
 				.param("emailId", "nancy.watta@gmail.com")
 				.param("roleId", "1")
@@ -161,8 +161,8 @@ public class GroupMockTests extends BaseContextControllerTests {
 
 		this.mockMvc.perform(post(URL+"/inviteUser")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "1")
-				.param("groupId", "34")
+				.param("accountId", "3")
+				.param("groupId","9")
 				.param("emailId", "nancy.watta@gmail.com")
 				.param("roleId", "1")
 				)
@@ -181,8 +181,8 @@ public class GroupMockTests extends BaseContextControllerTests {
 
 		this.mockMvc.perform(post(URL+"/inviteUser")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "1")
-				.param("groupId", "1")
+				.param("accountId", "3")
+				.param("groupId", "2")
 				.param("emailId", "nancy.watta@gmail.com")
 				.param("roleId", "1")
 				)
@@ -201,8 +201,8 @@ public class GroupMockTests extends BaseContextControllerTests {
 
 		this.mockMvc.perform(post(URL+"/inviteUser")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "2")
-				.param("groupId", "1")
+				.param("accountId", "4")
+				.param("groupId", "2")
 				.param("emailId", "nancy.watta@gmail.com")
 				.param("roleId", "3")
 				)
@@ -221,8 +221,8 @@ public class GroupMockTests extends BaseContextControllerTests {
 
 		this.mockMvc.perform(post(URL+"/inviteUser")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "3")
-				.param("groupId", "1")
+				.param("accountId", "5")
+				.param("groupId", "2")
 				.param("emailId", "nancy.watta@gmail.com")
 				.param("roleId", "3")
 				)
@@ -242,8 +242,8 @@ public class GroupMockTests extends BaseContextControllerTests {
 
 		this.mockMvc.perform(post(URL+"/inviteUser")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "1")
-				.param("groupId", "1")
+				.param("accountId", "3")
+				.param("groupId", "2")
 				.param("emailId", "nancy.watta@gmail.com")
 				.param("roleId", "3")
 				)
@@ -261,8 +261,8 @@ public class GroupMockTests extends BaseContextControllerTests {
 
 		this.mockMvc.perform(post(URL+"/inviteUser")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "1")
-				.param("groupId", "1")
+				.param("accountId", "3")
+				.param("groupId", "2")
 				.param("emailId", "nancywattaa@gmail.com")
 				.param("roleId", "3")
 				)
@@ -279,7 +279,7 @@ public class GroupMockTests extends BaseContextControllerTests {
 
 		this.mockMvc.perform(post(URL+"/createGroup")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "1")
+				.param("accountId", "3")
 				.param("groupName", "newGroup")
 				.param("roleId", "2")
 				)
@@ -296,7 +296,7 @@ public class GroupMockTests extends BaseContextControllerTests {
 
 		this.mockMvc.perform(post(URL+"/createGroup")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "1")
+				.param("accountId", "3")
 				.param("groupName", "newGroup")
 				.param("roleId", "3")//forbidden
 				)
@@ -327,8 +327,8 @@ public class GroupMockTests extends BaseContextControllerTests {
 	public void addGroupWrongBySameName() throws Exception {  
 		this.mockMvc.perform(post(URL+"/createGroup")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "1")
-				.param("groupName", "newGroup")
+				.param("accountId", "3")
+				.param("groupName", "group1")
 				.param("roleId", "2")
 				);
 		this.mockMvc.perform(post(URL+"/createGroup")
@@ -348,8 +348,8 @@ public class GroupMockTests extends BaseContextControllerTests {
 	public void pDeleteGroupCorrect() throws Exception {  
 		this.mockMvc.perform(post(URL+"/deleteGroup")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "1")
-				.param("groupId", "1")
+				.param("accountId", "3")
+				.param("groupId", "10")
 				
 				)
 				.andDo(print())
@@ -364,8 +364,8 @@ public class GroupMockTests extends BaseContextControllerTests {
 	public void nDeleteGroupCorrect() throws Exception { 
 		this.mockMvc.perform(post(URL+"/deleteGroup")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "1")
-				.param("groupId", "1")
+				.param("accountId", "3")
+				.param("groupId", "11")
 				
 				)
 				.andDo(print())
@@ -380,8 +380,8 @@ public class GroupMockTests extends BaseContextControllerTests {
 	public void spDeleteGroupWrong() throws Exception { 
 		this.mockMvc.perform(post(URL+"/deleteGroup")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "1")
-				.param("groupId", "1")
+				.param("accountId", "5")
+				.param("groupId", "2")
 				
 				)
 				.andDo(print())
@@ -396,8 +396,8 @@ public class GroupMockTests extends BaseContextControllerTests {
 	public void nDeleteGroupWrong() throws Exception { 
 		this.mockMvc.perform(post(URL+"/deleteGroup")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "1")
-				.param("groupId", "1")
+				.param("accountId", "4")
+				.param("groupId", "2")
 				
 				)
 				.andDo(print())
@@ -412,8 +412,8 @@ public class GroupMockTests extends BaseContextControllerTests {
 	public void invalidAccountDeleteGroup() throws Exception { 
 		this.mockMvc.perform(post(URL+"/deleteGroup")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "3")
-				.param("groupId", "1")
+				.param("accountId", "199")
+				.param("groupId", "2")
 				
 				)
 				.andDo(print())
@@ -428,8 +428,8 @@ public class GroupMockTests extends BaseContextControllerTests {
 	public void invalidGroupIdDeleteGroup() throws Exception { 
 		this.mockMvc.perform(post(URL+"/deleteGroup")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "1")
-				.param("groupId", "4")
+				.param("accountId", "3")
+				.param("groupId", "499")
 				
 				)
 				.andDo(print())
@@ -446,13 +446,13 @@ public class GroupMockTests extends BaseContextControllerTests {
 		this.mockMvc.perform(post(URL+"/deleteMember")
 				.contentType(MediaType.APPLICATION_JSON)
 				.param("accountId", "12345")
-				.param("groupId", "1")
+				.param("groupId", "2")
 				.param("memberId", "123456")
 				
 				)
 				.andDo(print())
 				.andExpect(jsonPath("$.status").value("404"))
-				.andExpect(jsonPath("$.error").value("The user/member is invalid"));
+				.andExpect(jsonPath("$.error").value("Invalid Inputs"));
 	}
 	
 	
@@ -463,9 +463,9 @@ public class GroupMockTests extends BaseContextControllerTests {
 	public void pDeletePWrong() throws Exception { 
 		this.mockMvc.perform(post(URL+"/deleteMember")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "123")
-				.param("groupId", "1")
-				.param("memberId", "123")
+				.param("accountId", "3")
+				.param("groupId", "2")
+				.param("memberId", "3")
 				
 				)
 				.andDo(print())
@@ -480,9 +480,9 @@ public class GroupMockTests extends BaseContextControllerTests {
 	public void pDeleteNCorrect() throws Exception { 
 		this.mockMvc.perform(post(URL+"/deleteMember")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "123")
-				.param("groupId", "10")
-				.param("memberId", "456")
+				.param("accountId", "3")
+				.param("groupId", "2")
+				.param("memberId", "4")
 				
 				)
 				.andDo(print())
@@ -497,9 +497,9 @@ public class GroupMockTests extends BaseContextControllerTests {
 	public void pDeleteSMCorrect() throws Exception { 
 		this.mockMvc.perform(post(URL+"/deleteMember")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "123")
-				.param("groupId", "10")
-				.param("memberId", "789")
+				.param("accountId", "3")
+				.param("groupId", "2")
+				.param("memberId", "5")
 				
 				)
 				.andDo(print())
@@ -515,9 +515,9 @@ public class GroupMockTests extends BaseContextControllerTests {
 	public void nDeleteNWrong() throws Exception { 
 		this.mockMvc.perform(post(URL+"/deleteMember")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "456")
-				.param("groupId", "1")
-				.param("memberId", "222")
+				.param("accountId", "6")
+				.param("groupId", "7")
+				.param("memberId", "2")
 				
 				)
 				.andDo(print())
@@ -532,9 +532,9 @@ public class GroupMockTests extends BaseContextControllerTests {
 	public void nDeleteSMWrong() throws Exception { 
 		this.mockMvc.perform(post(URL+"/deleteMember")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "456")
-				.param("groupId", "1")
-				.param("memberId", "789")
+				.param("accountId", "4")
+				.param("groupId", "2")
+				.param("memberId", "5")
 				
 				)
 				.andDo(print())
@@ -549,9 +549,9 @@ public class GroupMockTests extends BaseContextControllerTests {
 	public void nDeletePCorrect() throws Exception { 
 		this.mockMvc.perform(post(URL+"/deleteMember")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "456")
-				.param("groupId", "11")
-				.param("memberId", "123")
+				.param("accountId", "4")
+				.param("groupId", "12")
+				.param("memberId", "3")
 				
 				)
 				.andDo(print())
@@ -566,9 +566,9 @@ public class GroupMockTests extends BaseContextControllerTests {
 	public void nDeleteICorrect() throws Exception { 
 		this.mockMvc.perform(post(URL+"/deleteMember")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "456")
-				.param("groupId", "11")
-				.param("memberId", "456")
+				.param("accountId", "4")
+				.param("groupId", "12")
+				.param("memberId", "4")
 				
 				)
 				.andDo(print())
@@ -584,9 +584,9 @@ public class GroupMockTests extends BaseContextControllerTests {
 	public void sMDeletePWrong() throws Exception { 
 		this.mockMvc.perform(post(URL+"/deleteMember")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "789")
-				.param("groupId", "1")
-				.param("memberId", "123")
+				.param("accountId", "5")
+				.param("groupId", "2")
+				.param("memberId", "3")
 				
 				)
 				.andDo(print())
@@ -601,9 +601,9 @@ public class GroupMockTests extends BaseContextControllerTests {
 	public void sMDeleteNWrong() throws Exception { 
 		this.mockMvc.perform(post(URL+"/deleteMember")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "789")
-				.param("groupId", "1")
-				.param("memberId", "456")
+				.param("accountId", "5")
+				.param("groupId", "2")
+				.param("memberId", "4")
 				
 				)
 				.andDo(print())
@@ -618,9 +618,9 @@ public class GroupMockTests extends BaseContextControllerTests {
 	public void sMDeleteSMWrong() throws Exception { 
 		this.mockMvc.perform(post(URL+"/deleteMember")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "789")
-				.param("groupId", "1")
-				.param("memberId", "333")
+				.param("accountId", "5")
+				.param("groupId", "2")
+				.param("memberId", "2")
 				
 				)
 				.andDo(print())
@@ -636,9 +636,9 @@ public class GroupMockTests extends BaseContextControllerTests {
 	public void sMDeleteICorrect() throws Exception { 
 		this.mockMvc.perform(post(URL+"/deleteMember")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "789")
-				.param("groupId", "12")
-				.param("memberId", "789")
+				.param("accountId", "5")
+				.param("groupId", "2")
+				.param("memberId", "5")
 				
 				)
 				.andDo(print())

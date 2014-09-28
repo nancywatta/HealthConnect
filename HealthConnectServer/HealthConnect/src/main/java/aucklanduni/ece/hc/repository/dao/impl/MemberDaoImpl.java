@@ -23,7 +23,7 @@ public class MemberDaoImpl extends BaseDaoImpl<Member> implements MemberDao{
 		try
 		{
 			PreparedStatement ps = connection.prepareStatement(
-					"SELECT a.id AS accountId, a.email, a.username, d.* "
+					"SELECT a.id AS accountId, a.email, a.username, m.*, d.* "
 					+ "FROM ACCOUNT a "
 					+ "INNER JOIN MEMBER m "
 					+ "ON "
@@ -40,12 +40,21 @@ public class MemberDaoImpl extends BaseDaoImpl<Member> implements MemberDao{
 				accountObject.setEmail(rs.getString("email"));
 				accountObject.setUsername(rs.getString("username"));
 				Dictionary roleObject = new Dictionary();
-				roleObject.setId(rs.getLong("id"));
+				roleObject.setId(rs.getLong("d.id"));
 				roleObject.setType(rs.getString("type"));
 				roleObject.setValue(rs.getString("value"));
 				roleObject.setName(rs.getString("name"));
 				roleObject.setDescription(rs.getString("description"));
 				accountObject.setRole(roleObject);
+				Member member = new Member();
+				member.setAccountId(rs.getLong("m.account_id"));
+				member.setId(rs.getLong("m.id"));
+				member.setGroupId(rs.getLong("m.group_id"));
+				member.setRoleId(rs.getLong("m.role_id"));
+				member.setCreateDate(rs.getDate("m.created_date"));
+				member.setExpirationDate(rs.getDate("m.expiration_date"));
+				member.setIsActive(rs.getString("m.isActive"));
+				accountObject.setMemberDetails(member);
 				accountData.add(accountObject);
 			}
 			return accountData;

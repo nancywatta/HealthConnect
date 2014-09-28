@@ -63,6 +63,9 @@ public class Account implements Serializable {
 	
 	@Transient
 	private Dictionary role;
+	
+	@Transient
+	private Member memberDetails;
 
 	public long getId() {
 		return id;
@@ -134,6 +137,14 @@ public class Account implements Serializable {
 
 	public void setExpirationDate(Date expirationDate) {
 		this.expirationDate = expirationDate;
+	}
+
+	public Member getMemberDetails() {
+		return memberDetails;
+	}
+
+	public void setMemberDetails(Member memberDetails) {
+		this.memberDetails = memberDetails;
 	}
 
 	@Override
