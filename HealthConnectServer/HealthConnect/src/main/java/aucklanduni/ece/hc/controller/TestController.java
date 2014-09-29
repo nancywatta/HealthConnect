@@ -54,7 +54,7 @@ public class TestController {
 //			@RequestParam(value="appointmentTime") Date appointmentTime,
 			@RequestParam(value="appointmentName") String appointmentName){
 		Appointment appointment=new Appointment();
-		appointment.setTime(new Date());
+		//appointment.setTime(new Date());
 		appointment.setName(appointmentName);
 		try {
 			appointmentService.add(appointment);

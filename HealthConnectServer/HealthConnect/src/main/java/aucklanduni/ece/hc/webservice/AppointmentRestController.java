@@ -585,13 +585,14 @@ public class AppointmentRestController {
 			@RequestParam("accountId") long accountId,
 			@RequestParam("roleId") long roleId,
 			@RequestParam("username") String username,
-			@RequestParam("startDate") @DateTimeFormat(pattern="yyyy-MM-dd") Date startDate,
+			@RequestParam("startDate") @DateTimeFormat(pattern="yyyy-MM-dd")  Date startDate,
 			@RequestParam("endDate") @DateTimeFormat(pattern="yyyy-MM-dd")  Date endDate){
 		
 		HCMessage message = new  HCMessage();
 		try{
 			
 			if(roleId != 2){
+				System.out.println("222222222222");
 				throw new ValidationFailException("only nurse can do this action!");
 			}
 			
@@ -625,6 +626,7 @@ public class AppointmentRestController {
 			
 		
 		}catch(ValidationFailException ve) {
+			System.out.println(ve.getMessage());
 			message.setFail("404", ve.getMessage());
 		} catch (Exception e) {
 			e.printStackTrace();

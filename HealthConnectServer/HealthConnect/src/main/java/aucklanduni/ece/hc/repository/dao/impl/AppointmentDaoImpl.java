@@ -123,7 +123,7 @@ public class AppointmentDaoImpl  extends BaseDaoImpl<Appointment> implements App
 				Appointment app = new Appointment();
 				app.setId(rs.getLong("id"));
 				app.setName(rs.getString("name"));
-				app.setTime(rs.getDate("time"));
+				//app.setTime(rs.getDate("time"));
 				app.setLocation(rs.getString("location"));
 				app.setDescription(rs.getString("description"));
 				app.setCreateDate(rs.getDate("created_date"));

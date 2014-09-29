@@ -110,7 +110,7 @@ public class AppointmentController {
 			
 			Appointment appointment=new Appointment();
 			AppointmentAccountRef aaf=new AppointmentAccountRef();
-			appointment.setTime(new Date());
+			//appointment.setTime(new Date());
 			appointment.setName(appointmentName);
 			appointment.setLocation(appointmentLocation);
 			appointment.setCreateDate(new Date());
