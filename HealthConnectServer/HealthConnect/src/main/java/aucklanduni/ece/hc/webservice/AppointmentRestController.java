@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import aucklanduni.ece.hc.repository.model.Account;
 import aucklanduni.ece.hc.repository.model.Appointment;
-import aucklanduni.ece.hc.repository.model.AppointmentAccountRef;
 import aucklanduni.ece.hc.repository.model.Dictionary;
 import aucklanduni.ece.hc.repository.model.Group;
 import aucklanduni.ece.hc.service.AccountService;
@@ -87,12 +86,47 @@ public class AppointmentRestController {
 	}
 	
 	/**
-	 * This is for passing Json object to the method
+	 * 
+	 * @Title: createAppointment 
+	 * @Description: Service will create appointment for the given accountId
+	 * and save details of the appointment in the APPOINTMENT table.
+	 * If the appointment is shared with the group, the sharedType column
+	 * in the Appointment table will be set as 'G'.
+	 * If the appointment is shared with only specific members of the group
+	 * the sharedType column in the Appointment table will be set as 'M' and
+	 * details of the member will be saved in APP_ACC_REF table.
+	 *  Input member array is of the below format
+	 *  [
+	 *    { "id":"1"
+	 *    },
+	 *    { "id":"2"
+	 *    },
+	 *  ]
+	 *  Input Appointment object is of the below format
+	 *  {
+	 *    "name": "Appointment",
+	 *    "location": "Mercy Hospital",
+	 *    "startTime": "09:00:00",
+	 *    "endTime": "10:00:00",
+	 *    "executeTime": 1,
+	 *    "description": "Diabetes",
+	 *    "startDate": "2014-09-29",
+	 *    "endDate": "3014-09-29"
+	 *  }
+	 *  
+	 * @param request
+	 * @param response
+	 * @param accountId 
+	 * @param groupId
+	 * @param members - optional 
+	 * @param appointment
+	 * @return HCMessage
+	 * @throws
 	 */
-	@RequestMapping(value="/crAppointment",method = RequestMethod.POST
+	@RequestMapping(value="/createAppointment",method = RequestMethod.POST
 			,headers="Accept=application/json"
 			)
-	public HCMessage crAppointment(HttpServletRequest request, HttpServletResponse response,
+	public HCMessage createAppointment(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam(value="accountId") long accountId
 			,@RequestParam(value="groupId") long groupId
 			,@RequestParam(value="members",required=false) String members
@@ -147,97 +181,7 @@ public class AppointmentRestController {
 		return message;
 
 	}
-
 	
-	/**
-	 * This is for passing Json object to the method
-	 */
-	@RequestMapping(value="/createAppointmentByObj",method = RequestMethod.POST
-			,headers="Accept=application/json"
-			)
-	public HCMessage createAppointmentByObj(HttpServletRequest request, HttpServletResponse response,
-			@RequestParam(value="accountId") long accountId
-			,@RequestParam(value="groupId") long groupId
-			,@RequestBody Appointment appointment) {
-
-		//log.debug(appointment.getTime());
-		return this.createAppointment(request, response
-				, accountId, groupId
-				, appointment.getName(), appointment.getLocation());
-				//, appointment.getIsShared());
-	}
-
-	@RequestMapping(value="/createAppointment",method = RequestMethod.POST
-			,headers="Accept=application/json"
-			)
-	public HCMessage createAppointment(HttpServletRequest request, HttpServletResponse response
-			,@RequestParam(value="accountId") long accountId
-			,@RequestParam(value="groupId") long groupId
-//			,@RequestParam("appointmentTime") Date appointmentTime
-			,@RequestParam("appointmentName") String appointmentName
-			,@RequestParam("appointmentLocation") String appointmentLocation
-			//,@RequestParam("isShare") String isShare
-//			,@RequestParam(value="members",required=false) String members
-			) {
-		HCMessage message = new  HCMessage();
-		try {
-			Account account = null;
-			// check if given accountId exists
-			account = accountService.findById(accountId);
-			if(account == null) {
-				throw new ValidationFailException("Account does not exist");
-			}
-			
-			Group group = null;
-			//check if given groupId exists
-			group = groupService.findById(groupId);
-			if(group == null){
-				throw new ValidationFailException("Group does not exist");
-			}
-			
-			Dictionary role = null;
-			role = roleService.findRoleByAccountIdAndGroupId(accountId,groupId);
-			// check if the current user is a nurse or patient
-			if( (role.getValue().compareTo("S")==0 ) ) {
-				throw new ValidationFailException("Supportive members are not allowed to create an appointment");
-			}
-			
-			Appointment appointment=new Appointment();
-			AppointmentAccountRef aaf=new AppointmentAccountRef();
-			appointment.setName(appointmentName);
-			appointment.setLocation(appointmentLocation);
-			appointment.setGroupId(groupId);
-			appointment.setCreateDate(new Date());
-			appointment.setUpdatedDate(new Date());
-//			if(isShare.compareTo("T")==0)
-//				appointment.setIsShared("T");
-//			else
-//				appointment.setIsShared("F");
-			appointmentService.add(appointment);
-			
-			//update the reference table
-			List<Account> accLists=memberService.findAllMembersInGroup(groupId);
-			for(Account acc:accLists){
-			aaf.setAccountId(acc.getId());
-			aaf.setAppointmentId(appointment.getId());
-			aafService.add(aaf);
-			}
-			
-			notifyService.notify(accountId, "You already create an appountment", "email");
-			
-			message.setSuccess(appointment);
-//			appointmentService.createNewAppointment(accountId, appointmentTime, appointmentName, appointmentLocation);
-
-		}catch(ValidationFailException ve) {
-			message.setFail("404", ve.getMessage());
-		} catch (Exception e) {
-			e.printStackTrace();
-			message.setFail("400", e.getMessage());
-		}
-
-		return message;
-	}
-
 	/**
 	 * This method handle updateAppointment request, only nurse and patient can update appointment.
 	 * @param request
