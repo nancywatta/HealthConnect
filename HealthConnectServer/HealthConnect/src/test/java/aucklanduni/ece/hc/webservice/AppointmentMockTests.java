@@ -159,19 +159,21 @@ public class AppointmentMockTests extends BaseContextControllerTests {
 				.andExpect(jsonPath("$.status").value("404"));
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+	/**
+	 * test filterAppsByUsername : The groupId must exist.
+	 */
+	@Test 
+	public void filterAppsByUsernameinvaildaccountId() throws Exception {  
+		this.mockMvc.perform(post(URL+"/filterAppsByUsername")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("accountId", "1000000")//this accountId is not exist
+				.param("roleId", "2")
+				.param("username", "")
+				)
+				.andDo(print())
+				.andExpect(jsonPath("$.status").value("404"));
+	}
 	/**
 	 * test filterAppsByUsername : Nurse filter appointments when he/she have a group as a nurse.
 	 */
@@ -219,6 +221,39 @@ public class AppointmentMockTests extends BaseContextControllerTests {
 				.andExpect(jsonPath("$.error").value("invalid username!"))
 				;
     }	
+	/**
+	 * test filterAppsByUsername with correct inputs
+	 */
+	@Test 
+	public void filterAppsByUsernamecorrect() throws Exception {  
+		this.mockMvc.perform(post(URL+"/filterAppsByUsername")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("accountId", "1")
+				.param("roleId", "2")
+				.param("username", "nancy")
+				)
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.status").value("200"))
+				;
+    }	
+	
+	
+	
+	/**
+	 * test filterAppsByDate : The groupId must exist.
+	 */
+	@Test 
+	public void filterAppsByDateinvaildaccountId() throws Exception {  
+		this.mockMvc.perform(post(URL+"/filterAppsByDate")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("accountId", "1000000")//this accountId is not exist
+				.param("roleId", "2")
+				.param("username", "")
+				)
+				.andDo(print())
+				.andExpect(jsonPath("$.status").value("404"));
+	}
 	/**
 	 * test filterAppsByDate : Nurse filter appointments when he/she have a group as a nurse.
 	 */
@@ -272,4 +307,20 @@ public class AppointmentMockTests extends BaseContextControllerTests {
 				.andExpect(jsonPath("$.error").value("invalid username!"))
 				;
     }	
+//	/**
+//	 * test filterAppsByDate with correct inputs
+//	 */
+//	@Test 
+//	public void filterAppsByDatecorrect() throws Exception {  
+//		this.mockMvc.perform(post(URL+"/filterAppsByDate")
+//				.contentType(MediaType.APPLICATION_JSON)
+//				.param("accountId", "1")
+//				.param("roleId", "2")
+//				.param("username", "nancy")
+//				)
+//				.andDo(print())
+//				.andExpect(status().isOk())
+//				.andExpect(jsonPath("$.status").value("200"))
+//				;
+//    }	
 }
