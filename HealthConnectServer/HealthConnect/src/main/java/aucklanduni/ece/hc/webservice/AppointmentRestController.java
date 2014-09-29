@@ -386,7 +386,7 @@ public class AppointmentRestController {
 		 * @return HCMessage
 		 * @throws
 		 */
-		
+		/*
 		@RequestMapping(value="/viewAppointmentByGroup",method = RequestMethod.GET
 				,headers="Accept=application/json"
 				)
@@ -430,7 +430,7 @@ public class AppointmentRestController {
 			return message;
 		
 	}
-	
+	*/
 	
 	/**
 	 * 

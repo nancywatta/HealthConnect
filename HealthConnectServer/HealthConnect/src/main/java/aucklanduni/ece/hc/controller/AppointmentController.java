@@ -237,7 +237,7 @@ public class AppointmentController {
 		return "viewAppointment/ok";
 	}
 
-	@RequestMapping("/viewAppointmentByGroup")//As nurses or patients, they can view the appointments.
+	/*@RequestMapping("/viewAppointmentByGroup")//As nurses or patients, they can view the appointments.
 	@ResponseBody
 	public String viewAppointmentByGroup(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam("accountId") long accountId,
@@ -284,7 +284,7 @@ public class AppointmentController {
 			}
 			return "viewAppointmentByGroup/ok";
 		}
-	
+	*/
 //	@RequestMapping(value="/viewAppointments")
 //	@ResponseBody
 //	public String viewAppointments(HttpServletRequest request, HttpServletResponse response,

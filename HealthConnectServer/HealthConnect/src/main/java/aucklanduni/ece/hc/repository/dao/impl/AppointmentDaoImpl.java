@@ -80,9 +80,11 @@ public class AppointmentDaoImpl  extends BaseDaoImpl<Appointment> implements App
 		Session s=getSession();
 		String hql="select app "+
 				"from Appointment app, Account acc, AppointmentAccountRef aaf, Member mem "+
-				"where acc.id=? "
-				+"and acc.id=aaf.accountId and app.id=aaf.appointmentId "
-				+"or mem.accountId=acc.id and mem.groupId=app.groupId and app.isShared=T";
+				"where acc.id=? and acc.id=aaf.accountId and app.id=aaf.appointmentId "
+				+"UNION "
+				+"select app "
+				+"from Appointment app, Group gro "
+				+"where app.groupId=gro.id and app.sharedType=G and gro in (select gro from Account acc, Member mem, Group gro where acc.id=? and acc.id=mem.accountId and gro.id=mem.groupId) ";
 		List<Appointment> appointments=(List<Appointment>)s.createQuery(hql).setParameter(0, accountId).list();
 		return appointments;
 	}
