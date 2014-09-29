@@ -2,10 +2,7 @@ package aucklanduni.ece.hc.webservice;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,21 +11,19 @@ import net.fortuna.ical4j.model.Calendar;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import aucklanduni.ece.hc.repository.model.Account;
-import aucklanduni.ece.hc.repository.model.ApnUser;
 import aucklanduni.ece.hc.repository.model.Appointment;
 import aucklanduni.ece.hc.repository.model.AppointmentAccountRef;
 import aucklanduni.ece.hc.repository.model.Dictionary;
 import aucklanduni.ece.hc.repository.model.Group;
-import aucklanduni.ece.hc.repository.model.Member;
 import aucklanduni.ece.hc.service.AccountService;
 import aucklanduni.ece.hc.service.AppointmentAccountRefService;
 import aucklanduni.ece.hc.service.AppointmentService;
@@ -94,6 +89,69 @@ public class AppointmentRestController {
 	/**
 	 * This is for passing Json object to the method
 	 */
+	@RequestMapping(value="/crAppointment",method = RequestMethod.POST
+			,headers="Accept=application/json"
+			)
+	public HCMessage crAppointment(HttpServletRequest request, HttpServletResponse response,
+			@RequestParam(value="accountId") long accountId
+			,@RequestParam(value="groupId") long groupId
+			,@RequestParam(value="members",required=false) String members
+			,@RequestBody Appointment appointment) {
+
+		HCMessage message = new  HCMessage();
+		try {
+			Account account = null;
+			// check if given accountId exists
+			account = accountService.findById(accountId);
+			if(account == null) {
+				throw new ValidationFailException("Account does not exist");
+			}
+			
+			Group group = null;
+			//check if given groupId exists
+			group = groupService.findById(groupId);
+			if(group == null){
+				throw new ValidationFailException("Group does not exist");
+			}
+			
+			List<Dictionary> roles = new ArrayList<Dictionary>();
+			roles = roleService.getRolesByGroupIdAccId(accountId, groupId);
+
+			// if the input accountId and GroupId does not exist in database
+			if(roles== null || roles.size() < 1) {
+				throw new ValidationFailException("Invalid Input");
+			}
+			
+			// check if the current user is a nurse or patient
+			if( (roles.get(0).getValue().compareTo("S")==0 ) ) {
+				throw new ValidationFailException("Support members are not allowed to create an appointment");
+			}
+			
+			if(members==null) {
+				appointmentService.createGroupAppointment(groupId, appointment);
+			} else {
+				appointmentService.createMemberAppointment(accountId, groupId, members, appointment);
+			}
+			
+			notifyService.notify(accountId, "Appointment created successfully", "email");
+			
+			message.setSuccess();
+		}
+		catch(ValidationFailException ve) {
+			message.setFail("404", ve.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			message.setFail("400", e.getMessage());
+		}
+
+		return message;
+
+	}
+
+	
+	/**
+	 * This is for passing Json object to the method
+	 */
 	@RequestMapping(value="/createAppointmentByObj",method = RequestMethod.POST
 			,headers="Accept=application/json"
 			)
@@ -102,11 +160,11 @@ public class AppointmentRestController {
 			,@RequestParam(value="groupId") long groupId
 			,@RequestBody Appointment appointment) {
 
-		log.debug(appointment.getTime());
+		//log.debug(appointment.getTime());
 		return this.createAppointment(request, response
 				, accountId, groupId
-				, appointment.getName(), appointment.getLocation()
-				, appointment.getIsShared());
+				, appointment.getName(), appointment.getLocation());
+				//, appointment.getIsShared());
 	}
 
 	@RequestMapping(value="/createAppointment",method = RequestMethod.POST
@@ -118,7 +176,7 @@ public class AppointmentRestController {
 //			,@RequestParam("appointmentTime") Date appointmentTime
 			,@RequestParam("appointmentName") String appointmentName
 			,@RequestParam("appointmentLocation") String appointmentLocation
-			,@RequestParam("isShare") String isShare
+			//,@RequestParam("isShare") String isShare
 //			,@RequestParam(value="members",required=false) String members
 			) {
 		HCMessage message = new  HCMessage();
@@ -146,16 +204,15 @@ public class AppointmentRestController {
 			
 			Appointment appointment=new Appointment();
 			AppointmentAccountRef aaf=new AppointmentAccountRef();
-			appointment.setTime(new Date());
 			appointment.setName(appointmentName);
 			appointment.setLocation(appointmentLocation);
 			appointment.setGroupId(groupId);
 			appointment.setCreateDate(new Date());
 			appointment.setUpdatedDate(new Date());
-			if(isShare.compareTo("T")==0)
-				appointment.setIsShared("T");
-			else
-				appointment.setIsShared("F");
+//			if(isShare.compareTo("T")==0)
+//				appointment.setIsShared("T");
+//			else
+//				appointment.setIsShared("F");
 			appointmentService.add(appointment);
 			
 			//update the reference table
@@ -232,7 +289,7 @@ public class AppointmentRestController {
 				throw new ValidationFailException("Supportive members are not allowed to update an appointment");
 			}
 			
-			appointment.setTime(new Date());
+			//appointment.setTime(new Date());
 			appointment.setUpdatedDate(new Date());
 			appointment.setLocation(appointmentLocationNew);
 			appointmentService.update(appointment);
@@ -450,7 +507,7 @@ public class AppointmentRestController {
 	 * @throws
 	 */
 	
-	@RequestMapping(value="/filterAppsByUsername",method = RequestMethod.GET
+	@RequestMapping(value="/filterAppsByUsername",method = RequestMethod.POST
 			,headers="Accept=application/json"
 			)
 	public HCMessage filterAppsByUsername(HttpServletRequest request, HttpServletResponse response,
@@ -521,15 +578,15 @@ public class AppointmentRestController {
 	 * @return HCMessage
 	 * @throws
 	 */
-	@RequestMapping(value="/filterAppsByByDate",method = RequestMethod.GET
+	@RequestMapping(value="/filterAppsByDate",method = RequestMethod.POST
 			,headers="Accept=application/json"
 			)
-	public HCMessage filterByDate(HttpServletRequest request, HttpServletResponse response,
+	public HCMessage filterAppsByDate(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam("accountId") long accountId,
 			@RequestParam("roleId") long roleId,
 			@RequestParam("username") String username,
-			@RequestParam("startDate") Date startDate,
-			@RequestParam("endDate") Date endDate){
+			@RequestParam("startDate") @DateTimeFormat(pattern="yyyy-MM-dd") Date startDate,
+			@RequestParam("endDate") @DateTimeFormat(pattern="yyyy-MM-dd")  Date endDate){
 		
 		HCMessage message = new  HCMessage();
 		try{

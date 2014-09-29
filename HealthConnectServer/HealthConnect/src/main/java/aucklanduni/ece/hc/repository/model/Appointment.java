@@ -39,20 +39,39 @@ public class Appointment implements Serializable {
 	@Column(name = "name")
 	private String name;
 
-	@Column(name = "time", nullable = false)
-	private Date time;
+	@Column(name = "start_time", nullable = false)
+	@Temporal(TemporalType.TIME)
+	private Date startTime;
+	
+	@Column(name = "end_time", nullable = false)
+	@Temporal(TemporalType.TIME)
+	private Date endTime;
+	
+	@Column(name = "start_date", nullable = false)
+	@Temporal(TemporalType.DATE)
+	private Date startDate;
+	
+	@Column(name = "end_date")
+	@Temporal(TemporalType.DATE)
+	private Date endDate;
+
+	@Column(name = "execute_time")
+	private long executeTime;
 	
 	@Column(name = "location")
 	private String location;
 	
-	@Column(name = "desciption")
-	private String desciption;
+	@Column(name = "description")
+	private String description;
+	
+	@Column(name = "appointment_type")
+	private String appointmentType;
 
 	@Column(name = "status")
 	private String status;
 	
-	@Column(name = "isShared")
-	private String isShared;
+	@Column(name = "shared_type")
+	private String sharedType;
 	
 	@Column(name = "group_id", nullable = false, precision = 20, scale = 0)
 	private long groupId;
@@ -85,13 +104,48 @@ public class Appointment implements Serializable {
 		this.name = name;
 	}
 
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")  
-	public Date getTime() {
-		return time;
+	@JsonFormat(pattern="HH:mm:ss")
+	public Date getStartTime() {
+		return startTime;
 	}
 
-	public void setTime(Date time) {
-		this.time = time;
+	public void setStartTime(Date startTime) {
+		this.startTime = startTime;
+	}
+
+	@JsonFormat(pattern="HH:mm:ss")
+	public Date getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(Date endTime) {
+		this.endTime = endTime;
+	}
+	
+	public long getExecuteTime(){
+		return executeTime;
+	}
+
+	public void setExecuteTime(long executeTime) {
+		this.executeTime = executeTime;
+	}
+
+	@JsonFormat(pattern="yyyy-MM-dd")
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	@JsonFormat(pattern="yyyy-MM-dd")
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
 	}
 
 	public String getLocation() {
@@ -102,12 +156,20 @@ public class Appointment implements Serializable {
 		this.location = location;
 	}
 
-	public String getDesciption() {
-		return desciption;
+	public String getDescription() {
+		return description;
 	}
 
-	public void setDesciption(String desciption) {
-		this.desciption = desciption;
+	public void setDescription(String desciption) {
+		this.description = desciption;
+	}
+
+	public String getAppointmentType() {
+		return appointmentType;
+	}
+
+	public void setAppointmentType(String appointmentType) {
+		this.appointmentType = appointmentType;
 	}
 
 	public String getStatus() {
@@ -118,12 +180,12 @@ public class Appointment implements Serializable {
 		this.status = status;
 	}
 
-	public String getIsShared() {
-		return isShared;
+	public String getSharedType() {
+		return sharedType;
 	}
 
-	public void setIsShared(String isShared) {
-		this.isShared = isShared;
+	public void setSharedType(String sharedType) {
+		this.sharedType = sharedType;
 	}
 
 	public long getGroupId() {

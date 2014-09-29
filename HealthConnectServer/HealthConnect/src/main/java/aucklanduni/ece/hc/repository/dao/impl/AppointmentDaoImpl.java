@@ -125,7 +125,7 @@ public class AppointmentDaoImpl  extends BaseDaoImpl<Appointment> implements App
 				app.setName(rs.getString("name"));
 				app.setTime(rs.getDate("time"));
 				app.setLocation(rs.getString("location"));
-				app.setDesciption(rs.getString("desciption"));
+				app.setDescription(rs.getString("description"));
 				app.setCreateDate(rs.getDate("created_date"));
 				appointments.add(app);
 				

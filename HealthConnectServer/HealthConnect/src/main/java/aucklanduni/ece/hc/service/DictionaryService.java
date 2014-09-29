@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import aucklanduni.ece.hc.repository.model.Appointment;
 import aucklanduni.ece.hc.repository.model.Dictionary;
 
 @Transactional
