@@ -14,6 +14,7 @@ import net.fortuna.ical4j.model.Calendar;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -450,7 +451,7 @@ public class AppointmentRestController {
 	 * @throws
 	 */
 	
-	@RequestMapping(value="/filterAppsByUsername",method = RequestMethod.GET
+	@RequestMapping(value="/filterAppsByUsername",method = RequestMethod.POST
 			,headers="Accept=application/json"
 			)
 	public HCMessage filterAppsByUsername(HttpServletRequest request, HttpServletResponse response,
@@ -521,20 +522,21 @@ public class AppointmentRestController {
 	 * @return HCMessage
 	 * @throws
 	 */
-	@RequestMapping(value="/filterAppsByByDate",method = RequestMethod.GET
+	@RequestMapping(value="/filterAppsByDate",method = RequestMethod.POST
 			,headers="Accept=application/json"
 			)
-	public HCMessage filterByDate(HttpServletRequest request, HttpServletResponse response,
+	public HCMessage filterAppsByDate(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam("accountId") long accountId,
 			@RequestParam("roleId") long roleId,
 			@RequestParam("username") String username,
-			@RequestParam("startDate") Date startDate,
-			@RequestParam("endDate") Date endDate){
+			@RequestParam("startDate") @DateTimeFormat(pattern="yyyy-MM-dd")  Date startDate,
+			@RequestParam("endDate") @DateTimeFormat(pattern="yyyy-MM-dd")  Date endDate){
 		
 		HCMessage message = new  HCMessage();
 		try{
 			
 			if(roleId != 2){
+				System.out.println("222222222222");
 				throw new ValidationFailException("only nurse can do this action!");
 			}
 			
@@ -568,6 +570,7 @@ public class AppointmentRestController {
 			
 		
 		}catch(ValidationFailException ve) {
+			System.out.println(ve.getMessage());
 			message.setFail("404", ve.getMessage());
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -159,6 +159,19 @@ public class AppointmentMockTests extends BaseContextControllerTests {
 				.andExpect(jsonPath("$.status").value("404"));
 	}
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	/**
 	 * test filterAppsByUsername : Nurse filter appointments when he/she have a group as a nurse.
 	 */
@@ -248,7 +261,11 @@ public class AppointmentMockTests extends BaseContextControllerTests {
 	public void filterAppsByDateusername() throws Exception {  
 		this.mockMvc.perform(post(URL+"/filterAppsByDate")
 				.contentType(MediaType.APPLICATION_JSON)
+				.param("accountId", "2")
+				.param("roleId", "3")
 				.param("username", "lala")
+				.param("startDate", "2014-02-10")
+				.param("endDate", "2016-02-10")
 				)
 				.andDo(print())
 				.andExpect(jsonPath("$.status").value("404"))
