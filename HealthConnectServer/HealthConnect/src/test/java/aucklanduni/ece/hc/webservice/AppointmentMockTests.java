@@ -6,6 +6,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.Date;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.http.MediaType;
@@ -166,22 +168,27 @@ public class AppointmentMockTests extends BaseContextControllerTests {
 				.contentType(MediaType.APPLICATION_JSON)
 				.param("accountId", "2")
 				.param("roleId", "2")
+				.param("username", "")
 				)
 				.andDo(print())
-				.andExpect(jsonPath("$.error").value("No groups Exists for this nurse"));
+				.andExpect(jsonPath("$.status").value("404"))
+				.andExpect(jsonPath("$.error").value("invalid input!"));
 	}
 	/**
 	 * test filterAppsByUsername : Only nurse can filter appointments.
 	 */
 	@Test 
-	public void filterAppsByUserroleId() throws Exception {  
+	public void filterAppsByUsernameroleId() throws Exception {  
 		this.mockMvc.perform(post(URL+"/filterAppsByUsername")
 				.contentType(MediaType.APPLICATION_JSON)
+				.param("accountId", "2")
 				.param("roleId", "3")
+				.param("username", "")
 				)
 				.andDo(print())
-				.andExpect(jsonPath("$.error").value("Only nurse can filter appointments"))
-				.andExpect(jsonPath("$.status").value("404"));
+				.andExpect(jsonPath("$.status").value("404"))
+				.andExpect(jsonPath("$.error").value("invalid input!"))
+				;
 	}
 	/**
 	 * test filterAppsByUsername : Only nurse can filter appointments.
@@ -190,50 +197,62 @@ public class AppointmentMockTests extends BaseContextControllerTests {
 	public void filterAppsByUserusername() throws Exception {  
 		this.mockMvc.perform(post(URL+"/filterAppsByUsername")
 				.contentType(MediaType.APPLICATION_JSON)
+				.param("accountId", "1")
+				.param("roleId", "2")
 				.param("username", "lala")
 				)
 				.andDo(print())
-				.andExpect(jsonPath("$.error").value("invalid username"))
-				.andExpect(jsonPath("$.status").value("404"));
+				.andExpect(jsonPath("$.status").value("404"))
+				.andExpect(jsonPath("$.error").value("invalid username!"))
+				;
     }	
 	/**
 	 * test filterAppsByDate : Nurse filter appointments when he/she have a group as a nurse.
 	 */
 	@Test 
 	public void filterAppsByDatenogroups() throws Exception {  
-		this.mockMvc.perform(post(URL+"/filterAppsByUsername")
+		this.mockMvc.perform(post(URL+"/filterAppsByDate")
 				.contentType(MediaType.APPLICATION_JSON)
 				.param("accountId", "2")
 				.param("roleId", "2")
+				.param("username", "")
+				.param("startDate", "2014-02-10")
+				.param("endDate", "2016-02-10")
 				)
 				.andDo(print())
-				.andExpect(jsonPath("$.error").value("No groups Exists for this nurse"))
-				.andExpect(jsonPath("$.status").value("404"));
+				.andExpect(jsonPath("$.status").value("404"))
+				.andExpect(jsonPath("$.error").value("invalid input!"))
+				;
 	}
 	/**
 	 * test filterAppsByDate : Only nurse can filter appointments.
 	 */
 	@Test 
 	public void filterAppsByDateroleId() throws Exception {  
-		this.mockMvc.perform(post(URL+"/filterAppsByUsername")
+		this.mockMvc.perform(post(URL+"/filterAppsByDate")
 				.contentType(MediaType.APPLICATION_JSON)
+				.param("accountId", "2")
 				.param("roleId", "3")
+				.param("username", "")
+				.param("startDate", "2014-02-10")
+				.param("endDate", "2016-02-10")
 				)
 				.andDo(print())
-				.andExpect(jsonPath("$.error").value("Only nurse can filter appointments"))
-				.andExpect(jsonPath("$.status").value("404"));
+				.andExpect(jsonPath("$.status").value("404"))
+				.andExpect(jsonPath("$.error").value("only nurse can do this action!"));
 	}
 	/**
 	 * test filterAppsByDate : Only nurse can filter appointments.
 	 */
 	@Test 
 	public void filterAppsByDateusername() throws Exception {  
-		this.mockMvc.perform(post(URL+"/filterAppsByUsername")
+		this.mockMvc.perform(post(URL+"/filterAppsByDate")
 				.contentType(MediaType.APPLICATION_JSON)
 				.param("username", "lala")
 				)
 				.andDo(print())
-				.andExpect(jsonPath("$.error").value("invalid username"))
-				.andExpect(jsonPath("$.status").value("404"));
+				.andExpect(jsonPath("$.status").value("404"))
+				.andExpect(jsonPath("$.error").value("invalid username!"))
+				;
     }	
 }
