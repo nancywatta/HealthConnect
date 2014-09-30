@@ -14,7 +14,11 @@ import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.hibernate.envers.Audited;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 /**
  * 
 * @ClassName: Appointment 
@@ -27,6 +31,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @Entity
 @Audited
 @Table(name = "APPOINTMENT")
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Appointment implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -131,6 +137,7 @@ public class Appointment implements Serializable {
 	}
 
 	@JsonFormat(pattern="yyyy-MM-dd")
+	 @JsonIgnore 
 	public Date getStartDate() {
 		return startDate;
 	}
@@ -140,6 +147,7 @@ public class Appointment implements Serializable {
 	}
 
 	@JsonFormat(pattern="yyyy-MM-dd")
+	 @JsonIgnore 
 	public Date getEndDate() {
 		return endDate;
 	}

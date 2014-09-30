@@ -199,6 +199,9 @@ public class AppointmentServiceImpl  extends BaseServiceImpl<Appointment> implem
 			throw e;
 		}
 	}
+	public List<Appointment> findAppointmentsByGroup(long groupId) throws Exception {
+		return appointmentDao.findAppointmentsByGroup(groupId);
+	}
 
 }
 
