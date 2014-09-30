@@ -8,7 +8,6 @@ import java.util.Map;
 import org.springframework.transaction.annotation.Transactional;
 
 import aucklanduni.ece.hc.repository.model.Appointment;
-import aucklanduni.ece.hc.repository.model.AppointmentAccountRef;
 import aucklanduni.ece.hc.webservice.model.ValidationFailException;
 
 @Transactional
@@ -36,8 +35,5 @@ public interface AppointmentService  extends BaseService<Appointment> {
 	
 	public void createMemberAppointment(long accountId, long groupId, 
 			String members, Appointment appointment) throws ValidationFailException, Exception;
-
-	public List<Appointment> findAppointmentsByGroup(long groupId) throws Exception;
-
 	      
 }

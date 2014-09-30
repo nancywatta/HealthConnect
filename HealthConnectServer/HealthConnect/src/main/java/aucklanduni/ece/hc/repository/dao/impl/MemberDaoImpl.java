@@ -238,9 +238,9 @@ public class MemberDaoImpl extends BaseDaoImpl<Member> implements MemberDao{
 	public Member findByAccountIdAndGroupId(long accountId, long groupId)
 			throws Exception {
 		Session s=getSession();
-		String hql="select m "+
-				"from Member m "+
-				"where m.accountId=? and m.groupId=?";
+		String hql="select member "+
+				"from Member member "+
+				"where member.accountId=? and member.groupId=?";
 		return (Member)s.createQuery(hql).setParameter(0,accountId).setParameter(1,groupId).uniqueResult();
 	}
 

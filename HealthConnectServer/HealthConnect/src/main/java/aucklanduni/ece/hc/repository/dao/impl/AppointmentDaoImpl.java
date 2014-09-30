@@ -140,15 +140,6 @@ public class AppointmentDaoImpl  extends BaseDaoImpl<Appointment> implements App
 		}
 	}
 
-	public List<Appointment> findAppointmentsByGroup(long groupId)
-			throws Exception {
-		Session s = getSession();
-		String hql="select app "
-				+"from Appointment app "
-				+"where app.groupId=?";
-		return (List<Appointment>)s.createQuery(hql).setParameter(0, groupId).list();
-	}
-
 //	public List<Appointment> filterByUserName(long accountId) throws Exception {
 //		
 //		return null;
