@@ -8,4 +8,5 @@ import aucklanduni.ece.hc.repository.model.AppointmentAccountRef;
 public interface AppointmentAccountRefService extends
 		BaseService<AppointmentAccountRef> {
 
+	public AppointmentAccountRef ifExist(long accountId, long appointmentId) throws Exception;
 }
