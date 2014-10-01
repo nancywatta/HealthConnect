@@ -127,6 +127,10 @@ public class AppointmentServiceImpl  extends BaseServiceImpl<Appointment> implem
 		}
 	}
 
+	/**
+	 * Function will save appointment shared with the input group.
+	 * Shared_Type column will be set as 'G' in the APPOINTMENT table.
+	 */
 	public void createGroupAppointment(long groupId, Appointment appointment) throws Exception {
 		try {
 
@@ -152,6 +156,13 @@ public class AppointmentServiceImpl  extends BaseServiceImpl<Appointment> implem
 		}
 	}
 
+	/**
+	 * Function will save appointment shared with the specific members of
+	 * the input group.
+	 * Shared_Type column will be set as 'M' in the APPOINTMENT table.
+	 * and entry will be saved in APP_ACC_REF table for every member
+	 * with whom the appointment is shared.
+	 */
 	public void createMemberAppointment(long accountId, long groupId, 
 			String members, Appointment appointment) throws ValidationFailException, Exception {
 		try {
@@ -178,6 +189,7 @@ public class AppointmentServiceImpl  extends BaseServiceImpl<Appointment> implem
 
 			for(Account  member : accList) {
 				
+				// Check if the MemberId is part of the Inout GroupId
 				List<Member> memberDtls = new ArrayList<Member>();
 				memberDtls = memberDao.findByHql("from Member m WHERE "
 						+ "m.accountId=" + member.getId() 
@@ -185,6 +197,7 @@ public class AppointmentServiceImpl  extends BaseServiceImpl<Appointment> implem
 				if(memberDtls == null || memberDtls.size() < 1)
 					throw new ValidationFailException("Incorrect Member ID");
 				
+				// add row in APP_ACC_REF table for the member
 				AppointmentAccountRef aaf=new AppointmentAccountRef();
 				aaf.setAccountId(member.getId());
 				aaf.setAppointmentId(appoint.getId());
@@ -192,6 +205,7 @@ public class AppointmentServiceImpl  extends BaseServiceImpl<Appointment> implem
 				appointRefDao.add(aaf);
 			}
 			
+			//add row in APP_ACC_REF table for the creater of the appointment
 			AppointmentAccountRef creater=new AppointmentAccountRef();
 			creater.setAccountId(accountId);
 			creater.setAppointmentId(appoint.getId());
