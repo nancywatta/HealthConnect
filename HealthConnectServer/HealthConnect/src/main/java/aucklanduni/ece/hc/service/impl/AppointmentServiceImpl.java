@@ -126,6 +126,10 @@ public class AppointmentServiceImpl  extends BaseServiceImpl<Appointment> implem
 		}
 	}
 
+	/**
+	 * Function will save appointment shared with the input group.
+	 * Shared_Type column will be set as 'G' in the APPOINTMENT table.
+	 */
 	public void createGroupAppointment(long groupId, Appointment appointment) throws Exception {
 		try {
 
@@ -151,6 +155,13 @@ public class AppointmentServiceImpl  extends BaseServiceImpl<Appointment> implem
 		}
 	}
 
+	/**
+	 * Function will save appointment shared with the specific members of
+	 * the input group.
+	 * Shared_Type column will be set as 'M' in the APPOINTMENT table.
+	 * and entry will be saved in APP_ACC_REF table for every member
+	 * with whom the appointment is shared.
+	 */
 	public void createMemberAppointment(long accountId, long groupId, 
 			String members, Appointment appointment) throws ValidationFailException, Exception {
 		try {
@@ -177,6 +188,7 @@ public class AppointmentServiceImpl  extends BaseServiceImpl<Appointment> implem
 
 			for(Account  member : accList) {
 				
+				// Check if the MemberId is part of the Inout GroupId
 				List<Member> memberDtls = new ArrayList<Member>();
 				memberDtls = memberDao.findByHql("from Member m WHERE "
 						+ "m.accountId=" + member.getId() 
@@ -184,15 +196,19 @@ public class AppointmentServiceImpl  extends BaseServiceImpl<Appointment> implem
 				if(memberDtls == null || memberDtls.size() < 1)
 					throw new ValidationFailException("Incorrect Member ID");
 				
+				// add row in APP_ACC_REF table for the member
 				AppointmentAccountRef aaf=new AppointmentAccountRef();
 				aaf.setAccountId(member.getId());
 				aaf.setAppointmentId(appoint.getId());
+				aaf.setGroupId(groupId);
 				appointRefDao.add(aaf);
 			}
 			
+			//add row in APP_ACC_REF table for the creater of the appointment
 			AppointmentAccountRef creater=new AppointmentAccountRef();
 			creater.setAccountId(accountId);
 			creater.setAppointmentId(appoint.getId());
+			creater.setGroupId(groupId);
 			appointRefDao.add(creater);
 
 		} catch (Exception e) {
@@ -202,6 +218,62 @@ public class AppointmentServiceImpl  extends BaseServiceImpl<Appointment> implem
 
 	public List<Appointment> findAppointmentsByGroup(long groupId) throws Exception {
 		return appointmentDao.findAppointmentsByGroup(groupId);
+	}
+	
+	/**
+	 * Function will return all appointments that are shared with input groupList
+	 */
+	public List<Appointment> findAppointmentByGroupId(List<Long> groupId) throws Exception {
+		try {
+
+			return appointmentDao.findAppointmentByGroupId(groupId);
+
+		} catch (Exception e) {
+			throw e;
+		}
+	}
+
+	/**
+	 * Function will return all appointments that are shared with input memberId and accountId both
+	 * within the input groupList 
+	 */
+	public List<Appointment> findAppByGroupIdMemberId(List<Long> groupId, long memberId,long accountId) throws Exception {
+		try {
+
+			return appointmentDao.findAppByGroupIdMemberId(groupId, memberId,accountId);
+
+		} catch (Exception e) {
+			throw e;
+		}
+	}
+
+	/**
+	 * Function will filter input appointments on the basis of input date
+	 */
+	public List<Appointment> findAppByDate(List<Appointment> appointments, 
+			Date startDate, Date endDate) throws Exception {
+		try {
+
+			return appointmentDao.findAppByDate(appointments, startDate, endDate);
+
+		} catch (Exception e) {
+			throw e;
+		}
+	}
+	
+	/**
+	 * Function will return all appointments that are shared with or owned to the input accountId
+	 * within the input groupList 
+	 */
+	public List<Appointment> findAppByGroupIdAccountId(List<Long> groupId, long accountId) throws Exception {
+		try {
+
+			return appointmentDao.findAppByGroupIdAccountId(groupId, accountId);
+
+		} catch (Exception e) {
+			throw e;
+		}
+
 	}
 }
 

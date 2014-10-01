@@ -23,6 +23,7 @@ import aucklanduni.ece.hc.repository.model.Account;
 import aucklanduni.ece.hc.repository.model.Appointment;
 import aucklanduni.ece.hc.repository.model.Dictionary;
 import aucklanduni.ece.hc.repository.model.Group;
+import aucklanduni.ece.hc.repository.model.Member;
 import aucklanduni.ece.hc.service.AccountService;
 import aucklanduni.ece.hc.service.AppointmentAccountRefService;
 import aucklanduni.ece.hc.service.AppointmentService;
@@ -585,5 +586,126 @@ public class AppointmentRestController {
 	
 	}
 	
+	/**
+	 * 
+	 * @Title: filterAppointment
+	 * @author Yalu You,Pengyi Li
+	 * @Description: Service will filter appointments based on given inputs.
+	 *  
+	 * @param request
+	 * @param response
+	 * @param accountId - account id of the user who wants to view the appointment
+	 * @param memberId - optional
+	 *                   accountId of the person whose appointment user wants to view
+	 * @param groupId - optional 
+	 *                  user can view all appointments within a group which are shared to
+	 *                   entire group or himself
+	 * @param startDate - optional
+	 *                  can be combined with either the memberId or groupId
+	 *                  or user can view appointments by startDate and endDate
+	 * @param endDate - optional
+	 *                  mandatory if startDate provided in input
+	 * @return HCMessage
+	 * @throws
+	 */
+	@RequestMapping(value="/filterAppointment",method = RequestMethod.GET
+			,headers="Accept=application/json"
+			)
+	public HCMessage filterAppointment(HttpServletRequest request, HttpServletResponse response,
+			@RequestParam("accountId") long accountId,
+			@RequestParam(value="memberId",required=false) Long memberId,
+			@RequestParam(value="groupId",required=false) Long groupId,
+			@RequestParam(value="startDate",required=false) @DateTimeFormat(pattern="yyyy-MM-dd")  Date startDate,
+			@RequestParam(value="endDate",required=false) @DateTimeFormat(pattern="yyyy-MM-dd")  Date endDate){
+		HCMessage message = new  HCMessage();
+		try{
+			List<Long> groupIds = new ArrayList<Long>();
+			List<Appointment> appoints = new ArrayList<Appointment>();
+			
+			Account account = null;
+			// check if given accountId exists
+			account = accountService.findById(accountId);
+			if(account == null) {
+				throw new ValidationFailException("Account does not exist");
+			}
+			
+			if(memberId != null) {
+				// check if given memberId exists
+				account = accountService.findById(memberId.longValue());
+				if(account == null) {
+					throw new ValidationFailException("Member does not exist");
+				}
+				
+				// find all groups in which the accountId and memberId are part of.
+				List<Group> group = null;
+				group = groupService.findCommonGroup(accountId, memberId.longValue());
+				
+				if(group == null || group.size() < 1)
+					throw new ValidationFailException("Invalid Input");
+				
+				for(Group g: group){
+					groupIds.add(g.getId());
+				}
 
+				// find all appointments shared with the memberId and accountId both within the retrieved groups 
+				appoints = appointmentService.findAppByGroupIdMemberId(groupIds, memberId.longValue(),accountId );
+			} else if(groupId != null) {
+				Group group = null;
+				//check if given groupId exists
+				group = groupService.findById(groupId.longValue());
+				if(group == null){
+					throw new ValidationFailException("Group does not exist");
+				}
+				
+				// check if the input accountId is member of the input GroupId
+				List<Member> memberDtls = new ArrayList<Member>();
+				memberDtls = memberService.findByHql("from Member m WHERE "
+						+ "m.accountId=" + accountId 
+						+ " and m.groupId=" + groupId.longValue());
+				if(memberDtls == null || memberDtls.size() < 1)
+					throw new ValidationFailException("Input AccountId does not belong to the Group");
+				
+				groupIds.add(groupId.longValue());
+			} else if(startDate !=null && endDate!=null) {
+				
+				// find all the groups of the input accountId
+				List<Group> groupList = new ArrayList<Group>();
+				groupList = groupService.getGroupByAccId(accountId);
+				
+				for(Group g: groupList){
+					groupIds.add(g.getId());
+				}
+
+				// find all appointments shared with the accountId within the retrieved groups
+				appoints = appointmentService.findAppByGroupIdAccountId(groupIds, accountId);
+
+			}
+			
+			// find all appointments shared with the entire group
+			List<Appointment> appointments = new ArrayList<Appointment>();
+			appointments = appointmentService.findAppointmentByGroupId(groupIds);
+			
+			if(appoints!=null) 
+				appointments.addAll(appoints);
+			
+			// filter appointment on basis of input Date
+			if(startDate !=null && endDate!=null) {
+				appointments = appointmentService.findAppByDate(appointments, startDate, endDate);
+			}
+			
+			for(Appointment a:appointments ) {
+			System.out.println(a.getId());
+			}
+			
+			message.setSuccess(appointments);
+			
+		}
+		catch(ValidationFailException ve) {
+			message.setFail("404", ve.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			message.setFail("400", e.getMessage());
+		}
+		return message;
+	}
 }

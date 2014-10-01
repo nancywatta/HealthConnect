@@ -41,6 +41,9 @@ public class AppointmentAccountRef implements Serializable {
 	@Column(name = "account_id", nullable = false, precision = 20, scale = 0)
 	private long accountId;
 	
+	@Column(name = "group_id",  precision = 20, scale = 0)
+	private long groupId;
+	
 	@Column(name = "expiration_date")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date expirationDate;
@@ -67,6 +70,14 @@ public class AppointmentAccountRef implements Serializable {
 
 	public void setAccountId(long accountId) {
 		this.accountId = accountId;
+	}
+
+	public long getGroupId() {
+		return groupId;
+	}
+
+	public void setGroupId(long groupId) {
+		this.groupId = groupId;
 	}
 
 	public Date getExpirationDate() {
