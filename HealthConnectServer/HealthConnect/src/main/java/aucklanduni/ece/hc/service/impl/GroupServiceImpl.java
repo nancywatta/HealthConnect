@@ -58,7 +58,7 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 	}
 	
 	/**
-	 * Function will get return group details based on groupName.
+	 * Function will return group details based on groupName.
 	 */
 	public List<Group> getGroupByName(String groupName)throws Exception {
 		try {
@@ -538,7 +538,11 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 			throw e;
 		}
 	}
-
+	
+	/**
+	 * Function will return all groups in which the input accountId and memberId 
+	 * are member of.
+	 */
 	public List<Group> findCommonGroup(long accountId, long memberId) throws Exception {
 		try {
 			List<Group> groups = new ArrayList<Group>();

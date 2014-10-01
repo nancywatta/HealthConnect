@@ -158,19 +158,23 @@ public class AppointmentDaoImpl  extends BaseDaoImpl<Appointment> implements App
 		}
 	}
 	
-	public List<Appointment> findAppByGroupIdMemberId(List<Long> groupId, long memberId) throws Exception {
+	public List<Appointment> findAppByGroupIdMemberId(List<Long> groupId, long memberId, long accountId) throws Exception {
 		try {
 			Session s=getSession();
 			String hql=
 						 "select a from Appointment a, AppointmentAccountRef aar WHERE "
 							+ "a.sharedType='M' "
-							+ "and a.groupId in (:groupIds)"
-							+ " and a.id = aar.appointmentId "
-							+ "and aar.accountId = :memberId";
+							+ "and a.groupId in (:groupIds) "
+							+ "and a.id = aar.appointmentId "
+							+ "and aar.accountId = :memberId "
+							+ "and exists (select a1 from AppointmentAccountRef a1 WHERE "
+							+ "a1.appointmentId = aar.appointmentId "
+							+ "and a1.accountId= :accountId)";
 			@SuppressWarnings("unchecked")
 			List<Appointment> appointments = (List<Appointment>)s.createQuery(hql)
 					.setParameterList("groupIds", groupId)
 					.setParameter("memberId", memberId)
+					.setParameter("accountId", accountId)
 					.list();
 
 			return appointments;
@@ -179,6 +183,29 @@ public class AppointmentDaoImpl  extends BaseDaoImpl<Appointment> implements App
 			throw e;
 		}
 	}
+	
+	public List<Appointment> findAppByGroupIdAccountId(List<Long> groupId, long accountId) throws Exception {
+		try {
+			Session s=getSession();
+			String hql=
+						 "select a from Appointment a, AppointmentAccountRef aar WHERE "
+							+ "a.sharedType='M' "
+							+ "and a.groupId in (:groupIds) "
+							+ "and a.id = aar.appointmentId "
+							+ "and aar.accountId = :accountId";
+			@SuppressWarnings("unchecked")
+			List<Appointment> appointments = (List<Appointment>)s.createQuery(hql)
+					.setParameterList("groupIds", groupId)
+					.setParameter("accountId", accountId)
+					.list();
+
+			return appointments;
+
+		} catch (Exception e) {
+			throw e;
+		}
+	}
+
 	
 	public List<Appointment> findAppByDate(List<Appointment> appointments, 
 			Date startDate, Date endDate) throws Exception {

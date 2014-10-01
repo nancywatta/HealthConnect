@@ -38,7 +38,9 @@ public interface AppointmentService  extends BaseService<Appointment> {
 	
 	public List<Appointment> findAppointmentByGroupId(List<Long> groupId) throws Exception;
 	
-	public List<Appointment> findAppByGroupIdMemberId(List<Long> groupId, long memberId) throws Exception;
+	public List<Appointment> findAppByGroupIdMemberId(List<Long> groupId, long memberId, long accountId) throws Exception;
+	
+	public List<Appointment> findAppByGroupIdAccountId(List<Long> groupId, long accountId) throws Exception;
 	
 	public List<Appointment> findAppByDate(List<Appointment> appointments, 
 			Date startDate, Date endDate) throws Exception;

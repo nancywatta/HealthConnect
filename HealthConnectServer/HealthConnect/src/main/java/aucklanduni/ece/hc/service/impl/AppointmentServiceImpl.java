@@ -203,6 +203,9 @@ public class AppointmentServiceImpl  extends BaseServiceImpl<Appointment> implem
 		}
 	}
 	
+	/**
+	 * Function will return all appointments that are shared with input groupList
+	 */
 	public List<Appointment> findAppointmentByGroupId(List<Long> groupId) throws Exception {
 		try {
 			
@@ -213,16 +216,23 @@ public class AppointmentServiceImpl  extends BaseServiceImpl<Appointment> implem
 		}
 	}
 	
-	public List<Appointment> findAppByGroupIdMemberId(List<Long> groupId, long memberId) throws Exception {
+	/**
+	 * Function will return all appointments that are shared with input memberId and accountId both
+	 * within the input groupList 
+	 */
+	public List<Appointment> findAppByGroupIdMemberId(List<Long> groupId, long memberId,long accountId) throws Exception {
 		try {
 
-			return appointmentDao.findAppByGroupIdMemberId(groupId, memberId);
+			return appointmentDao.findAppByGroupIdMemberId(groupId, memberId, accountId);
 
 		} catch (Exception e) {
 			throw e;
 		}
 	}
-	
+		
+	/**
+	 * Function will filter input appointments on the basis of input date
+	 */
 	public List<Appointment> findAppByDate(List<Appointment> appointments, 
 			Date startDate, Date endDate) throws Exception {
 		try {
@@ -232,6 +242,21 @@ public class AppointmentServiceImpl  extends BaseServiceImpl<Appointment> implem
 		} catch (Exception e) {
 			throw e;
 		}
+	}
+	
+	/**
+	 * Function will return all appointments that are shared with or owned to the input accountId
+	 * within the input groupList 
+	 */
+	public List<Appointment> findAppByGroupIdAccountId(List<Long> groupId, long accountId) throws Exception {
+		try {
+
+			return appointmentDao.findAppByGroupIdAccountId(groupId, accountId);
+
+		} catch (Exception e) {
+			throw e;
+		}
+
 	}
 
 }

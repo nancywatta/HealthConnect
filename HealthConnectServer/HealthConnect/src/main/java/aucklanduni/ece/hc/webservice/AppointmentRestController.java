@@ -582,10 +582,32 @@ public class AppointmentRestController {
 	
 	}
 	
-	@RequestMapping(value="/filterAppByAccountId",method = RequestMethod.GET
+	/**
+	 * 
+	 * @Title: filterAppointment
+	 * @author Yalu You,Pengyi Li
+	 * @Description: Service will filter appointments based on given inputs.
+	 *  
+	 * @param request
+	 * @param response
+	 * @param accountId - account id of the user who wants to view the appointment
+	 * @param memberId - optional
+	 *                   accountId of the person whose appointment user wants to view
+	 * @param groupId - optional 
+	 *                  user can view all appointments within a group which are shared to
+	 *                   entire group or himself
+	 * @param startDate - optional
+	 *                  can be combined with either the memberId or groupId
+	 *                  or user can view appointments by startDate and endDate
+	 * @param endDate - optional
+	 *                  mandatory if startDate provided in input
+	 * @return HCMessage
+	 * @throws
+	 */
+	@RequestMapping(value="/filterAppointment",method = RequestMethod.GET
 			,headers="Accept=application/json"
 			)
-	public HCMessage filterAppByAccountId(HttpServletRequest request, HttpServletResponse response,
+	public HCMessage filterAppointment(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam("accountId") long accountId,
 			@RequestParam(value="memberId",required=false) Long memberId,
 			@RequestParam(value="groupId",required=false) Long groupId,
@@ -604,22 +626,25 @@ public class AppointmentRestController {
 			}
 			
 			if(memberId != null) {
+				// check if given memberId exists
 				account = accountService.findById(memberId.longValue());
 				if(account == null) {
 					throw new ValidationFailException("Member does not exist");
 				}
+				
+				// find all groups in which the accountId and memberId are part of.
 				List<Group> group = null;
 				group = groupService.findCommonGroup(accountId, memberId.longValue());
 				
 				if(group == null || group.size() < 1)
 					throw new ValidationFailException("Invalid Input");
 				
-				
 				for(Group g: group){
 					groupIds.add(g.getId());
 				}
 
-				appoints = appointmentService.findAppByGroupIdMemberId(groupIds, memberId.longValue());
+				// find all appointments shared with the memberId and accountId both within the retrieved groups 
+				appoints = appointmentService.findAppByGroupIdMemberId(groupIds, memberId.longValue(),accountId );
 			} else if(groupId != null) {
 				Group group = null;
 				//check if given groupId exists
@@ -628,6 +653,7 @@ public class AppointmentRestController {
 					throw new ValidationFailException("Group does not exist");
 				}
 				
+				// check if the input accountId is member of the input GroupId
 				List<Member> memberDtls = new ArrayList<Member>();
 				memberDtls = memberService.findByHql("from Member m WHERE "
 						+ "m.accountId=" + accountId 
@@ -637,6 +663,8 @@ public class AppointmentRestController {
 				
 				groupIds.add(groupId.longValue());
 			} else if(startDate !=null && endDate!=null) {
+				
+				// find all the groups of the input accountId
 				List<Group> groupList = new ArrayList<Group>();
 				groupList = groupService.getGroupByAccId(accountId);
 				
@@ -644,21 +672,27 @@ public class AppointmentRestController {
 					groupIds.add(g.getId());
 				}
 
-				appoints = appointmentService.findAppByGroupIdMemberId(groupIds, accountId);
+				// find all appointments shared with the accountId within the retrieved groups
+				appoints = appointmentService.findAppByGroupIdAccountId(groupIds, accountId);
 
 			}
 			
+			// find all appointments shared with the entire group
 			List<Appointment> appointments = new ArrayList<Appointment>();
 			appointments = appointmentService.findAppointmentByGroupId(groupIds);
 			
 			if(appoints!=null) 
 				appointments.addAll(appoints);
 			
+			// filter appointment on basis of input Date
 			if(startDate !=null && endDate!=null) {
 				appointments = appointmentService.findAppByDate(appointments, startDate, endDate);
 			}
 			
-			System.out.println(appointments);
+			for(Appointment a:appointments ) {
+			System.out.println(a.getId());
+			}
+			
 			message.setSuccess(appointments);
 			
 		}
