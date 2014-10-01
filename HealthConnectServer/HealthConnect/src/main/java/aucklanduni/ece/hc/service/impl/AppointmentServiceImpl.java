@@ -24,6 +24,7 @@ import aucklanduni.ece.hc.webservice.model.ValidationFailException;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
 
 @Service
 public class AppointmentServiceImpl  extends BaseServiceImpl<Appointment> implements AppointmentService{
@@ -187,14 +188,47 @@ public class AppointmentServiceImpl  extends BaseServiceImpl<Appointment> implem
 				AppointmentAccountRef aaf=new AppointmentAccountRef();
 				aaf.setAccountId(member.getId());
 				aaf.setAppointmentId(appoint.getId());
+				aaf.setGroupId(groupId);
 				appointRefDao.add(aaf);
 			}
 			
 			AppointmentAccountRef creater=new AppointmentAccountRef();
 			creater.setAccountId(accountId);
 			creater.setAppointmentId(appoint.getId());
+			creater.setGroupId(groupId);
 			appointRefDao.add(creater);
 
+		} catch (Exception e) {
+			throw e;
+		}
+	}
+	
+	public List<Appointment> findAppointmentByGroupId(List<Long> groupId) throws Exception {
+		try {
+			
+			return appointmentDao.findAppointmentByGroupId(groupId);
+			
+		} catch (Exception e) {
+			throw e;
+		}
+	}
+	
+	public List<Appointment> findAppByGroupIdMemberId(List<Long> groupId, long memberId) throws Exception {
+		try {
+
+			return appointmentDao.findAppByGroupIdMemberId(groupId, memberId);
+
+		} catch (Exception e) {
+			throw e;
+		}
+	}
+	
+	public List<Appointment> findAppByDate(List<Appointment> appointments, 
+			Date startDate, Date endDate) throws Exception {
+		try {
+			
+			 return appointmentDao.findAppByDate(appointments, startDate, endDate);
+			
 		} catch (Exception e) {
 			throw e;
 		}

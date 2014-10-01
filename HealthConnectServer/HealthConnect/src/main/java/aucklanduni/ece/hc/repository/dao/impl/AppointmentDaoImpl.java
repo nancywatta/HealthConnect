@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
@@ -138,6 +139,73 @@ public class AppointmentDaoImpl  extends BaseDaoImpl<Appointment> implements App
 		{
 			throw e;
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Appointment> findAppointmentByGroupId(List<Long> groupId) throws Exception {
+		try {
+			Session s=getSession();
+			String hql="select a from Appointment a WHERE "
+					+ "a.sharedType='G' "
+					+ "and a.groupId in (:groupIds)";
+			List<Appointment> appointments = (List<Appointment>)s.createQuery(hql)
+					.setParameterList("groupIds", groupId).list();
+			
+			return appointments;
+			
+		} catch (Exception e) {
+			throw e;
+		}
+	}
+	
+	public List<Appointment> findAppByGroupIdMemberId(List<Long> groupId, long memberId) throws Exception {
+		try {
+			Session s=getSession();
+			String hql=
+						 "select a from Appointment a, AppointmentAccountRef aar WHERE "
+							+ "a.sharedType='M' "
+							+ "and a.groupId in (:groupIds)"
+							+ " and a.id = aar.appointmentId "
+							+ "and aar.accountId = :memberId";
+			@SuppressWarnings("unchecked")
+			List<Appointment> appointments = (List<Appointment>)s.createQuery(hql)
+					.setParameterList("groupIds", groupId)
+					.setParameter("memberId", memberId)
+					.list();
+
+			return appointments;
+
+		} catch (Exception e) {
+			throw e;
+		}
+	}
+	
+	public List<Appointment> findAppByDate(List<Appointment> appointments, 
+			Date startDate, Date endDate) throws Exception {
+		try {
+			Session s=getSession();
+			List<Long> appIds = new ArrayList<Long>();
+			for (Appointment a: appointments) {
+				appIds.add(a.getId());
+			}
+			
+			String hql= "select a from Appointment a WHERE "
+					+ "a.id in (:appointments) "
+					+ "and a.startDate BETWEEN :startDate AND :endDate";
+						 
+			@SuppressWarnings("unchecked")
+			List<Appointment> appoints = (List<Appointment>)s.createQuery(hql)
+					.setParameterList("appointments", appIds)
+					.setParameter("startDate", startDate)
+					.setParameter("endDate", endDate)
+					.list();
+
+			return appoints;
+
+		} catch (Exception e) {
+			throw e;
+		}
+
 	}
 
 //	public List<Appointment> filterByUserName(long accountId) throws Exception {

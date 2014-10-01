@@ -20,4 +20,5 @@ public interface MemberService extends BaseService<Member> {
 	public String getPatientName( long groupId) throws Exception;
 
 	public List<Account> findAllMembersInGroup(long groupId)throws Exception;
+	
 }

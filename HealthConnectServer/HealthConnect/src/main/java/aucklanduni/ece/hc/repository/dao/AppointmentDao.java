@@ -25,4 +25,11 @@ public interface AppointmentDao extends BaseDao<Appointment> {
 	public List<Appointment> findAllByGroupId(long accountId, long groupId) throws Exception;
 
 	//public List<Appointment> findAllByGroupShared(long accountId) throws Exception;
+	
+	public List<Appointment> findAppointmentByGroupId(List<Long> groupId) throws Exception;
+	
+	public List<Appointment> findAppByGroupIdMemberId(List<Long> groupId, long memberId) throws Exception;
+	
+	public List<Appointment> findAppByDate(List<Appointment> appointments, 
+			Date startDate, Date endDate) throws Exception;
 }

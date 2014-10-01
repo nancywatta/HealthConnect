@@ -58,7 +58,5 @@ public class MemberServiceImpl extends BaseServiceImpl<Member> implements
 	public List<Account> findAllMembersInGroup(long groupId) throws Exception {
 		return memberDao.findAllMembersInGroup(groupId);
 	}
-	
-	
 
 }

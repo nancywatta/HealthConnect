@@ -35,5 +35,12 @@ public interface AppointmentService  extends BaseService<Appointment> {
 	
 	public void createMemberAppointment(long accountId, long groupId, 
 			String members, Appointment appointment) throws ValidationFailException, Exception;
+	
+	public List<Appointment> findAppointmentByGroupId(List<Long> groupId) throws Exception;
+	
+	public List<Appointment> findAppByGroupIdMemberId(List<Long> groupId, long memberId) throws Exception;
+	
+	public List<Appointment> findAppByDate(List<Appointment> appointments, 
+			Date startDate, Date endDate) throws Exception;
 	      
 }

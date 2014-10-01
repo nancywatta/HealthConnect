@@ -23,6 +23,7 @@ import aucklanduni.ece.hc.repository.model.Account;
 import aucklanduni.ece.hc.repository.model.Appointment;
 import aucklanduni.ece.hc.repository.model.Dictionary;
 import aucklanduni.ece.hc.repository.model.Group;
+import aucklanduni.ece.hc.repository.model.Member;
 import aucklanduni.ece.hc.service.AccountService;
 import aucklanduni.ece.hc.service.AppointmentAccountRefService;
 import aucklanduni.ece.hc.service.AppointmentService;
@@ -502,6 +503,7 @@ public class AppointmentRestController {
 		return message;
 	
 	}
+	
 	/**
 	 * 
 	 * @Title: filterAppsByDate
@@ -580,5 +582,93 @@ public class AppointmentRestController {
 	
 	}
 	
+	@RequestMapping(value="/filterAppByAccountId",method = RequestMethod.GET
+			,headers="Accept=application/json"
+			)
+	public HCMessage filterAppByAccountId(HttpServletRequest request, HttpServletResponse response,
+			@RequestParam("accountId") long accountId,
+			@RequestParam(value="memberId",required=false) Long memberId,
+			@RequestParam(value="groupId",required=false) Long groupId,
+			@RequestParam(value="startDate",required=false) @DateTimeFormat(pattern="yyyy-MM-dd")  Date startDate,
+			@RequestParam(value="endDate",required=false) @DateTimeFormat(pattern="yyyy-MM-dd")  Date endDate){
+		HCMessage message = new  HCMessage();
+		try{
+			List<Long> groupIds = new ArrayList<Long>();
+			List<Appointment> appoints = new ArrayList<Appointment>();
+			
+			Account account = null;
+			// check if given accountId exists
+			account = accountService.findById(accountId);
+			if(account == null) {
+				throw new ValidationFailException("Account does not exist");
+			}
+			
+			if(memberId != null) {
+				account = accountService.findById(memberId.longValue());
+				if(account == null) {
+					throw new ValidationFailException("Member does not exist");
+				}
+				List<Group> group = null;
+				group = groupService.findCommonGroup(accountId, memberId.longValue());
+				
+				if(group == null || group.size() < 1)
+					throw new ValidationFailException("Invalid Input");
+				
+				
+				for(Group g: group){
+					groupIds.add(g.getId());
+				}
+
+				appoints = appointmentService.findAppByGroupIdMemberId(groupIds, memberId.longValue());
+			} else if(groupId != null) {
+				Group group = null;
+				//check if given groupId exists
+				group = groupService.findById(groupId.longValue());
+				if(group == null){
+					throw new ValidationFailException("Group does not exist");
+				}
+				
+				List<Member> memberDtls = new ArrayList<Member>();
+				memberDtls = memberService.findByHql("from Member m WHERE "
+						+ "m.accountId=" + accountId 
+						+ " and m.groupId=" + groupId.longValue());
+				if(memberDtls == null || memberDtls.size() < 1)
+					throw new ValidationFailException("Input AccountId does not belong to the Group");
+				
+				groupIds.add(groupId.longValue());
+			} else if(startDate !=null && endDate!=null) {
+				List<Group> groupList = new ArrayList<Group>();
+				groupList = groupService.getGroupByAccId(accountId);
+				
+				for(Group g: groupList){
+					groupIds.add(g.getId());
+				}
+
+				appoints = appointmentService.findAppByGroupIdMemberId(groupIds, accountId);
+
+			}
+			
+			List<Appointment> appointments = new ArrayList<Appointment>();
+			appointments = appointmentService.findAppointmentByGroupId(groupIds);
+			
+			if(appoints!=null) 
+				appointments.addAll(appoints);
+			
+			if(startDate !=null && endDate!=null) {
+				appointments = appointmentService.findAppByDate(appointments, startDate, endDate);
+			}
+			
+			System.out.println(appointments);
+			message.setSuccess(appointments);
+			
+		}
+		catch(ValidationFailException ve) {
+			message.setFail("404", ve.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			message.setFail("400", e.getMessage());
+		}
+		return message;
+	}
 
 }

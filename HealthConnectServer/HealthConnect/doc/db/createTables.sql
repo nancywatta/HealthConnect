@@ -145,12 +145,15 @@ CREATE TABLE `APP_ACC_REF` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `appointment_id` bigint(20) NOT NULL,
   `account_id` bigint(20) NOT NULL,
+  `group_id` bigint(20) DEFAULT NULL,
   `expiration_date` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `appaccref_acc_fk` (`account_id`),
   KEY `appaccref_app_fk` (`appointment_id`),
+  KEY `appaccref_group_fk` (`group_id`),
   CONSTRAINT `appaccref_app_fk` FOREIGN KEY (`appointment_id`) REFERENCES `appointment` (`id`),
-  CONSTRAINT `appaccref_acc_fk` FOREIGN KEY (`account_id`) REFERENCES `account` (`id`)
+  CONSTRAINT `appaccref_acc_fk` FOREIGN KEY (`account_id`) REFERENCES `account` (`id`),
+  CONSTRAINT `appaccref_group_fk` FOREIGN KEY (`group_id`) REFERENCES `group_info` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8
 ;
 
@@ -160,6 +163,7 @@ CREATE TABLE `APP_ACC_REF_AUD` (
   `REVTYPE` tinyint(4) DEFAULT NULL,
   `appointment_id` bigint(20) DEFAULT NULL,
   `account_id` bigint(20) DEFAULT NULL,
+  `group_id` bigint(20) DEFAULT NULL,
   `expiration_date` datetime DEFAULT NULL,
   PRIMARY KEY (`ID`,`REV`),
   KEY `FK_8ydb8pqmq863gvfewm3ldf49k` (`REV`),

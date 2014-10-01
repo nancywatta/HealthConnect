@@ -45,4 +45,5 @@ public interface GroupService extends BaseService<Group>{
 	
 	public List<Member> getEffectiveMembers(long groupId) throws Exception;
 	 
+	public List<Group> findCommonGroup(long accountId, long memberId) throws Exception;
 }
