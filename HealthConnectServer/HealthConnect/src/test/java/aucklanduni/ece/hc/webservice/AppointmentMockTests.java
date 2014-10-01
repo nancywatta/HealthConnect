@@ -83,6 +83,77 @@ public class AppointmentMockTests extends BaseContextControllerTests {
 				.andExpect(jsonPath("$.error").value("No Appointment Exists for given Account"));
 	}	
 
+	//Junit test for view appointments by group
+	 /**
+		 * test viewAppointment for valid account 
+		 */
+		@Test  
+		public void viewAppointmentByGroupForValidAccount() throws Exception {  
+
+			this.mockMvc.perform(get(URL+"/viewAppointmentByGroup")
+					.contentType(MediaType.APPLICATION_JSON)
+					.param("accountId", "1")
+					.param("groupId", "1")
+					)
+					.andDo(print())
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.status").value("200"))
+					.andExpect(jsonPath("$.response.appointments").isArray())
+					.andExpect(jsonPath("$.response.appointments[0].appointmentname").value("haha"));
+		}
+
+		/**
+		 * test appointment for invalid account 
+		 */
+		@Test  
+		public void viewAppointmentbyGroupForInvalidAccount() throws Exception {  
+
+			this.mockMvc.perform(get(URL+"/viewAppointmentByGroup")
+					.contentType(MediaType.APPLICATION_JSON)
+					.param("accountId", "199")
+					.param("groupId", "1")
+					)
+					.andDo(print())
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.status").value("404"))
+					.andExpect(jsonPath("$.error").value("Account does not exist"));
+		}
+		
+		/**
+		 * test appointment for invalid account 
+		 */
+		@Test  
+		public void viewAppointmentbyGroupForInvalidGroup() throws Exception {  
+
+			this.mockMvc.perform(get(URL+"/viewAppointmentByGroup")
+					.contentType(MediaType.APPLICATION_JSON)
+					.param("accountId", "1")
+					.param("groupId", "199")
+					)
+					.andDo(print())
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.status").value("404"))
+					.andExpect(jsonPath("$.error").value("Group does not exist"));
+		}
+		
+		
+		/**
+		 * test viewAppointment for account that does not have any 
+		 * appointment created yet  
+		 */
+		@Test  
+		public void emptyAppointmentByGroup() throws Exception {  
+
+			this.mockMvc.perform(get(URL+"/viewAppointmentByGroup")
+					.contentType(MediaType.APPLICATION_JSON)
+					.param("accountId", "3")
+					)
+					.andDo(print())
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.status").value("404"))
+					.andExpect(jsonPath("$.error").value("No Appointment Exists for given Account"));
+		}	
+
 	
 	/**
 	 * test createAppointment with correct inputs
