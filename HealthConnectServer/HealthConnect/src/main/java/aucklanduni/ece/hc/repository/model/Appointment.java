@@ -1,4 +1,4 @@
- package aucklanduni.ece.hc.repository.model;
+package aucklanduni.ece.hc.repository.model;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -13,12 +13,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
-import org.hibernate.envers.Audited;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 /**
  * 
 * @ClassName: Appointment 
@@ -26,74 +22,97 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 * This is to contain information of all Appintment
 * @author Zhao Yuan
 * @date 2014年9月15日 下午9:00:02 
+* 
+* CREATE TABLE `APPOINTMENT` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) DEFAULT NULL,
+  `location` varchar(64) DEFAULT NULL,
+  `start_time` time NOT NULL,
+  `end_time` time NOT NULL,
+  `start_date` datetime NOT NULL,
+  `end_date` datetime DEFAULT NULL,
+  `execute_time` bigint(20) DEFAULT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  `appointment_type` varchar(64) DEFAULT NULL,
+  `status` varchar(4) DEFAULT NULL,
+  `shared_type` varchar(4) DEFAULT NULL,
+  `group_id` bigint(20) DEFAULT NULL,
+  `created_date` datetime DEFAULT NULL,
+  `updated_date` datetime DEFAULT NULL,
+  `expiration_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `app_group_fk` (`group_id`),
+  CONSTRAINT `app_group_fk` FOREIGN KEY (`group_id`) REFERENCES `group_info` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8
+; 
 *
  */
 @Entity
-@Audited
 @Table(name = "APPOINTMENT")
-@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
-@JsonDeserialize()
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Appointment implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+
+	private static final long serialVersionUID = -7958131297262423223L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "ID", unique = true, nullable = false, precision = 20, scale = 0)
 	private long id;
 	
+	/**
+	 * appointment name 
+	 */
 	@Column(name = "name")
 	private String name;
 
-	@Column(name = "start_time", nullable = false)
-	@Temporal(TemporalType.TIME)
-	private Date startTime;
+	/**
+	 * appointment time 
+	 */
+	@Column(name = "time", nullable = false)
+	private Date time;
 	
-	@Column(name = "end_time", nullable = false)
-	@Temporal(TemporalType.TIME)
-	private Date endTime;
-	
-	@Column(name = "start_date")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date startDate;
-	
-	@Column(name = "end_date")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date endDate;
-
-	@Column(name = "execute_time")
-	private long executeTime;
-	
+	/**
+	 * location of this appointment
+	 */
 	@Column(name = "location")
 	private String location;
 	
-	@Column(name = "description")
-	private String description;
-	
-	@Column(name = "appointment_type")
-	private String appointmentType;
+	/**
+	 * short description of this appointment
+	 */
+	@Column(name = "desciption")
+	private String desciption;
 
+	/**
+	 * the status of this appointment. Right now this field has not been used in app
+	 * But it allows to save different status like "W":waiting for other to accept this appointment
+	 * "C":cancel by others and so on.
+	 */
 	@Column(name = "status")
 	private String status;
 	
-	@Column(name = "shared_type")
-	private String sharedType;
-	
-	@Column(name = "group_id", nullable = false, precision = 20, scale = 0)
-	private long groupId;
+	/**
+	 * It means whether this appointment is shared.
+	 * Note that by default, a appointment is shared with all members in a group
+	 * But patients can edit to allow only a few member to be shared with.
+	 * Value : "T" "F"
+	 */
+	@Column(name = "isShared")
+	private String isShared;
 
+	/**
+	 * The datetime when a record is first created
+	 */
 	@Column(name = "created_date")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date createDate;
 	
+	/**
+	 * The datetime when a record is updated
+	 */
 	@Column(name = "updated_date")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedDate;
-	
-	@Column(name = "expiration_date")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date expirationDate;
 
 	public long getId() {
 		return id;
@@ -111,48 +130,13 @@ public class Appointment implements Serializable {
 		this.name = name;
 	}
 
-	@JsonFormat(pattern="HH:mm:ss", timezone = "GMT+13")
-	public Date getStartTime() {
-		return startTime;
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")  
+	public Date getTime() {
+		return time;
 	}
 
-	public void setStartTime(Date startTime) {
-		this.startTime = startTime;
-	}
-
-	@JsonFormat(pattern="HH:mm:ss", timezone = "GMT+13")
-	public Date getEndTime() {
-		return endTime;
-	}
-
-	public void setEndTime(Date endTime) {
-		this.endTime = endTime;
-	}
-	
-	public long getExecuteTime(){
-		return executeTime;
-	}
-
-	public void setExecuteTime(long executeTime) {
-		this.executeTime = executeTime;
-	}
-
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone = "GMT+13")
-	public Date getStartDate() {
-		return startDate;
-	}
-
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
-	}
-
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone = "GMT+13")
-	public Date getEndDate() {
-		return endDate;
-	}
-
-	public void setEndDate(Date endDate) {
-		this.endDate = endDate;
+	public void setTime(Date time) {
+		this.time = time;
 	}
 
 	public String getLocation() {
@@ -163,20 +147,12 @@ public class Appointment implements Serializable {
 		this.location = location;
 	}
 
-	public String getDescription() {
-		return description;
+	public String getDesciption() {
+		return desciption;
 	}
 
-	public void setDescription(String desciption) {
-		this.description = desciption;
-	}
-
-	public String getAppointmentType() {
-		return appointmentType;
-	}
-
-	public void setAppointmentType(String appointmentType) {
-		this.appointmentType = appointmentType;
+	public void setDesciption(String desciption) {
+		this.desciption = desciption;
 	}
 
 	public String getStatus() {
@@ -187,23 +163,14 @@ public class Appointment implements Serializable {
 		this.status = status;
 	}
 
-	public String getSharedType() {
-		return sharedType;
+	public String getIsShared() {
+		return isShared;
 	}
 
-	public void setSharedType(String sharedType) {
-		this.sharedType = sharedType;
+	public void setIsShared(String isShared) {
+		this.isShared = isShared;
 	}
-
-	public long getGroupId() {
-		return groupId;
-	}
-
-	public void setGroupId(long groupId) {
-		this.groupId = groupId;
-	}
-
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone = "GMT+13")  
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")  
 	public Date getCreateDate() {
 		return createDate;
 	}
@@ -211,23 +178,13 @@ public class Appointment implements Serializable {
 	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
 	}
-	
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone = "GMT+13")  
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")  
 	public Date getUpdatedDate() {
 		return updatedDate;
 	}
 
 	public void setUpdatedDate(Date updatedDate) {
 		this.updatedDate = updatedDate;
-	}
-
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone = "GMT+13")
-	public Date getExpirationDate() {
-		return expirationDate;
-	}
-
-	public void setExpirationDate(Date expirationDate) {
-		this.expirationDate = expirationDate;
 	}
 
 	@Override
