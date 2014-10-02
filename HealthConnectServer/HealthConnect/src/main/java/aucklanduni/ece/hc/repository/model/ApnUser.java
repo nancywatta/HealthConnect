@@ -18,26 +18,9 @@ import org.apache.commons.lang.builder.ReflectionToStringBuilder;
  * 
 * @ClassName: ApnUser 
 * @Description: This is an Entity class relating to actural database table
-* ApnUser is to contain Push Notification Users.
-* Note that right now this Push Notification Server hasnt been used in this app
-* this table is teporaly useless. But As design it will contain mobile phone's info
-* so as to push messages to the clients. 
+* ApnUser is to contain Push Notification Users
 * @author Zhao Yuan
 * @date 2014年9月15日 下午8:59:50 
-* 
-* 
-CREATE TABLE `APN_USER` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `created_date` datetime DEFAULT NULL,
-  `email` varchar(64) DEFAULT NULL,
-  `name` varchar(64) DEFAULT NULL,
-  `password` varchar(64) DEFAULT NULL,
-  `updated_date` datetime DEFAULT NULL,
-  `username` varchar(64) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8
-;
 *
  */
 @Entity
@@ -51,42 +34,23 @@ public class ApnUser  implements Serializable {
 	@Column(name = "ID", unique = true, nullable = false, precision = 20, scale = 0)
 	private long id;
 	
-	/**
-	 * create date is to contain the datetime when this record was firstly created.
-	 */
 	@Column(name = "created_date")
 	@Temporal(TemporalType.DATE)
 	private Date createDate;
 	
-	/**
-	 * email means users email address to distinguish among users.
-	 */
 	@Column(name = "email")
 	private String email;
 	
-	/**
-	 * name is push notification users real name
-	 */
 	@Column(name = "name")
 	private String name;
 	
-	/**
-	 * passward is for users to update their information or to get permittion
-	 * when connectting to push server.
-	 */
 	@Column(name = "password")
 	private String password;
 	
-	/**
-	 * record datetime for every update action 
-	 */
 	@Column(name = "updated_date")
 	@Temporal(TemporalType.DATE)
 	private Date updatedDate;
 	
-	/**
-	 * This is the nickname of this user
-	 */
 	@Column(name = "username", unique = true, nullable = false)
 	private String username;
 

@@ -14,6 +14,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+import org.hibernate.envers.Audited;
 /**
  * 
 * @ClassName: Account 
@@ -21,85 +22,50 @@ import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 * Account object is to contain information of application users
 * @author Zhao Yuan
 * @date 2014年9月15日 下午8:58:46 
-* 
-* CREATE TABLE `ACCOUNT` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `email` varchar(64) NOT NULL,
-  `username` varchar(64) DEFAULT NULL,
-  `password` varchar(64) DEFAULT NULL,
-  `created_date` datetime DEFAULT NULL,
-  `updated_date` datetime DEFAULT NULL,
-  `last_login_date` datetime DEFAULT NULL,
-  `expiration_date` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8
-;
 *
  */
 @Entity
+@Audited
 @Table(name = "ACCOUNT")
 public class Account implements Serializable {
 
-	private static final long serialVersionUID = -251853810742604601L;
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "ID", unique = true, nullable = false, precision = 20, scale = 0)
 	private long id;
 	
-	/**
-	 * Email is the unique value represents user's email address. 
-	 * It should not be null.
-	 */
 	@Column(name = "email", unique = true, nullable = false)
 	private String email;
 	
-	/**
-	 * Username represents user's nickname/shown name in this application.
-	 * If its null, UI should show its email address. 
-	 */
 	@Column(name = "username")
 	private String username;
 	
-	/**
-	 * Password is for users to use in case when they want to change 
-	 * personal information. 
-	 */
 	@Column(name = "password")
 	private String password;
 
-	/**
-	 * CreateDate is to record the datetime when the record first being created.
-	 */
 	@Column(name = "created_date")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date createDate;
 	
-	/**
-	 * UpdateDate is to record every time when this record being updated.
-	 */
 	@Column(name = "updated_date")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedDate;
 	
-	/**
-	 * last login date is to save last time when user loged in.
-	 * This value should be updated after user logout
-	 * or UI's session expires.
-	 */
 	@Column(name = "last_login_date")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastLoginDate;
 	
-	/**
-	 * It represents the role of this account.
-	 * This Transient field wont be saved in db.
-	 * TODO this field should be deleted once we have viewobjects done
-	 * coz right now its only for the sake of showing role in android layout.
-	 */
+	@Column(name = "expiration_date")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date expirationDate;
+	
 	@Transient
 	private Dictionary role;
+	
+	@Transient
+	private Member memberDetails;
 
 	public long getId() {
 		return id;
@@ -165,6 +131,22 @@ public class Account implements Serializable {
 		return role;
 	}
 	
+	public Date getExpirationDate() {
+		return expirationDate;
+	}
+
+	public void setExpirationDate(Date expirationDate) {
+		this.expirationDate = expirationDate;
+	}
+
+	public Member getMemberDetails() {
+		return memberDetails;
+	}
+
+	public void setMemberDetails(Member memberDetails) {
+		this.memberDetails = memberDetails;
+	}
+
 	@Override
 	public String toString() {
 		return ReflectionToStringBuilder.toString(this);
