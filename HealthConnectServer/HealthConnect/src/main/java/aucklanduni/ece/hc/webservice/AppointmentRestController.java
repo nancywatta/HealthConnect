@@ -252,15 +252,10 @@ public class AppointmentRestController {
 
 		return message;
 	}
-		
-	
 
-
-
-/*
- * /**
+  /**
 	 * 
-	 * @Title: viewAppointments 
+	 * @Title: viewAppointment 
 	 * @Description: Service will return all the appointments of the given
 	 * accountId.
 	 *  
@@ -270,8 +265,6 @@ public class AppointmentRestController {
 	 * @return HCMessage
 	 * @throws
 	 */
-	
-
 	@RequestMapping(value="/viewAppointment",method = RequestMethod.GET
 			,headers="Accept=application/json"
 			)
@@ -322,64 +315,7 @@ public class AppointmentRestController {
 	
 }
 	
-	@RequestMapping(value="/viewAppointmentByGroup",method = RequestMethod.GET
-			,headers="Accept=application/json"
-			)
-	public HCMessage showAppointmentsByGroup(HttpServletRequest request, HttpServletResponse response,
-			@RequestParam("accountId") long accountId
-			,@RequestParam("groupId") long groupId){
-		System.out.println(">>>>>>>>>>>>>>>>>viewAppointment"+accountId);
-		
-		List<Appointment> appointmentListShown = new ArrayList<Appointment>();
-		HCMessage message = new  HCMessage();
-		try{
-			Account account = null;
-			// check if given accountId exists
-			account = accountService.findById(accountId);
-			if(account == null) {
-				throw new ValidationFailException("Account does not exist");
-			}
-			Group group = null;
-			// check if given group exists
-			group = groupService.findById(groupId);
-			if(group == null){
-				throw new ValidationFailException("Group does not exist");
-			}
-			// check if given member is in given group
-			if(memberService.findByAccountIdAndGroupId(accountId, groupId) == null){
-				throw new ValidationFailException("Account is not a member of that group");
-			}
-			// find all groups that this account has
-			List<Appointment> appointments = appointmentService.
-					findAppointmentsByGroup(group.getId());
-			for(Appointment appointment:appointments){
-				if(appointment.getSharedType().equals("M")){
-					if(aafService.ifExist(accountId,appointment.getId())!=null)
-						appointmentListShown.add(appointment);
-				}
-				else{
-					appointmentListShown.add(appointment);
-				}
-			}
-			//System.out.println("These are the appointments that you created");
-			for(Appointment appointment:appointmentListShown){
-				System.out.println("appointmentName="+appointment.getName()+"   appointmentLocation="+appointment.getLocation()
-						+"   startDate="+appointment.getStartDate());
-			}
-
-			message.setSuccess(appointmentListShown);
-			//message.setSuccess(appointments2);
-		
-		}catch(ValidationFailException ve) {
-			message.setFail("404", ve.getMessage());
-		} catch (Exception e) {
-			e.printStackTrace();
-			message.setFail("400", e.getMessage());
-		}
-		return message;
-	
-}
-	/*
+		/*
 	 * /**
 		 * 
 		 * @Title: viewAppointmentsBuGroup 
