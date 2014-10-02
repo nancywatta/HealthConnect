@@ -111,8 +111,8 @@ public class AppointmentRestController {
 	 *    "endTime": "10:00:00",
 	 *    "executeTime": 1,
 	 *    "description": "Diabetes",
-	 *    "startDate": "2014-09-29",
-	 *    "endDate": "3014-09-29"
+	 *    "startDate": "2014-09-29 00:00:00",
+	 *    "endDate": "3014-09-29 00:00:00"
 	 *  }
 	 *  
 	 * @param request
@@ -457,57 +457,57 @@ public class AppointmentRestController {
 	 * @throws
 	 */
 	
-	@RequestMapping(value="/filterAppsByUsername",method = RequestMethod.POST
-			,headers="Accept=application/json"
-			)
-	public HCMessage filterAppsByUsername(HttpServletRequest request, HttpServletResponse response,
-			@RequestParam("accountId") long accountId,
-			@RequestParam("roleId") long roleId,
-			@RequestParam("username") String username){
-		
-		HCMessage message = new  HCMessage();
-		try{
-			
-			if(roleId != 2){
-				throw new ValidationFailException("only nurse can do this action!");
-			}
-			ArrayList groupIdList = new ArrayList();//get
-			groupIdList = memberService.getGroupIdOfNurse(accountId, roleId);
-//			System.out.println(groupIdList.get(0)+"-------------------------------------------");
-			ArrayList<String> patientName = new ArrayList<String>();
-			
-			if(groupIdList.size() == 0){
-				throw new ValidationFailException("invalid input!");
-			}
-			
-			
-			
-			for(int i = 0; i < groupIdList.size(); i++){
-				long groupId = (Long) groupIdList.get(i);
-				String patientN = "";
-				patientN = memberService.getPatientName(groupId);
-				patientName.add(patientN);
-			}
-			
-			if(patientName.contains(username)){
-				long accIdOfPatient = accountService.getAccIdByUsername(username);
-				List<Appointment> appointments=appointmentService.findAllByAccountId(accIdOfPatient);
-				message.setSuccess(appointments);
-			} else {
-				throw new ValidationFailException("invalid username!");
-			}
-			
-			
-		
-		}catch(ValidationFailException ve) {
-			message.setFail("404", ve.getMessage());
-		} catch (Exception e) {
-			e.printStackTrace();
-			message.setFail("400", e.getMessage());
-		}
-		return message;
-	
-	}
+//	@RequestMapping(value="/filterAppsByUsername",method = RequestMethod.POST
+//			,headers="Accept=application/json"
+//			)
+//	public HCMessage filterAppsByUsername(HttpServletRequest request, HttpServletResponse response,
+//			@RequestParam("accountId") long accountId,
+//			@RequestParam("roleId") long roleId,
+//			@RequestParam("username") String username){
+//		
+//		HCMessage message = new  HCMessage();
+//		try{
+//			
+//			if(roleId != 2){
+//				throw new ValidationFailException("only nurse can do this action!");
+//			}
+//			ArrayList groupIdList = new ArrayList();//get
+//			groupIdList = memberService.getGroupIdOfNurse(accountId, roleId);
+////			System.out.println(groupIdList.get(0)+"-------------------------------------------");
+//			ArrayList<String> patientName = new ArrayList<String>();
+//			
+//			if(groupIdList.size() == 0){
+//				throw new ValidationFailException("invalid input!");
+//			}
+//			
+//			
+//			
+//			for(int i = 0; i < groupIdList.size(); i++){
+//				long groupId = (Long) groupIdList.get(i);
+//				String patientN = "";
+//				patientN = memberService.getPatientName(groupId);
+//				patientName.add(patientN);
+//			}
+//			
+//			if(patientName.contains(username)){
+//				long accIdOfPatient = accountService.getAccIdByUsername(username);
+//				List<Appointment> appointments=appointmentService.findAllByAccountId(accIdOfPatient);
+//				message.setSuccess(appointments);
+//			} else {
+//				throw new ValidationFailException("invalid username!");
+//			}
+//			
+//			
+//		
+//		}catch(ValidationFailException ve) {
+//			message.setFail("404", ve.getMessage());
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			message.setFail("400", e.getMessage());
+//		}
+//		return message;
+//	
+//	}
 	/**
 	 * 
 	 * @Title: filterAppsByDate
@@ -528,63 +528,63 @@ public class AppointmentRestController {
 	 * @return HCMessage
 	 * @throws
 	 */
-	@RequestMapping(value="/filterAppsByDate",method = RequestMethod.POST
-			,headers="Accept=application/json"
-			)
-	public HCMessage filterAppsByDate(HttpServletRequest request, HttpServletResponse response,
-			@RequestParam("accountId") long accountId,
-			@RequestParam("roleId") long roleId,
-			@RequestParam("username") String username,
-			@RequestParam("startDate") @DateTimeFormat(pattern="yyyy-MM-dd")  Date startDate,
-			@RequestParam("endDate") @DateTimeFormat(pattern="yyyy-MM-dd")  Date endDate){
-		
-		HCMessage message = new  HCMessage();
-		try{
-			
-			if(roleId != 2){
-				System.out.println("222222222222");
-				throw new ValidationFailException("only nurse can do this action!");
-			}
-			
-			ArrayList groupIdList = new ArrayList();
-			groupIdList = memberService.getGroupIdOfNurse(accountId, roleId);
-//			System.out.println(groupIdList.get(0)+"-------------------------------------------");
-			ArrayList<String> patientName = new ArrayList<String>();
-			
-			if(groupIdList.size() == 0){
-				throw new ValidationFailException("invalid input!");
-			}
-			
-			
-			
-			for(int i = 0; i < groupIdList.size(); i++){
-				long groupId = (Long) groupIdList.get(i);
-				String patientN = "";
-				patientN = memberService.getPatientName(groupId);
-				patientName.add(patientN);
-			}
-			
-			if(patientName.contains(username)){
-				long accIdOfPatient = accountService.getAccIdByUsername(username);
-				List<Appointment> appointments=appointmentService.filterByDate(accIdOfPatient, startDate, endDate);
-				message.setSuccess(appointments);
-			} else {
-				throw new ValidationFailException("invalid username!");
-			}
-			
-			
-			
-		
-		}catch(ValidationFailException ve) {
-			System.out.println(ve.getMessage());
-			message.setFail("404", ve.getMessage());
-		} catch (Exception e) {
-			e.printStackTrace();
-			message.setFail("400", e.getMessage());
-		}
-		return message;
-	
-	}
+//	@RequestMapping(value="/filterAppsByDate",method = RequestMethod.POST
+//			,headers="Accept=application/json"
+//			)
+//	public HCMessage filterAppsByDate(HttpServletRequest request, HttpServletResponse response,
+//			@RequestParam("accountId") long accountId,
+//			@RequestParam("roleId") long roleId,
+//			@RequestParam("username") String username,
+//			@RequestParam("startDate") @DateTimeFormat(pattern="yyyy-MM-dd")  Date startDate,
+//			@RequestParam("endDate") @DateTimeFormat(pattern="yyyy-MM-dd")  Date endDate){
+//		
+//		HCMessage message = new  HCMessage();
+//		try{
+//			
+//			if(roleId != 2){
+//				System.out.println("222222222222");
+//				throw new ValidationFailException("only nurse can do this action!");
+//			}
+//			
+//			ArrayList groupIdList = new ArrayList();
+//			groupIdList = memberService.getGroupIdOfNurse(accountId, roleId);
+////			System.out.println(groupIdList.get(0)+"-------------------------------------------");
+//			ArrayList<String> patientName = new ArrayList<String>();
+//			
+//			if(groupIdList.size() == 0){
+//				throw new ValidationFailException("invalid input!");
+//			}
+//			
+//			
+//			
+//			for(int i = 0; i < groupIdList.size(); i++){
+//				long groupId = (Long) groupIdList.get(i);
+//				String patientN = "";
+//				patientN = memberService.getPatientName(groupId);
+//				patientName.add(patientN);
+//			}
+//			
+//			if(patientName.contains(username)){
+//				long accIdOfPatient = accountService.getAccIdByUsername(username);
+//				List<Appointment> appointments=appointmentService.filterByDate(accIdOfPatient, startDate, endDate);
+//				message.setSuccess(appointments);
+//			} else {
+//				throw new ValidationFailException("invalid username!");
+//			}
+//			
+//			
+//			
+//		
+//		}catch(ValidationFailException ve) {
+//			System.out.println(ve.getMessage());
+//			message.setFail("404", ve.getMessage());
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			message.setFail("400", e.getMessage());
+//		}
+//		return message;
+//	
+//	}
 	
 	/**
 	 * 
@@ -666,7 +666,7 @@ public class AppointmentRestController {
 					throw new ValidationFailException("Input AccountId does not belong to the Group");
 				
 				groupIds.add(groupId.longValue());
-			} else if(startDate !=null && endDate!=null) {
+			} else {
 				
 				// find all the groups of the input accountId
 				List<Group> groupList = new ArrayList<Group>();

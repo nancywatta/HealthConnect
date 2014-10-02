@@ -1,4 +1,4 @@
-package aucklanduni.ece.hc.repository.model;
+ package aucklanduni.ece.hc.repository.model;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -14,9 +14,10 @@ import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.hibernate.envers.Audited;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 /**
  * 
@@ -31,6 +32,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @Audited
 @Table(name = "APPOINTMENT")
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+@JsonDeserialize()
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Appointment implements Serializable {
 
@@ -52,12 +54,12 @@ public class Appointment implements Serializable {
 	@Temporal(TemporalType.TIME)
 	private Date endTime;
 	
-	@Column(name = "start_date", nullable = false)
-	@Temporal(TemporalType.DATE)
+	@Column(name = "start_date")
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date startDate;
 	
 	@Column(name = "end_date")
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date endDate;
 
 	@Column(name = "execute_time")
@@ -109,7 +111,7 @@ public class Appointment implements Serializable {
 		this.name = name;
 	}
 
-	@JsonFormat(pattern="HH:mm:ss")
+	@JsonFormat(pattern="HH:mm:ss", timezone = "GMT+13")
 	public Date getStartTime() {
 		return startTime;
 	}
@@ -118,7 +120,7 @@ public class Appointment implements Serializable {
 		this.startTime = startTime;
 	}
 
-	@JsonFormat(pattern="HH:mm:ss")
+	@JsonFormat(pattern="HH:mm:ss", timezone = "GMT+13")
 	public Date getEndTime() {
 		return endTime;
 	}
@@ -135,8 +137,7 @@ public class Appointment implements Serializable {
 		this.executeTime = executeTime;
 	}
 
-	@JsonFormat(pattern="yyyy-MM-dd")
-	 @JsonIgnore 
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone = "GMT+13")
 	public Date getStartDate() {
 		return startDate;
 	}
@@ -145,8 +146,7 @@ public class Appointment implements Serializable {
 		this.startDate = startDate;
 	}
 
-	@JsonFormat(pattern="yyyy-MM-dd")
-	 @JsonIgnore 
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone = "GMT+13")
 	public Date getEndDate() {
 		return endDate;
 	}
@@ -203,7 +203,7 @@ public class Appointment implements Serializable {
 		this.groupId = groupId;
 	}
 
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")  
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone = "GMT+13")  
 	public Date getCreateDate() {
 		return createDate;
 	}
@@ -212,7 +212,7 @@ public class Appointment implements Serializable {
 		this.createDate = createDate;
 	}
 	
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")  
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone = "GMT+13")  
 	public Date getUpdatedDate() {
 		return updatedDate;
 	}
@@ -221,7 +221,7 @@ public class Appointment implements Serializable {
 		this.updatedDate = updatedDate;
 	}
 
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone = "GMT+13")
 	public Date getExpirationDate() {
 		return expirationDate;
 	}

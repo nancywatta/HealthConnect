@@ -34,7 +34,7 @@ public class ICalendarTool {
 	 */
 	public static Calendar getICal4J(Appointment app,List<Account> accountList) throws SocketException{
 		Calendar iCal = createICalendar();
-		//iCal = createAppointment(iCal, app.getTime(),app.getTime(),app.getName(),accountList);
+		iCal = createAppointment(iCal, app.getStartDate(),app.getEndDate(),app.getName(),accountList);
 		
 		return iCal;
 	}

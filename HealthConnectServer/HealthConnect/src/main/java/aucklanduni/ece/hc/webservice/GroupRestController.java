@@ -77,7 +77,7 @@ public class GroupRestController {
 	 *    { "email":"google2@gmail.com",
 	 *      "role":
 	 *             { "id":3 }
-	 *    },
+	 *    }
 	 *  ]
 	 *  if the invited member does not exist in database, account will be registered
 	 *  and emailId and default password will be saved in the ACCOUNT table.
