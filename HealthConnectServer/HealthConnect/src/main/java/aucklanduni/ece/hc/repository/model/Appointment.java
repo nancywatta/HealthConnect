@@ -27,6 +27,28 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 * @author Zhao Yuan
 * @date 2014年9月15日 下午9:00:02 
 *
+*CREATE TABLE `APPOINTMENT` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) DEFAULT NULL,
+  `location` varchar(64) DEFAULT NULL,
+  `start_time` time NOT NULL,
+  `end_time` time NOT NULL,
+  `start_date` datetime NOT NULL,
+  `end_date` datetime DEFAULT NULL,
+  `execute_time` bigint(20) DEFAULT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  `appointment_type` varchar(64) DEFAULT NULL,
+  `status` varchar(4) DEFAULT NULL,
+  `shared_type` varchar(4) DEFAULT NULL,
+  `group_id` bigint(20) DEFAULT NULL,
+  `created_date` datetime DEFAULT NULL,
+  `updated_date` datetime DEFAULT NULL,
+  `expiration_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `app_group_fk` (`group_id`),
+  CONSTRAINT `app_group_fk` FOREIGN KEY (`group_id`) REFERENCES `group_info` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8
+; 
  */
 @Entity
 @Audited
@@ -36,61 +58,115 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Appointment implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -7329335127924971404L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "ID", unique = true, nullable = false, precision = 20, scale = 0)
 	private long id;
 	
+	/**
+	 * appointment name 
+	 */
 	@Column(name = "name")
 	private String name;
 
+	/**
+	 * start time for this appointment
+	 */
 	@Column(name = "start_time", nullable = false)
 	@Temporal(TemporalType.TIME)
 	private Date startTime;
 	
+	/**
+	 * end time for this appointment
+	 */
 	@Column(name = "end_time", nullable = false)
 	@Temporal(TemporalType.TIME)
 	private Date endTime;
 	
+	/**
+	 * start date of this appointment
+	 */
 	@Column(name = "start_date")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date startDate;
 	
+	/**
+	 * end date of this appointment
+	 */
 	@Column(name = "end_date")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date endDate;
 
+	/**
+	 * execute time during start date and end date when the appointment will be executed.
+	 */
 	@Column(name = "execute_time")
 	private long executeTime;
 	
+	/**
+	 * location of this appointment
+	 */
 	@Column(name = "location")
 	private String location;
 	
+	/**
+	 * short description of this appointment
+	 */
 	@Column(name = "description")
 	private String description;
 	
+	/**
+	 * This allows users to have different types of appointment
+	 * so as to manage or filter effectively
+	 */
 	@Column(name = "appointment_type")
 	private String appointmentType;
 
+	/**
+	 * the status of this appointment. Right now this field has not been used in app
+	 * But it allows to save different status like "W":waiting for other to accept this appointment
+	 * "C":cancel by others and so on.
+	 */
 	@Column(name = "status")
 	private String status;
 	
+	/**
+	 * It means the range where this appointment is shared.
+	 * Note that by default, a appointment is shared with all members in a group
+	 * But patients can edit to allow only a few member to be shared with.
+	 * Value : "G":group; "M":members
+	 * When its G, it means all members in group can view this appointment
+	 * When its M, it means only members in App_acc_ref table are allowed 
+	 * to view  the appointment.
+	 */
 	@Column(name = "shared_type")
 	private String sharedType;
 	
+	/**
+	 * mean which group this appointment belongs to 
+	 */
 	@Column(name = "group_id", nullable = false, precision = 20, scale = 0)
 	private long groupId;
 
+	/**
+	 * The datetime when a record is first created
+	 */
 	@Column(name = "created_date")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date createDate;
 	
+	/**
+	 * The datetime when a record is updated
+	 */
 	@Column(name = "updated_date")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedDate;
 	
+	/**
+	 * The datetime when a record is expired
+	 */
 	@Column(name = "expiration_date")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date expirationDate;

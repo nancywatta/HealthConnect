@@ -18,49 +18,98 @@ import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 * @ClassName: Task 
 * @Description: This is an Entity class relating to actural database table
 * Task means TO_DO things 
+* TO_DO list contains not only appointment but also taking pills, doing excercise
+* having special diet and so on.
+* TODO should be reconsidered coz right now its a bit duplicated with appointment
+* also should know more detailed logic about patients daily routine 
+* apart from appointment management
 * @author Zhao Yuan
 * @date 2014年9月15日 下午9:07:17 
 *
+*CREATE TABLE `TASK` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `account_id` bigint(20) NOT NULL,
+  `name` varchar(64) NOT NULL,
+  `start_date` datetime DEFAULT NULL,
+  `end_date` datetime DEFAULT NULL,
+  `execute_time` datetime DEFAULT NULL,
+  `isValid` varchar(4) DEFAULT NULL,
+  `isShared` varchar(4) DEFAULT NULL,
+  `desciption` varchar(256) DEFAULT NULL,
+  `created_date` datetime DEFAULT NULL,
+  `updated_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `task_acc_fk` (`account_id`),
+  CONSTRAINT `task_acc_fk` FOREIGN KEY (`account_id`) REFERENCES `account` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8
+;
  */
 @Entity
 @Table(name = "TASK")
 public class Task implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -1888663488419982146L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "ID", unique = true, nullable = false, precision = 20, scale = 0)
 	private long id;
 	
+	/**
+	 * name of a task
+	 */
 	@Column(name = "name", nullable = false)
 	private String name;
 
+	/**
+	 * start date of a task
+	 */
 	@Column(name = "start_date")
 	@Temporal(TemporalType.DATE)
 	private Date startDate;
 	
+	/**
+	 * end date of a task
+	 */
 	@Column(name = "end_date")
 	@Temporal(TemporalType.DATE)
 	private Date endDate;
 
+	/**
+	 * execute time of a task during start date and end date
+	 */
 	@Column(name = "execute_time")
 	@Temporal(TemporalType.DATE)
 	private Date executeTime;
 	
+	/**
+	 * whether a task is valid
+	 */
 	@Column(name = "isValid")
 	private String isValid;
 	
+	/**
+	 * whether a task is opened to group
+	 */
 	@Column(name = "isShared")
 	private String isShared;
 	
+	/**
+	 * short description of a task
+	 */
 	@Column(name = "desciption")
 	private String desciption;
 
+	/**
+	 * create date of a task
+	 */
 	@Column(name = "created_date")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date createDate;
 	
+	/**
+	 * updated date of a task
+	 */
 	@Column(name = "updated_date")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedDate;

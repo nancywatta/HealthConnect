@@ -22,30 +22,51 @@ import org.hibernate.envers.Audited;
 * @author Zhao Yuan
 * @date 2014年9月15日 下午9:04:09 
 *
+*CREATE TABLE `GROUP_INFO` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `groupname` varchar(64) NOT NULL,
+  `created_date` datetime DEFAULT NULL,
+  `updated_date` datetime DEFAULT NULL,
+  `expiration_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8
+;
  */
 @Entity
 @Audited
 @Table(name = "GROUP_INFO")
 public class Group implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 6751331068836527969L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "ID", unique = true, nullable = false, precision = 20, scale = 0)
 	private long id;
 	
+	/**
+	 * name of a group
+	 */
 	@Column(name = "groupname",  nullable = false)
 	private String groupname;
 	
+	/**
+	 * create date of this group
+	 */
 	@Column(name = "created_date")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date createDate;
 	
+	/**
+	 * updated date of this group
+	 */
 	@Column(name = "updated_date")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedDate;
 	
+	/**
+	 * expired date of this group
+	 */
 	@Column(name = "expiration_date")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date expirationDate;
