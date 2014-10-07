@@ -36,4 +36,6 @@ public interface AppointmentDao extends BaseDao<Appointment> {
 
 	public List<Appointment> findAppByDate(List<Appointment> appointments, 
 			Date startDate, Date endDate) throws Exception;
+	
+	public void expireSharedMembersByAppointmtId(long appointmtId) throws Exception;
 }

@@ -89,6 +89,23 @@ public class AppointmentDaoImpl  extends BaseDaoImpl<Appointment> implements App
 		return appointments;
 	}
 	
+	
+	//TODO expire
+	public void expireSharedMembersByAppointmtId(long appointmtId)
+			throws Exception {
+		Session s=getSession();
+		Date date=new Date();
+		String hql=
+//				"update "+
+//				"AppointmentAccountRef aaf "+
+//				"set aaf.expirationDate = '" + date
+//				+ "' where aaf.appointmentId = "+appointmtId;
+				"delete "+
+				"AppointmentAccountRef aaf "+
+				"where aaf.appointmentId = "+appointmtId;
+		s.createQuery(hql).executeUpdate();
+	}
+	
 	public List<Appointment> findAllByGroupId(long accountId, long groupId) throws Exception{
 		Session s=getSession();
 		String hql="select app "+
