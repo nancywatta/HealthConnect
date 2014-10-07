@@ -15,6 +15,16 @@ import aucklanduni.ece.hc.repository.model.Account;
 @Repository
 public class AccountDaoImpl  extends BaseDaoImpl<Account> implements AccountDao{
 
+	/**
+	 * @Title: getAccountByEmail
+	 * @Description: Function will return account details based on input emailId
+	 * from the ACCOUNT table.
+	 * 
+	 * @param connection
+	 * @param emailId
+	 * @return Account
+	 * @throws Exception
+	 */
 	public Account getAccountByEmail(Connection connection, String emailId) throws Exception {
 		try
 		{
@@ -39,6 +49,16 @@ public class AccountDaoImpl  extends BaseDaoImpl<Account> implements AccountDao{
 		}
 	}
 
+	/**
+	 * @Title: createAccount
+	 * @Description: Function will insert record into ACCOUNT table.
+	 * 
+	 * @param connection
+	 * @param emailId
+	 * @param password
+	 * @param userName
+	 * @throws Exception
+	 */
 	public void createAccount(Connection connection, String emailId, String password, String userName)throws Exception {
 		try
 		{
@@ -61,6 +81,17 @@ public class AccountDaoImpl  extends BaseDaoImpl<Account> implements AccountDao{
 		}
 	}
 	
+	/**
+	 * @Title: getAccbyEmailPswd
+	 * @Description: Function will return account details based on input emailId 
+	 * and password from the ACCOUNT table.
+	 * 
+	 * @param connection
+	 * @param emailId
+	 * @param password
+	 * @return Account
+	 * @throws Exception
+	 */
 	public Account getAccbyEmailPswd(Connection connection, String emailId, String password) throws Exception{
 		try
 		{
@@ -86,7 +117,18 @@ public class AccountDaoImpl  extends BaseDaoImpl<Account> implements AccountDao{
 		}
 	}
 	
+	
 	//Ben 09/2014
+	/**
+	 * @Title: getEmailByAccountId
+	 * @Description: Function will return emailId based on input accountId 
+	 * from the ACCOUNT table.
+	 * 
+	 * @param connection
+	 * @param accountId
+	 * @return String
+	 * @throws Exception
+	 */
 	public String getEmailByAccountId(Connection connection, long accountId) throws Exception {
 		try
 		{
@@ -108,6 +150,16 @@ public class AccountDaoImpl  extends BaseDaoImpl<Account> implements AccountDao{
 	}
 	
 	//Wu
+	/**
+	 * @Title: getAccbyAppointmentId
+	 * @Description: Function will return account details of all users 
+	 * with which the given appointment is shared.
+	 * 
+	 * @param appointmentId
+	 * @return List<Account>
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
 	public List<Account> getAccbyAppointmentId(long appointmentId) throws Exception {
 		Session s=getSession();
 		String hql="select acc "+
@@ -117,6 +169,15 @@ public class AccountDaoImpl  extends BaseDaoImpl<Account> implements AccountDao{
 		return accounts;
 	}
 
+	/**
+	 * @Title: getAccIdByEmail
+	 * @Description: Function will return accountId based on input emailId
+	 * from the ACCOUNT table.
+	 * 
+	 * @param memberEmail
+	 * @return long
+	 * @throws Exception
+	 */
 	public long getAccIdByEmail(String memberEmail) throws Exception {
 		Session s=getSession();
 		String hql="select acc.id "+
@@ -125,6 +186,16 @@ public class AccountDaoImpl  extends BaseDaoImpl<Account> implements AccountDao{
 		return (Long)s.createQuery(hql).setParameter(0, memberEmail).uniqueResult();
 	}
 
+	/**
+	 * @Title: getAccIdByUserName
+	 * @Description: Function will return accountId based on input userName
+	 * from the ACCOUNT table.
+	 * 
+	 * @param connection
+	 * @param username
+	 * @return long
+	 * @throws Exception
+	 */
 	public long getAccIdByUserName(Connection connection, String username) throws Exception {
 		
 		try
@@ -145,7 +216,5 @@ public class AccountDaoImpl  extends BaseDaoImpl<Account> implements AccountDao{
 			throw e;
 		}
 	}
-
-
 	
 }

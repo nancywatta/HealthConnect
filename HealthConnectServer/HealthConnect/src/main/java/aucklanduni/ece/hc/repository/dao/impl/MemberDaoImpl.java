@@ -18,6 +18,15 @@ import aucklanduni.ece.hc.repository.model.Member;
 @Repository
 public class MemberDaoImpl extends BaseDaoImpl<Member> implements MemberDao{
 	
+	/**
+	 * @Title: GetMembers
+	 * @Description: Function will return all members of the input groupId.
+	 * 
+	 * @param connection
+	 * @param groupId
+	 * @return ArrayList<Account>
+	 * @throws Exception
+	 */
 	public ArrayList<Account> GetMembers(Connection connection, long groupId) throws Exception
 	{
 		ArrayList<Account> accountData = new ArrayList<Account>();
@@ -66,6 +75,17 @@ public class MemberDaoImpl extends BaseDaoImpl<Member> implements MemberDao{
 		}
 	}
 	
+	/**
+	 * @Title: GetMemberRole
+	 * @Description: Function will return role of the given accountId
+	 * in the input groupId.
+	 * 
+	 * @param connection
+	 * @param accountId
+	 * @param groupId
+	 * @return String
+	 * @throws Exception
+	 */
 	public String GetMemberRole(Connection connection, long accountId, long groupId) throws Exception
 	{
 		String roleValue = "";
@@ -93,6 +113,16 @@ public class MemberDaoImpl extends BaseDaoImpl<Member> implements MemberDao{
 		
 	}
 	
+	/**
+	 * @Title: checkPatientCount
+	 * @Description: Function will check the count of patient within
+	 * the input groupId.
+	 * 
+	 * @param connection
+	 * @param groupId
+	 * @return int
+	 * @throws Exception
+	 */
 	public int checkPatientCount(Connection connection, long groupId) throws Exception {
 		try
 		{
@@ -118,6 +148,16 @@ public class MemberDaoImpl extends BaseDaoImpl<Member> implements MemberDao{
 		}
 	}
 
+	/**
+	 * @Title: checkSupportMemberCount
+	 * @Description: Function will check the count of support member 
+	 * within the input groupId.
+	 * 
+	 * @param connection
+	 * @param groupId
+	 * @return int
+	 * @throws Exception
+	 */
 	public int checkSupportMemberCount(Connection connection, long groupId) throws Exception {
 		try
 		{
@@ -144,6 +184,16 @@ public class MemberDaoImpl extends BaseDaoImpl<Member> implements MemberDao{
 		}
 	}
 	
+	/**
+	 * @Title: checkMemberCount
+	 * @Description: Function will check the count of members 
+	 * within the input groupId.
+	 * 
+	 * @param connection
+	 * @param groupId
+	 * @return int
+	 * @throws Exception
+	 */
 	public int checkMemberCount(Connection connection, long groupId) throws Exception {
 		try
 		{
@@ -166,6 +216,17 @@ public class MemberDaoImpl extends BaseDaoImpl<Member> implements MemberDao{
 		}
 	}
 	
+	/**
+	 * @Title: saveMember
+	 * @Description: Function will insert record in the MEMBER table.
+	 * 
+	 * @param connection
+	 * @param groupId
+	 * @param accountId
+	 * @param emailId
+	 * @param roleId
+	 * @throws Exception
+	 */
 	public void saveMember(Connection connection, long groupId, long accountId, String emailId, long roleId) throws Exception {
 		try
 		{
@@ -187,8 +248,17 @@ public class MemberDaoImpl extends BaseDaoImpl<Member> implements MemberDao{
 			throw e;
 		}
 	}
-	
 
+	/**
+	 * @Title: deleteMember
+	 * @Description: Function will delete record from the MEMBER table
+	 * based on input memberId and groupId.
+	 * 
+	 * @param connection
+	 * @param groupId
+	 * @param memberId
+	 * @throws Exception
+	 */
 	public void deleteMember(Connection connection, long groupId, long memberId) throws Exception {
 		try
 		{
@@ -210,6 +280,15 @@ public class MemberDaoImpl extends BaseDaoImpl<Member> implements MemberDao{
 	}
 	
 	//empty the members of a group
+	/**
+	 * @Title: deleteAllMember
+	 * @Description: Function will delete all records from the MEMBER table
+	 * for the input groupId.
+	 * 
+	 * @param connection
+	 * @param groupId
+	 * @throws Exception
+	 */
 	public void deleteAllMember(Connection connection, long groupId) throws Exception {
 		try
 		{
@@ -227,6 +306,16 @@ public class MemberDaoImpl extends BaseDaoImpl<Member> implements MemberDao{
 		}
 	}
 
+	/**
+	 * @Title: isMember
+	 * @Description: Function will check if the input accountId is
+	 * member of the given groupId.
+	 * 
+	 * @param accountId
+	 * @param groupId
+	 * @return boolean
+	 * @throws Exception
+	 */
 	public boolean isMember(long accountId, long groupId) throws Exception {
 		Session s=getSession();
 		String hql="select member "+
@@ -235,6 +324,16 @@ public class MemberDaoImpl extends BaseDaoImpl<Member> implements MemberDao{
 		return (Boolean) s.createQuery(hql).setParameter(0, accountId).setParameter(1, groupId).uniqueResult();
 	}
 
+	/**
+	 * @Title: findByAccountIdAndGroupId
+	 * @Description: Function will return member details
+	 * based on given groupId and accountId.
+	 * 
+	 * @param accountId
+	 * @param groupId
+	 * @return Member
+	 * @throws Exception
+	 */
 	public Member findByAccountIdAndGroupId(long accountId, long groupId)
 			throws Exception {
 		Session s=getSession();
@@ -245,6 +344,16 @@ public class MemberDaoImpl extends BaseDaoImpl<Member> implements MemberDao{
 	}
 
 	//Yalu
+	/**
+	 * @Title: getPatientName
+	 * @Description: Function will userName of the patient within the
+	 * the given groupId.
+	 * 
+	 * @param connection
+	 * @param groupId
+	 * @return String
+	 * @throws Exception
+	 */
 	public String getPatientName(Connection connection, long groupId)
 			throws Exception {
 		String patientName = "";
@@ -268,6 +377,17 @@ public class MemberDaoImpl extends BaseDaoImpl<Member> implements MemberDao{
 		
 	}
 
+	/**
+	 * @Title: getGroupIdOfNurse
+	 * @Description: Function will return all groups in which the input accountId
+	 * has the role of Nurse.
+	 * 
+	 * @param connection
+	 * @param accountId
+	 * @param roleId
+	 * @return ArrayList<Long>
+	 * @throws Exception
+	 */
 	public ArrayList<Long> getGroupIdOfNurse(Connection connection,long accountId, long roleId)
 			throws Exception {
 		ArrayList<Long> groupIdList = new ArrayList<Long>();
@@ -293,6 +413,16 @@ public class MemberDaoImpl extends BaseDaoImpl<Member> implements MemberDao{
 		
 	}
 
+	/**
+	 * @Title: findAllMembersInGroup
+	 * @Description: Function will return account details from ACCOUNT table
+	 * of all members of the given groupId.
+	 * 
+	 * @param groupId
+	 * @return List<Account>
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
 	public List<Account> findAllMembersInGroup(long groupId) throws Exception {
 		Session s=getSession();
 		String hql="select acc "

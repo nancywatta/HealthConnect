@@ -14,6 +14,16 @@ import aucklanduni.ece.hc.repository.model.Dictionary;
 @Repository
 public class DictionaryDaoImpl  extends BaseDaoImpl<Dictionary> implements DictionaryDao{
 	
+	/**
+	 * @Title: findByValue
+	 * @Description: Function will return record from DICTIONARY table 
+	 * for the TYPE as 'Role' and VALUE as input roleValue.
+	 * 
+	 * @param connection
+	 * @param roleValue
+	 * @return ArrayList<Dictionary>
+	 * @throws Exception
+	 */
 	public ArrayList<Dictionary> findByValue(Connection connection, String roleValue) throws Exception
 	{
 		ArrayList<Dictionary> roleData = new ArrayList<Dictionary>();
@@ -42,6 +52,16 @@ public class DictionaryDaoImpl  extends BaseDaoImpl<Dictionary> implements Dicti
 		}
 	}
 
+	/**
+	 * @Title: findRoleByAccountIdAndGroupId
+	 * @Description: Function will return record from the DICTIONARY table 
+	 * stating the role of the input accountId within the given groupId.
+	 * 
+	 * @param accountId
+	 * @param groupId
+	 * @return Dictionary
+	 * @throws Exception
+	 */
 	public Dictionary findRoleByAccountIdAndGroupId(long accountId, long groupId)
 			throws Exception {
 		Session s=getSession();
