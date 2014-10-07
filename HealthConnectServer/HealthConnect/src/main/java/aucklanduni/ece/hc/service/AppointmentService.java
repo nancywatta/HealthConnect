@@ -47,4 +47,9 @@ public interface AppointmentService  extends BaseService<Appointment> {
 	public List<Appointment> findAppByDate(List<Appointment> appointments, 
 			Date startDate, Date endDate) throws Exception;
 
+	public void setAppointmentGroupShare(long appointmtId) throws Exception;
+	
+	public void setAppointmentMemberShare(long accountId,long groupId,long appointmtId,String members) throws Exception;
+	
+	public boolean checkAppointmtShared(long accountId, long appointmtId) throws Exception;
 }
