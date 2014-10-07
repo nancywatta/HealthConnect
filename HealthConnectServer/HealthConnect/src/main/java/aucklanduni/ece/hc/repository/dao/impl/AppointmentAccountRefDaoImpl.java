@@ -1,5 +1,8 @@
 package aucklanduni.ece.hc.repository.dao.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 
@@ -18,5 +21,4 @@ public class AppointmentAccountRefDaoImpl extends BaseDaoImpl<AppointmentAccount
 		
 		return (AppointmentAccountRef) s.createQuery(hql).setParameter(0, accountId).setParameter(1, appointmentId).uniqueResult();
 	}
-
 }

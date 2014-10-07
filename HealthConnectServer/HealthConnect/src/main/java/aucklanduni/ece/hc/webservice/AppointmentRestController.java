@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import aucklanduni.ece.hc.repository.model.Account;
 import aucklanduni.ece.hc.repository.model.Appointment;
+import aucklanduni.ece.hc.repository.model.AppointmentAccountRef;
 import aucklanduni.ece.hc.repository.model.Dictionary;
 import aucklanduni.ece.hc.repository.model.Group;
 import aucklanduni.ece.hc.repository.model.Member;
@@ -101,7 +102,7 @@ public class AppointmentRestController {
 	 *    { "id":"1"
 	 *    },
 	 *    { "id":"2"
-	 *    },
+	 *    }
 	 *  ]
 	 *  Input Appointment object is of the below format
 	 *  {
@@ -306,37 +307,52 @@ public class AppointmentRestController {
 	}
 	
 	
-	
 	/**
-	 * This method handle updateAppointment request, only nurse and patient can update appointment.
+	 * 
+	 * @Title: updateAppointment 
+	 * @Description: Service will update appointment details
+	 * for the given appointment.
+	 * Only Nurse and Patient are allowed to update appointment.
+	 * If the input expiration date in the appointment object is 
+	 * populated, the service will expire the appointment in the 
+	 * APPOINTMENT table and APP_ACC_REF table if applicable.
+	 * 
+	 *  Input Appointment object is of the below format
+	 *  {
+	 *    "id": 1,
+	 *    "name": "Appointment",
+	 *    "location": "Mercy Hospital",
+	 *    "startTime": "09:00:00",
+	 *    "endTime": "10:00:00",
+	 *    "executeTime": 1,
+	 *    "description": "Diabetes",
+	 *    "startDate": "2014-09-29 00:00:00",
+	 *    "endDate": "3014-09-29 00:00:00",
+	 *    "expirationDate": "2014-09-29 00:00:00"
+	 *  }
+	 *  
 	 * @param request
 	 * @param response
-	 * @param accountId
-	 * @param groupId
-	 * @param appointmentName
-	 * @param appointmentLocation
-	 * @param isShare
-	 * @return
+	 * @param accountId 
+	 * @param appointment
+	 * @return HCMessage
+	 * @throws
 	 */
 	@RequestMapping(value="/updateAppointment",method = RequestMethod.POST
 			,headers="Accept=application/json"
 			)
 	public HCMessage updateAppointment(HttpServletRequest request, HttpServletResponse response
 			,@RequestParam(value="accountId") long accountId
-			,@RequestParam(value="groupId") long groupId
-			,@RequestParam("startDateNew") @DateTimeFormat(pattern="yyyy-MM-dd")  Date startDateNew
-			,@RequestParam("endDateNew") @DateTimeFormat(pattern="yyyy-MM-dd")  Date endDateNew
-			,@RequestParam("appointmentId") long appointmentId
-			,@RequestParam("appointmentLocationNew") String appointmentLocationNew
-			) {
+			,@RequestBody Appointment appointment) 
+	{
 		HCMessage message = new  HCMessage();
 		try {
-			Appointment appointment = null;
+			Appointment app = null;
 			// check if given appointment exists
-			appointment = appointmentService.findById(appointmentId);
-			if(appointment == null){
+			app = appointmentService.findById(appointment.getId());
+			if(app == null){
 				throw new ValidationFailException("Appointment does not exist");
-			}
+			} 
 			
 			Account account = null;
 			// check if given accountId exists
@@ -345,28 +361,53 @@ public class AppointmentRestController {
 				throw new ValidationFailException("Account does not exist");
 			}
 			
-			Group group = null;
-			//check if given groupId exists
-			group = groupService.findById(groupId);
-			if(group == null){
-				throw new ValidationFailException("Group does not exist");
-			}
-			
-			Dictionary role = null;
-			role = roleService.findRoleByAccountIdAndGroupId(accountId,groupId);
+			List<Dictionary> role = null;
+			role = roleService.getRolesByGroupIdAccId(accountId,app.getGroupId());
 			// check if the current user is a nurse or patient
-			if( (role.getValue().compareTo("S")==0 ) ) {
-				throw new ValidationFailException("Supportive members are not allowed to update an appointment");
+			if(role == null || role.size() < 1) 
+				throw new ValidationFailException("Invalid Input");
+			
+			if( role.get(0).getValue().compareTo("S") == 0 ) {
+				throw new ValidationFailException("Support members are not allowed to update an appointment");
 			}
 			
-			//appointment.setTime(new Date());
-			appointment.setStartDate(startDateNew);
-			appointment.setEndDate(endDateNew);
-			appointment.setUpdatedDate(new Date());
-			appointment.setLocation(appointmentLocationNew);
-			appointmentService.update(appointment);
+			if(appointment.getAppointmentType() != null)
+				app.setAppointmentType(appointment.getAppointmentType());
+			if(appointment.getDescription() != null)
+				app.setDescription(appointment.getDescription());
+			if(appointment.getEndTime() != null)
+				app.setEndTime(appointment.getEndTime());
+			if(appointment.getEndDate() != null)
+				app.setEndDate(appointment.getEndDate());
+			if(appointment.getExpirationDate() != null)
+				app.setExpirationDate(new Date());
+			if(appointment.getLocation() != null)
+				app.setLocation(appointment.getLocation());
+			if(appointment.getExecuteTime() != 0)
+				app.setExecuteTime(appointment.getExecuteTime());
+			if(appointment.getName() != null)
+				app.setName(appointment.getName());
+			if(appointment.getStartDate() != null)
+				app.setStartDate(appointment.getStartDate());
+			if(appointment.getStartTime()!=null)
+				app.setStartTime(appointment.getStartTime());
 			
-			message.setSuccess(appointment);
+			app.setUpdatedDate(new Date());
+			
+			appointmentService.update(app);
+			
+			if(appointment.getExpirationDate() != null 
+					&& app.getSharedType().compareTo("M") == 0) {
+				List<AppointmentAccountRef> aarList = null;
+				aarList = aafService.findByAppointmentId(appointment.getId());
+				
+				for(AppointmentAccountRef aarEntry: aarList) {
+					aarEntry.setExpirationDate(new Date());
+					aafService.update(aarEntry);
+				}
+			}
+			
+			message.setSuccess(app);
 		}catch(ValidationFailException ve) {
 			message.setFail("404", ve.getMessage());
 		} catch (Exception e) {

@@ -1,6 +1,6 @@
 package aucklanduni.ece.hc.service.impl;
 
-import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +20,21 @@ public class AppointmentAccountRefServiceImpl extends
 	public AppointmentAccountRef ifExist(long accountId, long appointmentId)
 			throws Exception {
 		return aafDao.ifExist(accountId,appointmentId);
+	}
+	
+	public List<AppointmentAccountRef> findByAppointmentId(long appointmentId) throws Exception {
+		try {
+			List<AppointmentAccountRef> aarList = new ArrayList<AppointmentAccountRef>();
+			
+			aarList = aafDao.findByHql("from AppointmentAccountRef WHERE "
+					+ "appointmentId=" + appointmentId 
+					+ " and expirationDate IS NULL");
+			
+			return aarList;
+			
+		} catch (Exception e) {
+			throw e;
+		}
 	}
 
 }

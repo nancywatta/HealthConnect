@@ -98,3 +98,5 @@ HealthConnectServer/HealthConnect/target/classes/aucklanduni/ece/hc/repository/d
 HealthConnectServer/HealthConnect/target/classes/aucklanduni/ece/hc/service/DictionaryService.class
 
 HealthConnectServer/HealthConnect/target/classes/aucklanduni/ece/hc/service/impl/DictionaryServiceImpl.class
+
+HealthConnectServer/HealthConnect/target/classes/aucklanduni/ece/hc/repository/dao/impl/AppointmentAccountRefDaoImpl.class
