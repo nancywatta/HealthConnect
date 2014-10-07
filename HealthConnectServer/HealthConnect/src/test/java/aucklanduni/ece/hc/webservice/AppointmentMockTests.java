@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.sql.Time;
 import java.util.Date;
 
 import org.junit.Test;
@@ -14,6 +15,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+
+import aucklanduni.ece.hc.repository.model.Appointment;
+
+import com.google.gson.Gson;
 
 /**
  * 
@@ -41,13 +46,13 @@ public class AppointmentMockTests extends BaseContextControllerTests {
 
 		this.mockMvc.perform(get(URL+"/viewAppointment")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "1")
+				.param("accountId", "2")
 				)
 				.andDo(print())
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.status").value("200"))
 				.andExpect(jsonPath("$.response.appointments").isArray())
-				.andExpect(jsonPath("$.response.appointments[0].appointmentname").value("haha"));
+				.andExpect(jsonPath("$.response.appointments[0].appointmentname").value("Appointment"));
 	}
 
 	/**
@@ -89,13 +94,21 @@ public class AppointmentMockTests extends BaseContextControllerTests {
 	 */
 	@Test  
 	public void addAppointmentCorrect() throws Exception {  
+		
+		Appointment appointment = new Appointment();
+		appointment.setName("dasdc");
+		appointment.setLocation("asdsd");
+		appointment.setStartTime(new Date());
+		appointment.setEndTime(new Date());
+		appointment.setStartDate(new Date());
+		Gson gson = new Gson();
+	    String json = gson.toJson(appointment);
 
 		this.mockMvc.perform(post(URL+"/createAppointment")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "1")
-				.param("groupId", "1")
-				.param("appointmentName", "withJam")
-				.param("appointmentLocation", "University")
+				.param("accountId", "4")
+				.param("groupId", "8")
+				.content(json)
 				)
 				.andDo(print())
 				.andExpect(status().isOk())
@@ -167,12 +180,15 @@ public class AppointmentMockTests extends BaseContextControllerTests {
 	@Test  
 	public void updateAppointmentWrongByAppointment() throws Exception {  
 
+		Appointment appointment = new Appointment();
+		appointment.setId(111);
+		Gson gson = new Gson();
+	    String json = gson.toJson(appointment);
+				
 		this.mockMvc.perform(post(URL+"/updateAppointment")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "1")//not found
-				.param("groupId", "1")
-				.param("appointmentId", "10000")
-				.param("appointmentLocation", "Boston")
+				.param("accountId", "6")//not found
+				.content(json)
 				)
 				.andDo(print())
 				.andExpect(jsonPath("$.status").value("404"))
@@ -184,12 +200,15 @@ public class AppointmentMockTests extends BaseContextControllerTests {
 	@Test  
 	public void updateAppointmentWrongByAccount() throws Exception {  
 
+		Appointment appointment = new Appointment();
+		appointment.setId(11);
+		Gson gson = new Gson();
+	    String json = gson.toJson(appointment);
+	    
 		this.mockMvc.perform(post(URL+"/updateAppointment")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "1")//not found
-				.param("groupId", "1")
-				.param("appointmentId", "10000")
-				.param("appointmentLocation", "Boston")
+				.param("accountId", "1111")//not found
+				.content(json)
 				)
 				.andDo(print())
 				.andExpect(jsonPath("$.status").value("404"))
@@ -199,18 +218,21 @@ public class AppointmentMockTests extends BaseContextControllerTests {
 	 * test updateAppointment with invalid inputs
 	 */
 	@Test  
-	public void updateAppointmentWrongByGroup() throws Exception {  
+	public void updateAppointmentWrongByGroup() throws Exception { 
+		
+		Appointment appointment = new Appointment();
+		appointment.setId(11);
+		Gson gson = new Gson();
+	    String json = gson.toJson(appointment);
 
 		this.mockMvc.perform(post(URL+"/updateAppointment")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "1")//not found
-				.param("groupId", "100000")
-				.param("appointmentId", "1")
-				.param("appointmentLocation", "Boston")
+				.param("accountId", "2")//not found
+				.content(json)
 				)
 				.andDo(print())
 				.andExpect(jsonPath("$.status").value("404"))
-				.andExpect(jsonPath("$.error").value("Group does not exist"));
+				.andExpect(jsonPath("$.error").value("Invalid Input"));
 	}
 	
 	
@@ -290,7 +312,7 @@ public class AppointmentMockTests extends BaseContextControllerTests {
 	 */
 	@Test 
 	public void filterAppointmentinvaildaccountId() throws Exception {  
-		this.mockMvc.perform(post(URL+"/filterAppointment")
+		this.mockMvc.perform(get(URL+"/filterAppointment")
 				.contentType(MediaType.APPLICATION_JSON)
 				.param("accountId", "1000000")//this accountId is not exist
 				)
@@ -303,9 +325,9 @@ public class AppointmentMockTests extends BaseContextControllerTests {
 	 */
 	@Test 
 	public void filterAppointmentinvailmemeberId() throws Exception {  
-		this.mockMvc.perform(post(URL+"/filterAppointment")
+		this.mockMvc.perform(get(URL+"/filterAppointment")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "1")//this accountId is not exist
+				.param("accountId", "2")//this accountId is not exist
 				.param("memberId", "34")//this memberId does not belongs to the account
 				
 				)
@@ -319,10 +341,10 @@ public class AppointmentMockTests extends BaseContextControllerTests {
 	 */
 	@Test 
 	public void filterAppointmentnogroups() throws Exception {  
-		this.mockMvc.perform(post(URL+"/filterAppointment")
+		this.mockMvc.perform(get(URL+"/filterAppointment")
 				.contentType(MediaType.APPLICATION_JSON)
 				.param("accountId", "3")
-				.param("memberId", "2")
+				.param("memberId", "10")
 				
 				)
 				.andDo(print())
@@ -335,10 +357,9 @@ public class AppointmentMockTests extends BaseContextControllerTests {
 	 */
 	@Test 
 	public void filterAppointmentgroupId() throws Exception {  
-		this.mockMvc.perform(post(URL+"/filterAppointment")
+		this.mockMvc.perform(get(URL+"/filterAppointment")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "1")
-				.param("memberId", "1")
+				.param("accountId", "3")
 				.param("groupId", "100000")
 				
 				)
@@ -351,7 +372,7 @@ public class AppointmentMockTests extends BaseContextControllerTests {
 	 * test filterAppointment: the input startDate should be suitable*/
 	@Test 
 	public void filterAppointmentinvalidSDate() throws Exception {  
-		this.mockMvc.perform(post(URL+"/filterAppointment")
+		this.mockMvc.perform(get(URL+"/filterAppointment")
 				.contentType(MediaType.APPLICATION_JSON)
 				.param("accountId", "1")
 				.param("startDate","17536287")
@@ -366,9 +387,9 @@ public class AppointmentMockTests extends BaseContextControllerTests {
 	 * test filterAppointment: the input endDate should be suitable*/
 	@Test 
 	public void filterAppointmentinvalidEDate() throws Exception {  
-		this.mockMvc.perform(post(URL+"/filterAppointment")
+		this.mockMvc.perform(get(URL+"/filterAppointment")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "1")
+				.param("accountId", "3")
 				.param("startDate","2014-02-10")
 				.param("endDate", "45466575")
 				
@@ -381,9 +402,9 @@ public class AppointmentMockTests extends BaseContextControllerTests {
 	 * test filterAppointment: the input Date should be suitable*/
 	@Test 
 	public void filterAppointmentinvalidDate() throws Exception {  
-		this.mockMvc.perform(post(URL+"/filterAppointment")
+		this.mockMvc.perform(get(URL+"/filterAppointment")
 				.contentType(MediaType.APPLICATION_JSON)
-				.param("accountId", "1")
+				.param("accountId", "3")
 				.param("startDate","gdfjjerhrj")
 				.param("endDate", "45466575")
 				

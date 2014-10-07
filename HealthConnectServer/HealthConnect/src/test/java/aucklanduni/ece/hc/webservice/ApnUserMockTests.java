@@ -38,13 +38,13 @@ public class ApnUserMockTests extends BaseContextControllerTests {
     @Test  
     public void getCorrectApnUser() throws Exception {  
 
-        this.mockMvc.perform(get(URL+"/2")
+        this.mockMvc.perform(get(URL+"/1")
         		.contentType(MediaType.APPLICATION_JSON)  
         		)
         		.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("200"))
-                .andExpect(jsonPath("$.response.id").value(2))
+                .andExpect(jsonPath("$.response.id").value(1))
                 ;  
     }
     
@@ -67,7 +67,7 @@ public class ApnUserMockTests extends BaseContextControllerTests {
      */
   @Test  
   public void updateCorrectApnUser() throws Exception {  
-      this.mockMvc.perform(post(URL+"/{id}/update",3)
+      this.mockMvc.perform(post(URL+"/{id}/update",1)
 	      		.contentType(MediaType.APPLICATION_JSON)
 	      		.param("email", "newEmail@cc.com")
 	      		.param("username", "newUserName")
@@ -88,8 +88,7 @@ public class ApnUserMockTests extends BaseContextControllerTests {
 	      		.param("username", "newUserName")
 	      		)
 				.andDo(print())
-				.andExpect(jsonPath("$.status").value("404"))
-				;  
+				.andExpect(jsonPath("$.status").value("404"));  
   } 
   
   	@Test  
@@ -98,8 +97,7 @@ public class ApnUserMockTests extends BaseContextControllerTests {
         		.contentType(MediaType.APPLICATION_JSON)
         		)
         		.andDo(print())
-                .andExpect(jsonPath("$.status").value("404"))
-                ;  
+                .andExpect(jsonPath("$.status").value("404"));  
     }
     
 }
