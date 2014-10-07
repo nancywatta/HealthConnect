@@ -183,6 +183,130 @@ public class AppointmentRestController {
 
 	}
 	
+	//TODO:doc
+	/**
+	 * 
+	 * @Title: shareAppointment 
+	 * 
+	 * 
+	 * 
+	 * @Description: Service will create appointment for the given accountId
+	 * and save details of the appointment in the APPOINTMENT table.
+	 * If the appointment is shared with the group, the sharedType column
+	 * in the Appointment table will be set as 'G'.
+	 * If the appointment is shared with only specific members of the group
+	 * the sharedType column in the Appointment table will be set as 'M' and
+	 * details of the member will be saved in APP_ACC_REF table.
+	 *  Input member array is of the below format
+	 *  [
+	 *    { "id":"1"
+	 *    },
+	 *    { "id":"2"
+	 *    },
+	 *  ]
+	 *  Input Appointment object is of the below format
+	 *  {
+	 *    "name": "Appointment",
+	 *    "location": "Mercy Hospital",
+	 *    "startTime": "09:00:00",
+	 *    "endTime": "10:00:00",
+	 *    "executeTime": 1,
+	 *    "description": "Diabetes",
+	 *    "startDate": "2014-09-29 00:00:00",
+	 *    "endDate": "3014-09-29 00:00:00"
+	 *  }
+	 *  
+	 *  
+	 *  
+	 *  
+	 *  
+	 *  
+	 * @param request
+	 * @param response
+	 * @param accountId 
+	 * @param groupId
+	 * @param members - optional 
+	 * @param appointment
+	 * @return HCMessage
+	 * @throws
+	 */
+	
+	
+	@RequestMapping(value="/shareAppointment",method = RequestMethod.POST
+			,headers="Accept=application/json"
+			)
+	public HCMessage shareAppointment(HttpServletRequest request, HttpServletResponse response,
+			@RequestParam(value="accountId") long accountId
+			,@RequestParam(value="appointmtId") long appointmtId
+			,@RequestParam(value="members",required=false) String members
+			){
+
+		HCMessage message = new  HCMessage();
+		try {
+			Account account = null;
+			// check if given accountId exists
+			account = accountService.findById(accountId);
+			if(account == null) {
+				throw new ValidationFailException("Account does not exist");
+			}
+			
+			//check if given appointmtId exists
+			Appointment appointmt = null;
+			appointmt = appointmentService.findById(appointmtId);
+			if(appointmt == null){
+				throw new ValidationFailException("Appointment does not exist");
+			}
+			
+
+			long groupId = appointmt.getGroupId();
+			List<Dictionary> roles = new ArrayList<Dictionary>();
+			roles = roleService.getRolesByGroupIdAccId(accountId, groupId);
+
+			// if the input accountId and GroupId does not exist in database
+			if(roles== null || roles.size() < 1) {
+				throw new ValidationFailException("Invalid Input");
+			}
+			
+			// check if the current user is a nurse or patient
+			if( (roles.get(0).getValue().compareTo("S")==0 ) ) {
+				throw new ValidationFailException("Support members are not allowed to change the share state of appointment");
+			}
+			
+			
+			if(appointmt.getSharedType().compareTo("G")==0){}
+			else if(appointmt.getSharedType().compareTo("M")==0){
+					// check if the appointment is shared with the current user
+					if(!appointmentService.checkAppointmtShared(accountId, appointmtId)){
+						throw new ValidationFailException("The appointment is not shared with this user");
+					}
+				};
+			
+				
+			if(members==null){
+				appointmentService.setAppointmentGroupShare(appointmtId);
+			}else {
+				appointmentService.setAppointmentMemberShare(accountId,groupId,appointmtId,members);
+			}
+			
+				
+			
+			notifyService.notify(accountId, "Appointment share state is successfully changed", "email");
+			
+			message.setSuccess();
+		}
+		catch(ValidationFailException ve) {
+			message.setFail("404", ve.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			message.setFail("400", e.getMessage());
+		}
+
+		return message;
+
+	}
+	
+	
+	
 	/**
 	 * This method handle updateAppointment request, only nurse and patient can update appointment.
 	 * @param request
