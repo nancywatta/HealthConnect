@@ -1,0 +1,9 @@
+aucklanduni.ece.hc.controller
+aucklanduni.ece.hc.repository.dao
+aucklanduni.ece.hc.repository.dao.impl
+aucklanduni.ece.hc.repository.model
+aucklanduni.ece.hc.service
+aucklanduni.ece.hc.service.impl
+aucklanduni.ece.hc.util
+aucklanduni.ece.hc.webservice
+aucklanduni.ece.hc.webservice.model

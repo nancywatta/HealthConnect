@@ -44,7 +44,7 @@ import aucklanduni.ece.hc.webservice.model.ValidationFailException;
 public class AppointmentRestController {
 
 	Logger log = Logger.getLogger(AppointmentRestController.class);
-	
+
 	@Autowired
 	private AppointmentService appointmentService;
 	@Autowired
@@ -59,7 +59,7 @@ public class AppointmentRestController {
 	private MemberService memberService;
 	@Autowired
 	private NotifyService notifyService;
-	
+
 	/**
 	 *  getICal4J object 
 	 */
@@ -69,27 +69,27 @@ public class AppointmentRestController {
 	public HCMessage getICal4J(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable long appointmentId) {
 		HCMessage message = new  HCMessage();
-		
+
 		try {
 			Appointment app =  appointmentService.findById(appointmentId);
 			List<Account> accList = accountService.getAccbyAppointmentId(appointmentId);
-			
-        	if(app == null){
-        		message.setFail("404", "No valid appointmentId");
-        		return message;
-        	}
 
-        	Calendar ical = ICalendarTool.getICal4J(app, accList);
-    		message.setSuccess(ical);
-        	log.debug(ical);
-        	
+			if(app == null){
+				message.setFail("404", "No valid appointmentId");
+				return message;
+			}
+
+			Calendar ical = ICalendarTool.getICal4J(app, accList);
+			message.setSuccess(ical);
+			log.debug(ical);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			message.setFail("400", e.getMessage());
 		}
-        return message;
+		return message;
 	}
-	
+
 	/**
 	 * 
 	 * @Title: createAppointment 
@@ -145,14 +145,14 @@ public class AppointmentRestController {
 			if(account == null) {
 				throw new ValidationFailException("Account does not exist");
 			}
-			
+
 			Group group = null;
 			//check if given groupId exists
 			group = groupService.findById(groupId);
 			if(group == null){
 				throw new ValidationFailException("Group does not exist");
 			}
-			
+
 			List<Dictionary> roles = new ArrayList<Dictionary>();
 			roles = roleService.getRolesByGroupIdAccId(accountId, groupId);
 
@@ -160,20 +160,20 @@ public class AppointmentRestController {
 			if(roles== null || roles.size() < 1) {
 				throw new ValidationFailException("Invalid Input");
 			}
-			
+
 			// check if the current user is a nurse or patient
 			if( (roles.get(0).getValue().compareTo("S")==0 ) ) {
 				throw new ValidationFailException("Support members are not allowed to create an appointment");
 			}
-			
+
 			if(members==null) {
 				appointmentService.createGroupAppointment(groupId, appointment);
 			} else {
 				appointmentService.createMemberAppointment(accountId, groupId, members, appointment);
 			}
-			
+
 			notifyService.notify(accountId, "Appointment created successfully", "email");
-			
+
 			message.setSuccess();
 		}
 		catch(ValidationFailException ve) {
@@ -186,7 +186,7 @@ public class AppointmentRestController {
 		return message;
 
 	}
-	
+
 	/**
 	 * 
 	 * @Title: shareAppointment 
@@ -224,23 +224,20 @@ public class AppointmentRestController {
 
 		HCMessage message = new  HCMessage();
 		try {
-			
-			
-			
+
 			Account account = null;
 			// check if given accountId exists
 			account = accountService.findById(accountId);
 			if(account == null) {
 				throw new ValidationFailException("Account does not exist");
 			}
-			
+
 			//check if given appointmtId exists
 			Appointment appointmt = null;
 			appointmt = appointmentService.findById(appointmtId);
 			if(appointmt == null){
 				throw new ValidationFailException("Appointment does not exist");
 			}
-			
 
 			long groupId = appointmt.getGroupId();
 			List<Dictionary> roles = new ArrayList<Dictionary>();
@@ -250,57 +247,62 @@ public class AppointmentRestController {
 			if(roles== null || roles.size() < 1) {
 				throw new ValidationFailException("Invalid Input");
 			}
-			
-			// check if the current user is a nurse or patient
+
+			// check if the current user is a support member
 			if( (roles.get(0).getValue().compareTo("S")==0 ) ) {
 				throw new ValidationFailException("Support members are not allowed to share appointment");
 			}
-			
+
 			// check if the appointment is shared with the current user
 			if(appointmt.getSharedType().compareTo("M")==0){
-					if(!aarService.checkAppointmtShared(accountId, appointmtId)){
-						throw new ValidationFailException("The appointment is not shared with this user");
-					}
-				};
-			
-				
+				if(!aarService.checkAppointmtShared(accountId, appointmtId)){
+					throw new ValidationFailException("The appointment is not shared with this user");
+				}
+			}
+
+			// when member is null then, appointment will be shared with entire group 
 			if(members==null){
-				
-				List<Account> currentSharedAccList = accountService.getAccbyAppointmentId(appointmtId);
-				aarService.expireAppointmtSharedState(appointmtId, currentSharedAccList);
+				/* if the appointment is shared with specific members, then expire the entry
+				 * in APP_ACC_REF table for the given appointment id and accountId and set
+				 * the SHARED_TYPE as 'G' in APPOINTMENT table to share with entire group.
+				 */
+				if(appointmt.getSharedType().compareTo("M")==0) {
+					List<Account> currentSharedAccList = accountService.getAccbyAppointmentId(appointmtId);
+					aarService.expireAppointmtSharedState(appointmtId, currentSharedAccList);
+				}
 				appointmentService.setAppointmentGroupShare(appointmtId);
 			}else {
-				
+
 				List<Account> sharedAccList = 
 						new Gson().fromJson(members, new TypeToken<List<Account>>() {}.getType());
-				
+
 				// Check if the MemberId is part of the Group associated with the appointment
 				for(Account  tempAccount : sharedAccList) {
 					Member member = null;
 					member = memberService.findByAccountIdAndGroupId(tempAccount.getId(), groupId);
 					if(member == null)
-						throw new ValidationFailException("Incorrect Member ID");}	
-				
-				
+						throw new ValidationFailException("Incorrect Member ID");
+				}	
+
+				// Set SHARED_TYPE as 'M' in APPOINTMENT table to share with specific members of group.
 				appointmentService.setAppointmentMemberShare(appointmtId);
 				
-				
-				
+				// retrieve all accounts with which the appointment is shared.
 				List<Account> currentSharedAccList = accountService.getAccbyAppointmentId(appointmtId);
-				
+
 				List<Account> addList = new ArrayList<Account>();
 				for(Account tempAccount0:sharedAccList){
 					boolean flag = true;
 					for(Account tempAccount1:currentSharedAccList){
 						if(tempAccount0.getId()==tempAccount1.getId())
-							{
-								flag = false;
-								break;
-							}
+						{
+							flag = false;
+							break;
+						}
 					}
 					if(flag){
 						addList.add(tempAccount0);
-						}
+					}
 				}
 
 				List<Account> removeList = new ArrayList<Account>();
@@ -308,29 +310,30 @@ public class AppointmentRestController {
 					boolean flag = true;
 					for(Account tempAccount1:sharedAccList){
 						if(tempAccount0.getId()==tempAccount1.getId())
-							{
-								flag = false;
-								break;
-							}
+						{
+							flag = false;
+							break;
+						}
 					}
 					if(flag){
 						removeList.add(tempAccount0);
-						}
+					}
 				}
-				
 
-
-				
-				
-				
+				/* expire entry from APP_ACC_REf table for account with whom, 
+				 * user no longer wants to share appointment.
+				 */
 				aarService.expireAppointmtSharedState(appointmtId, removeList);
-				aarService.addAppointmtShared(appointmtId,addList,groupId);
-	
 				
+				/* insert record in APP_ACC_REf table for account with whom, 
+				 * user wants to share appointment.
+				 */
+				aarService.addAppointmtShared(appointmtId,addList,groupId);
+
 			}
-			
+
 			notifyService.notify(accountId, "Appointment is shared successfully", "email");
-			
+
 			message.setSuccess();
 		}
 		catch(ValidationFailException ve) {
@@ -343,8 +346,8 @@ public class AppointmentRestController {
 		return message;
 
 	}
-	
-	
+
+
 	/**
 	 * 
 	 * @Title: updateAppointment 
@@ -391,24 +394,24 @@ public class AppointmentRestController {
 			if(app == null){
 				throw new ValidationFailException("Appointment does not exist");
 			} 
-			
+
 			Account account = null;
 			// check if given accountId exists
 			account = accountService.findById(accountId);
 			if(account == null) {
 				throw new ValidationFailException("Account does not exist");
 			}
-			
+
 			List<Dictionary> role = null;
 			role = roleService.getRolesByGroupIdAccId(accountId,app.getGroupId());
 			// check if the current user is a nurse or patient
 			if(role == null || role.size() < 1) 
 				throw new ValidationFailException("Invalid Input");
-			
+
 			if( role.get(0).getValue().compareTo("S") == 0 ) {
 				throw new ValidationFailException("Support members are not allowed to update an appointment");
 			}
-			
+
 			if(appointment.getAppointmentType() != null)
 				app.setAppointmentType(appointment.getAppointmentType());
 			if(appointment.getDescription() != null)
@@ -429,26 +432,26 @@ public class AppointmentRestController {
 				app.setStartDate(appointment.getStartDate());
 			if(appointment.getStartTime()!=null)
 				app.setStartTime(appointment.getStartTime());
-			
+
 			// set updated date as today's date in the APPOINTMENT table
 			app.setUpdatedDate(new Date());
-			
+
 			appointmentService.update(app);
-			
+
 			/* if the input expiration date is not null and the appointment is shared with
-			* specific members, then record in the APP_ACC_REF table should also be expired.
-			*/
+			 * specific members, then record in the APP_ACC_REF table should also be expired.
+			 */
 			if(appointment.getExpirationDate() != null 
 					&& app.getSharedType().compareTo("M") == 0) {
 				List<AppointmentAccountRef> aarList = null;
 				aarList = aarService.findByAppointmentId(appointment.getId());
-				
+
 				for(AppointmentAccountRef aarEntry: aarList) {
 					aarEntry.setExpirationDate(new Date());
 					aarService.update(aarEntry);
 				}
 			}
-			
+
 			message.setSuccess(app);
 		}catch(ValidationFailException ve) {
 			message.setFail("404", ve.getMessage());
@@ -460,7 +463,7 @@ public class AppointmentRestController {
 		return message;
 	}
 
-  /**
+	/**
 	 * 
 	 * @Title: viewAppointment 
 	 * @Description: Service will return all the appointments of the given
@@ -478,7 +481,7 @@ public class AppointmentRestController {
 	public HCMessage showAppointments(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam("accountId") long accountId){
 		System.out.println(">>>>>>>>>>>>>>>>>viewAppointment"+accountId);
-		
+
 		List<Appointment> appointmentListShown = new ArrayList<Appointment>();
 		HCMessage message = new  HCMessage();
 		try{
@@ -511,7 +514,7 @@ public class AppointmentRestController {
 
 			message.setSuccess(appointmentListShown);
 			//message.setSuccess(appointments2);
-		
+
 		}catch(ValidationFailException ve) {
 			message.setFail("404", ve.getMessage());
 		} catch (Exception e) {
@@ -519,23 +522,23 @@ public class AppointmentRestController {
 			message.setFail("400", e.getMessage());
 		}
 		return message;
-	
-}
-	
-		/*
+
+	}
+
+	/*
 	 * /**
-		 * 
-		 * @Title: viewAppointmentsBuGroup 
-		 * @Description: Service will return all the appointments of the given
-		 * accountId and groupId.
-		 *  
-		 * @param request
-		 * @param response
-		 * @param accountId 
-		 * @return HCMessage
-		 * @throws
-		 */
-		/*
+	 * 
+	 * @Title: viewAppointmentsBuGroup 
+	 * @Description: Service will return all the appointments of the given
+	 * accountId and groupId.
+	 *  
+	 * @param request
+	 * @param response
+	 * @param accountId 
+	 * @return HCMessage
+	 * @throws
+	 */
+	/*
 		@RequestMapping(value="/viewAppointmentByGroup",method = RequestMethod.GET
 				,headers="Accept=application/json"
 				)
@@ -551,14 +554,14 @@ public class AppointmentRestController {
 				if(account == null) {
 					throw new ValidationFailException("Account does not exist");
 				}
-				
+
 				Group group=null;
 				// check if given group exists
 				group=groupService.findById(groupId);
 				if(group==null){
 					throw new ValidationFailException("such group does not exist");
 				}
-				
+
 				//System.out.println("These are the appointments that you created");
 				List<Appointment> appointments=appointmentService.findAllByGroupId(accountId,groupId);
 				for(Appointment appointment:appointments){
@@ -577,10 +580,10 @@ public class AppointmentRestController {
 				message.setFail("400", e.getMessage());
 			}
 			return message;
-		
+
 	}
-	*/
-	
+	 */
+
 	/**
 	 * 
 	 * @Title: filterAppsByUsername
@@ -599,58 +602,58 @@ public class AppointmentRestController {
 	 * @return HCMessage
 	 * @throws
 	 */
-	
-//	@RequestMapping(value="/filterAppsByUsername",method = RequestMethod.POST
-//			,headers="Accept=application/json"
-//			)
-//	public HCMessage filterAppsByUsername(HttpServletRequest request, HttpServletResponse response,
-//			@RequestParam("accountId") long accountId,
-//			@RequestParam("roleId") long roleId,
-//			@RequestParam("username") String username){
-//		
-//		HCMessage message = new  HCMessage();
-//		try{
-//			
-//			if(roleId != 2){
-//				throw new ValidationFailException("only nurse can do this action!");
-//			}
-//			ArrayList groupIdList = new ArrayList();//get
-//			groupIdList = memberService.getGroupIdOfNurse(accountId, roleId);
-////			System.out.println(groupIdList.get(0)+"-------------------------------------------");
-//			ArrayList<String> patientName = new ArrayList<String>();
-//			
-//			if(groupIdList.size() == 0){
-//				throw new ValidationFailException("invalid input!");
-//			}
-//			
-//			
-//			
-//			for(int i = 0; i < groupIdList.size(); i++){
-//				long groupId = (Long) groupIdList.get(i);
-//				String patientN = "";
-//				patientN = memberService.getPatientName(groupId);
-//				patientName.add(patientN);
-//			}
-//			
-//			if(patientName.contains(username)){
-//				long accIdOfPatient = accountService.getAccIdByUsername(username);
-//				List<Appointment> appointments=appointmentService.findAllByAccountId(accIdOfPatient);
-//				message.setSuccess(appointments);
-//			} else {
-//				throw new ValidationFailException("invalid username!");
-//			}
-//			
-//			
-//		
-//		}catch(ValidationFailException ve) {
-//			message.setFail("404", ve.getMessage());
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			message.setFail("400", e.getMessage());
-//		}
-//		return message;
-//	
-//	}
+
+	//	@RequestMapping(value="/filterAppsByUsername",method = RequestMethod.POST
+	//			,headers="Accept=application/json"
+	//			)
+	//	public HCMessage filterAppsByUsername(HttpServletRequest request, HttpServletResponse response,
+	//			@RequestParam("accountId") long accountId,
+	//			@RequestParam("roleId") long roleId,
+	//			@RequestParam("username") String username){
+	//		
+	//		HCMessage message = new  HCMessage();
+	//		try{
+	//			
+	//			if(roleId != 2){
+	//				throw new ValidationFailException("only nurse can do this action!");
+	//			}
+	//			ArrayList groupIdList = new ArrayList();//get
+	//			groupIdList = memberService.getGroupIdOfNurse(accountId, roleId);
+	////			System.out.println(groupIdList.get(0)+"-------------------------------------------");
+	//			ArrayList<String> patientName = new ArrayList<String>();
+	//			
+	//			if(groupIdList.size() == 0){
+	//				throw new ValidationFailException("invalid input!");
+	//			}
+	//			
+	//			
+	//			
+	//			for(int i = 0; i < groupIdList.size(); i++){
+	//				long groupId = (Long) groupIdList.get(i);
+	//				String patientN = "";
+	//				patientN = memberService.getPatientName(groupId);
+	//				patientName.add(patientN);
+	//			}
+	//			
+	//			if(patientName.contains(username)){
+	//				long accIdOfPatient = accountService.getAccIdByUsername(username);
+	//				List<Appointment> appointments=appointmentService.findAllByAccountId(accIdOfPatient);
+	//				message.setSuccess(appointments);
+	//			} else {
+	//				throw new ValidationFailException("invalid username!");
+	//			}
+	//			
+	//			
+	//		
+	//		}catch(ValidationFailException ve) {
+	//			message.setFail("404", ve.getMessage());
+	//		} catch (Exception e) {
+	//			e.printStackTrace();
+	//			message.setFail("400", e.getMessage());
+	//		}
+	//		return message;
+	//	
+	//	}
 	/**
 	 * 
 	 * @Title: filterAppsByDate
@@ -671,64 +674,64 @@ public class AppointmentRestController {
 	 * @return HCMessage
 	 * @throws
 	 */
-//	@RequestMapping(value="/filterAppsByDate",method = RequestMethod.POST
-//			,headers="Accept=application/json"
-//			)
-//	public HCMessage filterAppsByDate(HttpServletRequest request, HttpServletResponse response,
-//			@RequestParam("accountId") long accountId,
-//			@RequestParam("roleId") long roleId,
-//			@RequestParam("username") String username,
-//			@RequestParam("startDate") @DateTimeFormat(pattern="yyyy-MM-dd")  Date startDate,
-//			@RequestParam("endDate") @DateTimeFormat(pattern="yyyy-MM-dd")  Date endDate){
-//		
-//		HCMessage message = new  HCMessage();
-//		try{
-//			
-//			if(roleId != 2){
-//				System.out.println("222222222222");
-//				throw new ValidationFailException("only nurse can do this action!");
-//			}
-//			
-//			ArrayList groupIdList = new ArrayList();
-//			groupIdList = memberService.getGroupIdOfNurse(accountId, roleId);
-////			System.out.println(groupIdList.get(0)+"-------------------------------------------");
-//			ArrayList<String> patientName = new ArrayList<String>();
-//			
-//			if(groupIdList.size() == 0){
-//				throw new ValidationFailException("invalid input!");
-//			}
-//			
-//			
-//			
-//			for(int i = 0; i < groupIdList.size(); i++){
-//				long groupId = (Long) groupIdList.get(i);
-//				String patientN = "";
-//				patientN = memberService.getPatientName(groupId);
-//				patientName.add(patientN);
-//			}
-//			
-//			if(patientName.contains(username)){
-//				long accIdOfPatient = accountService.getAccIdByUsername(username);
-//				List<Appointment> appointments=appointmentService.filterByDate(accIdOfPatient, startDate, endDate);
-//				message.setSuccess(appointments);
-//			} else {
-//				throw new ValidationFailException("invalid username!");
-//			}
-//			
-//			
-//			
-//		
-//		}catch(ValidationFailException ve) {
-//			System.out.println(ve.getMessage());
-//			message.setFail("404", ve.getMessage());
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			message.setFail("400", e.getMessage());
-//		}
-//		return message;
-//	
-//	}
-	
+	//	@RequestMapping(value="/filterAppsByDate",method = RequestMethod.POST
+	//			,headers="Accept=application/json"
+	//			)
+	//	public HCMessage filterAppsByDate(HttpServletRequest request, HttpServletResponse response,
+	//			@RequestParam("accountId") long accountId,
+	//			@RequestParam("roleId") long roleId,
+	//			@RequestParam("username") String username,
+	//			@RequestParam("startDate") @DateTimeFormat(pattern="yyyy-MM-dd")  Date startDate,
+	//			@RequestParam("endDate") @DateTimeFormat(pattern="yyyy-MM-dd")  Date endDate){
+	//		
+	//		HCMessage message = new  HCMessage();
+	//		try{
+	//			
+	//			if(roleId != 2){
+	//				System.out.println("222222222222");
+	//				throw new ValidationFailException("only nurse can do this action!");
+	//			}
+	//			
+	//			ArrayList groupIdList = new ArrayList();
+	//			groupIdList = memberService.getGroupIdOfNurse(accountId, roleId);
+	////			System.out.println(groupIdList.get(0)+"-------------------------------------------");
+	//			ArrayList<String> patientName = new ArrayList<String>();
+	//			
+	//			if(groupIdList.size() == 0){
+	//				throw new ValidationFailException("invalid input!");
+	//			}
+	//			
+	//			
+	//			
+	//			for(int i = 0; i < groupIdList.size(); i++){
+	//				long groupId = (Long) groupIdList.get(i);
+	//				String patientN = "";
+	//				patientN = memberService.getPatientName(groupId);
+	//				patientName.add(patientN);
+	//			}
+	//			
+	//			if(patientName.contains(username)){
+	//				long accIdOfPatient = accountService.getAccIdByUsername(username);
+	//				List<Appointment> appointments=appointmentService.filterByDate(accIdOfPatient, startDate, endDate);
+	//				message.setSuccess(appointments);
+	//			} else {
+	//				throw new ValidationFailException("invalid username!");
+	//			}
+	//			
+	//			
+	//			
+	//		
+	//		}catch(ValidationFailException ve) {
+	//			System.out.println(ve.getMessage());
+	//			message.setFail("404", ve.getMessage());
+	//		} catch (Exception e) {
+	//			e.printStackTrace();
+	//			message.setFail("400", e.getMessage());
+	//		}
+	//		return message;
+	//	
+	//	}
+
 	/**
 	 * 
 	 * @Title: filterAppointment
@@ -764,28 +767,28 @@ public class AppointmentRestController {
 		try{
 			List<Long> groupIds = new ArrayList<Long>();
 			List<Appointment> appoints = new ArrayList<Appointment>();
-			
+
 			Account account = null;
 			// check if given accountId exists
 			account = accountService.findById(accountId);
 			if(account == null) {
 				throw new ValidationFailException("Account does not exist");
 			}
-			
+
 			if(memberId != null) {
 				// check if given memberId exists
 				account = accountService.findById(memberId.longValue());
 				if(account == null) {
 					throw new ValidationFailException("Member does not exist");
 				}
-				
+
 				// find all groups in which the accountId and memberId are part of.
 				List<Group> group = null;
 				group = groupService.findCommonGroup(accountId, memberId.longValue());
-				
+
 				if(group == null || group.size() < 1)
 					throw new ValidationFailException("Invalid Input");
-				
+
 				for(Group g: group){
 					groupIds.add(g.getId());
 				}
@@ -799,7 +802,7 @@ public class AppointmentRestController {
 				if(group == null){
 					throw new ValidationFailException("Group does not exist");
 				}
-				
+
 				// check if the input accountId is member of the input GroupId
 				List<Member> memberDtls = new ArrayList<Member>();
 				memberDtls = memberService.findByHql("from Member m WHERE "
@@ -807,14 +810,14 @@ public class AppointmentRestController {
 						+ " and m.groupId=" + groupId.longValue());
 				if(memberDtls == null || memberDtls.size() < 1)
 					throw new ValidationFailException("Input AccountId does not belong to the Group");
-				
+
 				groupIds.add(groupId.longValue());
 			} else {
-				
+
 				// find all the groups of the input accountId
 				List<Group> groupList = new ArrayList<Group>();
 				groupList = groupService.getGroupByAccId(accountId);
-				
+
 				for(Group g: groupList){
 					groupIds.add(g.getId());
 				}
@@ -823,21 +826,21 @@ public class AppointmentRestController {
 				appoints = appointmentService.findAppByGroupIdAccountId(groupIds, accountId);
 
 			}
-			
+
 			// find all appointments shared with the entire group
 			List<Appointment> appointments = new ArrayList<Appointment>();
 			appointments = appointmentService.findAppointmentByGroupId(groupIds);
-			
+
 			if(appoints!=null) 
 				appointments.addAll(appoints);
-			
+
 			// filter appointment on basis of input Date
 			if(startDate !=null && endDate!=null) {
 				appointments = appointmentService.findAppByDate(appointments, startDate, endDate);
 			}
-			
+
 			message.setSuccess(appointments);
-			
+
 		}
 		catch(ValidationFailException ve) {
 			message.setFail("404", ve.getMessage());
