@@ -265,6 +265,9 @@ public class AppointmentRestController {
 			
 				
 			if(members==null){
+				
+				List<Account> currentSharedAccList = accountService.getAccbyAppointmentId(appointmtId);
+				aarService.expireAppointmtSharedState(appointmtId, currentSharedAccList);
 				appointmentService.setAppointmentGroupShare(appointmtId);
 			}else {
 				
