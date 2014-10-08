@@ -339,7 +339,7 @@ public class MemberDaoImpl extends BaseDaoImpl<Member> implements MemberDao{
 		Session s=getSession();
 		String hql="select m "+
 				"from Member m "+
-				"where m.accountId=? and m.groupId=?";
+				"where m.accountId=? and m.groupId=? and m.isActive='Y'";
 		return (Member)s.createQuery(hql).setParameter(0,accountId).setParameter(1,groupId).uniqueResult();
 	}
 

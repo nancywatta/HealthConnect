@@ -187,7 +187,7 @@ public class Appointment implements Serializable {
 		this.name = name;
 	}
 
-	@JsonFormat(pattern="HH:mm:ss", timezone = "GMT+13")
+	@JsonFormat(pattern="HH:mm:ss", timezone = "GMT+12")
 	public Date getStartTime() {
 		return startTime;
 	}
@@ -196,7 +196,7 @@ public class Appointment implements Serializable {
 		this.startTime = startTime;
 	}
 
-	@JsonFormat(pattern="HH:mm:ss", timezone = "GMT+13")
+	@JsonFormat(pattern="HH:mm:ss", timezone = "GMT+12")
 	public Date getEndTime() {
 		return endTime;
 	}

@@ -212,7 +212,8 @@ public class AppointmentServiceImpl  extends BaseServiceImpl<Appointment> implem
 				List<Member> memberDtls = new ArrayList<Member>();
 				memberDtls = memberDao.findByHql("from Member m WHERE "
 						+ "m.accountId=" + member.getId() 
-						+ " and m.groupId=" + groupId);
+						+ " and m.groupId=" + groupId
+						+ " and m.isActive='Y'");
 				if(memberDtls == null || memberDtls.size() < 1)
 					throw new ValidationFailException("Incorrect Member ID");
 				

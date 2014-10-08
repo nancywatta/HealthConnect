@@ -237,7 +237,8 @@ public class AppointmentRestController {
 			appointmt = appointmentService.findById(appointmtId);
 			if(appointmt == null){
 				throw new ValidationFailException("Appointment does not exist");
-			}
+			} else if(appointmt.getExpirationDate()!=null)
+				throw new ValidationFailException("Appointment is Expired");
 
 			long groupId = appointmt.getGroupId();
 			List<Dictionary> roles = new ArrayList<Dictionary>();
@@ -284,6 +285,8 @@ public class AppointmentRestController {
 						throw new ValidationFailException("Incorrect Member ID");
 				}	
 
+				sharedAccList.add(account);
+				
 				// Set SHARED_TYPE as 'M' in APPOINTMENT table to share with specific members of group.
 				appointmentService.setAppointmentMemberShare(appointmtId);
 				
@@ -393,7 +396,8 @@ public class AppointmentRestController {
 			app = appointmentService.findById(appointment.getId());
 			if(app == null){
 				throw new ValidationFailException("Appointment does not exist");
-			} 
+			} else if(app.getExpirationDate()!=null)
+				throw new ValidationFailException("Appointment is Expired");
 
 			Account account = null;
 			// check if given accountId exists
