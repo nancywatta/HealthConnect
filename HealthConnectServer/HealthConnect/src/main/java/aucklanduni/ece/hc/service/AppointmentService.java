@@ -49,7 +49,7 @@ public interface AppointmentService  extends BaseService<Appointment> {
 
 	public void setAppointmentGroupShare(long appointmtId) throws Exception;
 	
-	public void setAppointmentMemberShare(long accountId,long groupId,long appointmtId,String members) throws Exception;
+	public void setAppointmentMemberShare(long appointmtId) throws Exception;
 	
-	public boolean checkAppointmtShared(long accountId, long appointmtId) throws Exception;
+	
 }
