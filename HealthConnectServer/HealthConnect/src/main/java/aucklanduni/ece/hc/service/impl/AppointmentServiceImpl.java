@@ -78,7 +78,6 @@ public class AppointmentServiceImpl  extends BaseServiceImpl<Appointment> implem
 
 	private void createAppointment(Appointment appointment, Account account,String appointmentName, Date appointmentTime,
 			String appointmentLocation) throws Exception {
-		// TODO Auto-generated method stub
 		appointmentDao.add(appointment);
 	}
 	
@@ -100,42 +99,12 @@ public class AppointmentServiceImpl  extends BaseServiceImpl<Appointment> implem
 	 * and entry will be saved in APP_ACC_REF table for every member
 	 * with whom the appointment is shared.
 	 */
-	public void setAppointmentMemberShare(long accountId,long groupId,long appointmtId,String members) throws Exception {
+	public void setAppointmentMemberShare(long appointmtId) throws Exception {
 		Appointment appointment = appointmentDao.findById(appointmtId);
-		appointmentDao.expireSharedMembersByAppointmtId(appointmtId);
 		appointment.setSharedType("M");
 		appointment.setUpdatedDate(new Date());
 		appointmentDao.update(appointment);
 		
-		List<Account> accList = 
-				new Gson().fromJson(members, new TypeToken<List<Account>>() {}.getType());
-
-		for(Account  member : accList) {
-			
-			// Check if the MemberId is part of the Input GroupId
-			List<Member> memberDtls = new ArrayList<Member>();
-			memberDtls = memberDao.findByHql("from Member m WHERE "
-					+ "m.accountId=" + member.getId() 
-					+ " and m.groupId=" + groupId);
-			if(memberDtls == null || memberDtls.size() < 1)
-				throw new ValidationFailException("Incorrect Member ID");
-			
-			// add row in APP_ACC_REF table for the member
-			AppointmentAccountRef aaf=new AppointmentAccountRef();
-			aaf.setAccountId(member.getId());
-			aaf.setAppointmentId(appointmtId);
-			aaf.setGroupId(groupId);
-			appointRefDao.add(aaf);
-		}
-		
-		//add row in APP_ACC_REF table for the sharer of the appointment
-		AppointmentAccountRef sharer=new AppointmentAccountRef();
-		sharer.setAccountId(accountId);
-		sharer.setAppointmentId(appointmtId);
-		sharer.setGroupId(groupId);
-		appointRefDao.add(sharer);
-
-
 	}
 	
 	public List<Appointment> findAllByAccountId(long accountId) throws Exception{
@@ -335,34 +304,6 @@ public class AppointmentServiceImpl  extends BaseServiceImpl<Appointment> implem
 			throw e;
 		}
 
-	}
-	
-	/**
-	 * @Title: checkAppointmtShared
-	 * @Description: Function will check if the input appointmentId is
-	 * shared with the given accountId.
-	 * 
-	 * @param accountId
-	 * @param appointmtId
-	 * @return boolean
-	 * @throws Exception
-	 */
-	public boolean checkAppointmtShared(long accountId, long appointmtId) throws Exception {
-		try {
-			List<AppointmentAccountRef> refDtls = new ArrayList<AppointmentAccountRef>();
-			refDtls = appointRefDao.findByHql("from AppointmentAccountRef ref WHERE "
-						+ "ref.accountId=" + accountId 
-						+ " and ref.appointmentId=" + appointmtId
-						+ " and ref.expirationDate IS NULL"
-						);
-			if(refDtls == null || refDtls.size() < 1)
-				return false;
-			else
-				return true;
-
-		} catch (Exception e) {
-			throw e;
-		}
 	}
 }
 

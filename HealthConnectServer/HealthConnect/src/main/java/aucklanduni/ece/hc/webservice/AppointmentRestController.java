@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import aucklanduni.ece.hc.repository.model.Account;
 import aucklanduni.ece.hc.repository.model.Appointment;
 import aucklanduni.ece.hc.repository.model.AppointmentAccountRef;
@@ -49,7 +52,7 @@ public class AppointmentRestController {
 	@Autowired
 	private AccountService accountService;
 	@Autowired
-	private AppointmentAccountRefService aafService;
+	private AppointmentAccountRefService aarService;
 	@Autowired
 	private GroupService groupService;
 	@Autowired
@@ -221,6 +224,9 @@ public class AppointmentRestController {
 
 		HCMessage message = new  HCMessage();
 		try {
+			
+			
+			
 			Account account = null;
 			// check if given accountId exists
 			account = accountService.findById(accountId);
@@ -250,11 +256,9 @@ public class AppointmentRestController {
 				throw new ValidationFailException("Support members are not allowed to share appointment");
 			}
 			
-			
-			if(appointmt.getSharedType().compareTo("G")==0){}
-			else if(appointmt.getSharedType().compareTo("M")==0){
-					// check if the appointment is shared with the current user
-					if(!appointmentService.checkAppointmtShared(accountId, appointmtId)){
+			// check if the appointment is shared with the current user
+			if(appointmt.getSharedType().compareTo("M")==0){
+					if(!aarService.checkAppointmtShared(accountId, appointmtId)){
 						throw new ValidationFailException("The appointment is not shared with this user");
 					}
 				};
@@ -263,7 +267,63 @@ public class AppointmentRestController {
 			if(members==null){
 				appointmentService.setAppointmentGroupShare(appointmtId);
 			}else {
-				appointmentService.setAppointmentMemberShare(accountId,groupId,appointmtId,members);
+				
+				List<Account> sharedAccList = 
+						new Gson().fromJson(members, new TypeToken<List<Account>>() {}.getType());
+				
+				// Check if the MemberId is part of the Group associated with the appointment
+				for(Account  tempAccount : sharedAccList) {
+					Member member = null;
+					member = memberService.findByAccountIdAndGroupId(tempAccount.getId(), groupId);
+					if(member == null)
+						throw new ValidationFailException("Incorrect Member ID");}	
+				
+				
+				appointmentService.setAppointmentMemberShare(appointmtId);
+				
+				
+				
+				List<Account> currentSharedAccList = accountService.getAccbyAppointmentId(appointmtId);
+				
+				List<Account> addList = new ArrayList<Account>();
+				for(Account tempAccount0:sharedAccList){
+					boolean flag = true;
+					for(Account tempAccount1:currentSharedAccList){
+						if(tempAccount0.getId()==tempAccount1.getId())
+							{
+								flag = false;
+								break;
+							}
+					}
+					if(flag){
+						addList.add(tempAccount0);
+						}
+				}
+
+				List<Account> removeList = new ArrayList<Account>();
+				for(Account tempAccount0:currentSharedAccList){
+					boolean flag = true;
+					for(Account tempAccount1:sharedAccList){
+						if(tempAccount0.getId()==tempAccount1.getId())
+							{
+								flag = false;
+								break;
+							}
+					}
+					if(flag){
+						removeList.add(tempAccount0);
+						}
+				}
+				
+
+
+				
+				
+				
+				aarService.expireAppointmtSharedState(appointmtId, removeList);
+				aarService.addAppointmtShared(appointmtId,addList,groupId);
+	
+				
 			}
 			
 			notifyService.notify(accountId, "Appointment is shared successfully", "email");
@@ -378,11 +438,11 @@ public class AppointmentRestController {
 			if(appointment.getExpirationDate() != null 
 					&& app.getSharedType().compareTo("M") == 0) {
 				List<AppointmentAccountRef> aarList = null;
-				aarList = aafService.findByAppointmentId(appointment.getId());
+				aarList = aarService.findByAppointmentId(appointment.getId());
 				
 				for(AppointmentAccountRef aarEntry: aarList) {
 					aarEntry.setExpirationDate(new Date());
-					aafService.update(aarEntry);
+					aarService.update(aarEntry);
 				}
 			}
 			
@@ -432,7 +492,7 @@ public class AppointmentRestController {
 						findAppointmentsByGroup(group.getId());
 				for(Appointment appointment:appointments){
 					if(appointment.getSharedType().equals("M")){
-						if(aafService.ifExist(accountId,appointment.getId())!=null)
+						if(aarService.ifExist(accountId,appointment.getId())!=null)
 							appointmentListShown.add(appointment);
 					}
 					else{
