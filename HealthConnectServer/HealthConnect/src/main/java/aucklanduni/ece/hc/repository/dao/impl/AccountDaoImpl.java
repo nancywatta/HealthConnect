@@ -164,7 +164,8 @@ public class AccountDaoImpl  extends BaseDaoImpl<Account> implements AccountDao{
 		Session s=getSession();
 		String hql="select acc "+
 				"from Account acc, AppointmentAccountRef ref, Appointment app "+
-				"where app.id=? and app.id=ref.appointmentId and acc.id=ref.accountId and app.sharedType='M'";
+				"where app.id=? and app.sharedType = 'M' and app.id=ref.appointmentId"
+				+ "and acc.id=ref.accountId";
 		List<Account> accounts = (List<Account>) s.createQuery(hql).setParameter(0, appointmentId).list();
 		return accounts;
 	}

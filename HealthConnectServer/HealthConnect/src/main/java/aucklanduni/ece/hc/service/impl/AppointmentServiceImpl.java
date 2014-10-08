@@ -103,8 +103,7 @@ public class AppointmentServiceImpl  extends BaseServiceImpl<Appointment> implem
 		Appointment appointment = appointmentDao.findById(appointmtId);
 		appointment.setSharedType("M");
 		appointment.setUpdatedDate(new Date());
-		appointmentDao.update(appointment);
-		
+		appointmentDao.update(appointment);	
 	}
 	
 	public List<Appointment> findAllByAccountId(long accountId) throws Exception{
