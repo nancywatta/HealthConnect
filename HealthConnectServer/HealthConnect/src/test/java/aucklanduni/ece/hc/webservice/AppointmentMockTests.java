@@ -430,6 +430,71 @@ public class AppointmentMockTests extends BaseContextControllerTests {
 //				.andExpect(jsonPath("$.error").value("invalid input!"))
 //				;
 //	}
+	
+	
+	/**
+	 * test shareAppointment: support member can not share appointment */
+	@Test 
+	public void smShareAppointmtWrong() throws Exception {  
+		this.mockMvc.perform(post(URL+"/shareAppointment")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("accountId", "3")
+				.param("appointmtId","12")
+				.param("members", "")
+				
+				)
+				.andDo(print())
+				.andExpect(jsonPath("$.status").value("404"))
+				.andExpect(jsonPath("$.error").value("Support members are not allowed to share appointment"));
+	}
+	
+	/**
+	 * test shareAppointment: when the appointmt is shared to some specific members, other member cannot share it */
+	@Test 
+	public void otherMemberShareAppointmtWrong() throws Exception {  
+		this.mockMvc.perform(post(URL+"/shareAppointment")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("accountId", "6")
+				.param("appointmtId","12")
+				.param("members", "")
+				
+				)
+				.andDo(print())
+				.andExpect(jsonPath("$.status").value("404"))
+				.andExpect(jsonPath("$.error").value("The appointment is not shared with this user"));
+	}
+	
+	/**
+	 * test shareAppointment: Patient share the appointmt to the nurse and itself */
+	@Test 
+	public void patientShareAppointmtToNurseCorrect() throws Exception {  
+		this.mockMvc.perform(post(URL+"/shareAppointment")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("accountId", "4")
+				.param("appointmtId","12")
+				.param("members", "[{ \"id\":\"4\" },{ \"id\":\"6\"}]")
+				
+				)
+				.andDo(print())
+				.andExpect(jsonPath("$.status").value("200"));
+	}
+	
+	
+	/**
+	 * test shareAppointment: Nurse share the appointmt to the entire group */
+	@Test 
+	public void nurseShareAppointmtToGroup() throws Exception {  
+		this.mockMvc.perform(post(URL+"/shareAppointment")
+				.contentType(MediaType.APPLICATION_JSON)
+				.param("accountId", "6")
+				.param("appointmtId","12")
+				.param("members", "")
+				
+				)
+				.andDo(print())
+				.andExpect(jsonPath("$.status").value("200"));
+	}
+	
 
 
 }
