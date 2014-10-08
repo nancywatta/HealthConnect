@@ -15,7 +15,16 @@ import aucklanduni.ece.hc.service.AccountService;
 public class AccountServiceImpl extends BaseServiceImpl<Account> implements AccountService{
 	@Autowired
 	private AccountDao accountDao;
-		
+	
+	/**
+	 * @Title: getAccountbyEmail
+	 * @Description: Function will return account details based on input emailId
+	 * from the ACCOUNT table.
+	 * 
+	 * @param emailId
+	 * @return List<Account>
+	 * @throws Exception
+	 */
 	public List<Account> getAccountbyEmail(String emailId)throws Exception {
 		try {
 			List<Account> memberAccs = accountDao.findByHql(
@@ -29,6 +38,15 @@ public class AccountServiceImpl extends BaseServiceImpl<Account> implements Acco
 		}
 	}
 
+	/**
+	 * @Title: createAccount
+	 * @Description: Function will insert record into ACCOUNT table.
+	 * 
+	 * @param emailId
+	 * @param password
+	 * @param userName
+	 * @throws Exception
+	 */
 	public void createAccount(String emailId, String password, String userName)throws Exception {
 		try {
 			Database database= new Database();
@@ -42,6 +60,16 @@ public class AccountServiceImpl extends BaseServiceImpl<Account> implements Acco
 
 	}
 	
+	/**
+	 * @Title: getAccbyEmailPswd
+	 * @Description: Function will return account details based on input emailId 
+	 * and password from the ACCOUNT table.
+	 * 
+	 * @param emailId
+	 * @param password
+	 * @return List<Account>
+	 * @throws Exception
+	 */
 	public List<Account> getAccbyEmailPswd(String emailId, String password)throws Exception{
 		try {
 			
@@ -66,6 +94,15 @@ public class AccountServiceImpl extends BaseServiceImpl<Account> implements Acco
 	}
 	
 	//Ben 09/2014
+	/**
+	 * @Title: getEmailByAccountId
+	 * @Description: Function will return emailId based on input accountId 
+	 * from the ACCOUNT table.
+	 * 
+	 * @param accountId
+	 * @return String
+	 * @throws Exception
+	 */
 	public String getEmailByAccountId(long accountId)throws Exception {
 		try {
 			Database database= new Database();
@@ -79,15 +116,42 @@ public class AccountServiceImpl extends BaseServiceImpl<Account> implements Acco
 		}
 	}
 
+	/**
+	 * @Title: getAccbyAppointmentId
+	 * @Description: Function will return account details of all users 
+	 * with which the given appointment is shared.
+	 * 
+	 * @param appointmentId
+	 * @return List<Account>
+	 * @throws Exception
+	 */
 	public List<Account> getAccbyAppointmentId(long appointmentId) throws Exception {
 		List<Account> accounts=accountDao.getAccbyAppointmentId(appointmentId);
 		return accounts;
 	}
 
+	/**
+	 * @Title: getAccIdByEmail
+	 * @Description: Function will return accountId based on input emailId
+	 * from the ACCOUNT table.
+	 * 
+	 * @param memberEmail
+	 * @return long
+	 * @throws Exception
+	 */
 	public long getAccIdByEmail(String memberEmail) throws Exception {
 		return accountDao.getAccIdByEmail(memberEmail);
 	}
 
+	/**
+	 * @Title: getAccIdByUserName
+	 * @Description: Function will return accountId based on input userName
+	 * from the ACCOUNT table.
+	 * 
+	 * @param username
+	 * @return long
+	 * @throws Exception
+	 */
 	public long getAccIdByUsername(String username) throws Exception {
 		try {
 			Database database= new Database();

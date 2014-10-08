@@ -69,8 +69,6 @@ public class AppointmentServiceImpl  extends BaseServiceImpl<Appointment> implem
 			Account account = accountDao.findById(accountId);
 			createAppointment(newAppointment,account,appointmentName,appointmentTime,appointmentLocation);
 
-
-
 		}catch (ValidationFailException ve) {
 			throw ve;
 		}catch (Exception e) {
@@ -82,22 +80,31 @@ public class AppointmentServiceImpl  extends BaseServiceImpl<Appointment> implem
 			String appointmentLocation) throws Exception {
 		// TODO Auto-generated method stub
 		appointmentDao.add(appointment);
-
-
 	}
 	
+	/**
+	 * Function will share appointment with the input group.
+	 * Shared_Type column will be set as 'G' in the APPOINTMENT table.
+	 */
 	public void setAppointmentGroupShare(long appointmtId) throws Exception {
 		Appointment appointment = appointmentDao.findById(appointmtId);
 		appointment.setSharedType("G");
+		appointment.setUpdatedDate(new Date());
 		appointmentDao.update(appointment);
-
-
 	}
 	
+	/**
+	 * Function will share appointment with the specific members of
+	 * the input group.
+	 * Shared_Type column will be set as 'M' in the APPOINTMENT table.
+	 * and entry will be saved in APP_ACC_REF table for every member
+	 * with whom the appointment is shared.
+	 */
 	public void setAppointmentMemberShare(long accountId,long groupId,long appointmtId,String members) throws Exception {
 		Appointment appointment = appointmentDao.findById(appointmtId);
 		appointmentDao.expireSharedMembersByAppointmtId(appointmtId);
 		appointment.setSharedType("M");
+		appointment.setUpdatedDate(new Date());
 		appointmentDao.update(appointment);
 		
 		List<Account> accList = 
@@ -261,6 +268,15 @@ public class AppointmentServiceImpl  extends BaseServiceImpl<Appointment> implem
 		}
 	}
 
+	/**
+	 * @Title: findAppointmentsByGroup
+	 * @Description: Function will return all appointments that belong
+	 * to the input groupId.
+	 * 
+	 * @param groupId
+	 * @return List<Appointment>
+	 * @throws Exception
+	 */
 	public List<Appointment> findAppointmentsByGroup(long groupId) throws Exception {
 		return appointmentDao.findAppointmentsByGroup(groupId);
 	}
@@ -321,13 +337,23 @@ public class AppointmentServiceImpl  extends BaseServiceImpl<Appointment> implem
 
 	}
 	
+	/**
+	 * @Title: checkAppointmtShared
+	 * @Description: Function will check if the input appointmentId is
+	 * shared with the given accountId.
+	 * 
+	 * @param accountId
+	 * @param appointmtId
+	 * @return boolean
+	 * @throws Exception
+	 */
 	public boolean checkAppointmtShared(long accountId, long appointmtId) throws Exception {
 		try {
 			List<AppointmentAccountRef> refDtls = new ArrayList<AppointmentAccountRef>();
 			refDtls = appointRefDao.findByHql("from AppointmentAccountRef ref WHERE "
 						+ "ref.accountId=" + accountId 
 						+ " and ref.appointmentId=" + appointmtId
-						+ " and ref.expirationDate= null"
+						+ " and ref.expirationDate IS NULL"
 						);
 			if(refDtls == null || refDtls.size() < 1)
 				return false;

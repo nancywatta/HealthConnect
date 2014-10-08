@@ -70,12 +70,34 @@ public class DictionaryServiceImpl extends BaseServiceImpl<Dictionary> implement
 		return (ArrayList<Dictionary>)roles;
 	}
 
+	/**
+	 * @Title: findRoleByAccountIdAndGroupId
+	 * @Description: Function will return record from the DICTIONARY table 
+	 * stating the role of the input accountId within the given groupId.
+	 * 
+	 * @param accountId
+	 * @param groupId
+	 * @return Dictionary
+	 * @throws Exception
+	 */
 	public Dictionary findRoleByAccountIdAndGroupId(long accountId, long groupId)
 			throws Exception {
 		
 		return dictionaryDao.findRoleByAccountIdAndGroupId(accountId, groupId);
 	}
 	
+	/**
+	 * @Title: getRolesByGroupIdAccId
+	 * @Description: Function will return record from the DICTIONARY table 
+	 * stating the role of the input accountId within the given groupId, only
+	 * if the account is still active in the group i.e IS_ACTIVE is set as 'Y'
+	 * in MEMBER table.
+	 * 
+	 * @param accountId
+	 * @param groupId
+	 * @return List<Dictionary>
+	 * @throws Exception
+	 */
 	public List<Dictionary> getRolesByGroupIdAccId(long accountId, long groupId) throws Exception {
 		try {
 			List<Dictionary> roles = new ArrayList<Dictionary>();

@@ -17,11 +17,30 @@ public class AppointmentAccountRefServiceImpl extends
 	@Autowired
 	private AppointmentAccountRefDao aafDao;
 
+	/**
+	 * @Title: ifExist
+	 * @Description: Function will return rows from APP_ACC_REF table
+	 * based on input accountId and appointmentId.
+	 * 
+	 * @param accountId
+	 * @param appointmentId
+	 * @return AppointmentAccountRef
+	 * @throws Exception
+	 */
 	public AppointmentAccountRef ifExist(long accountId, long appointmentId)
 			throws Exception {
 		return aafDao.ifExist(accountId,appointmentId);
 	}
 	
+	/**
+	 * @Title: findByAppointmentId
+	 * @Description: Function will return all non expired entries from APP_ACC_REF table
+	 * based on input appointmentId.
+	 * 
+	 * @param appointmentId
+	 * @return List<AppointmentAccountRef>
+	 * @throws Exception
+	 */
 	public List<AppointmentAccountRef> findByAppointmentId(long appointmentId) throws Exception {
 		try {
 			List<AppointmentAccountRef> aarList = new ArrayList<AppointmentAccountRef>();

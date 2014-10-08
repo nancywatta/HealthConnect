@@ -184,18 +184,14 @@ public class AppointmentRestController {
 
 	}
 	
-	//TODO:doc
 	/**
 	 * 
 	 * @Title: shareAppointment 
-	 * 
-	 * 
-	 * 
-	 * @Description: Service will create appointment for the given accountId
-	 * and save details of the appointment in the APPOINTMENT table.
+	 * @Description: Service will share the given appointment with either the
+	 * entire group or with specific members based on input received.
 	 * If the appointment is shared with the group, the sharedType column
 	 * in the Appointment table will be set as 'G'.
-	 * If the appointment is shared with only specific members of the group
+	 * If the appointment is shared with only specific members of the group,
 	 * the sharedType column in the Appointment table will be set as 'M' and
 	 * details of the member will be saved in APP_ACC_REF table.
 	 *  Input member array is of the below format
@@ -203,36 +199,17 @@ public class AppointmentRestController {
 	 *    { "id":"1"
 	 *    },
 	 *    { "id":"2"
-	 *    },
+	 *    }
 	 *  ]
-	 *  Input Appointment object is of the below format
-	 *  {
-	 *    "name": "Appointment",
-	 *    "location": "Mercy Hospital",
-	 *    "startTime": "09:00:00",
-	 *    "endTime": "10:00:00",
-	 *    "executeTime": 1,
-	 *    "description": "Diabetes",
-	 *    "startDate": "2014-09-29 00:00:00",
-	 *    "endDate": "3014-09-29 00:00:00"
-	 *  }
-	 *  
-	 *  
-	 *  
-	 *  
-	 *  
-	 *  
+	 *  	
 	 * @param request
 	 * @param response
 	 * @param accountId 
-	 * @param groupId
+	 * @param appointmtId
 	 * @param members - optional 
-	 * @param appointment
 	 * @return HCMessage
 	 * @throws
 	 */
-	
-	
 	@RequestMapping(value="/shareAppointment",method = RequestMethod.POST
 			,headers="Accept=application/json"
 			)
@@ -270,7 +247,7 @@ public class AppointmentRestController {
 			
 			// check if the current user is a nurse or patient
 			if( (roles.get(0).getValue().compareTo("S")==0 ) ) {
-				throw new ValidationFailException("Support members are not allowed to change the share state of appointment");
+				throw new ValidationFailException("Support members are not allowed to share appointment");
 			}
 			
 			
@@ -289,9 +266,7 @@ public class AppointmentRestController {
 				appointmentService.setAppointmentMemberShare(accountId,groupId,appointmtId,members);
 			}
 			
-				
-			
-			notifyService.notify(accountId, "Appointment share state is successfully changed", "email");
+			notifyService.notify(accountId, "Appointment is shared successfully", "email");
 			
 			message.setSuccess();
 		}
@@ -392,10 +367,14 @@ public class AppointmentRestController {
 			if(appointment.getStartTime()!=null)
 				app.setStartTime(appointment.getStartTime());
 			
+			// set updated date as today's date in the APPOINTMENT table
 			app.setUpdatedDate(new Date());
 			
 			appointmentService.update(app);
 			
+			/* if the input expiration date is not null and the appointment is shared with
+			* specific members, then record in the APP_ACC_REF table should also be expired.
+			*/
 			if(appointment.getExpirationDate() != null 
 					&& app.getSharedType().compareTo("M") == 0) {
 				List<AppointmentAccountRef> aarList = null;
@@ -792,10 +771,6 @@ public class AppointmentRestController {
 			// filter appointment on basis of input Date
 			if(startDate !=null && endDate!=null) {
 				appointments = appointmentService.findAppByDate(appointments, startDate, endDate);
-			}
-			
-			for(Appointment a:appointments ) {
-			System.out.println(a.getId());
 			}
 			
 			message.setSuccess(appointments);

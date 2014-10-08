@@ -256,7 +256,7 @@ public class GroupServiceImpl extends BaseServiceImpl<Group> implements GroupSer
 	}
 	
 	/**
-	 * Function will get return all groups of input accountId.
+	 * Function will return all groups of input accountId.
 	 */
 	public List<Group> getGroupByAccId(long accountId)throws Exception {
 		List<Group> groupList = new ArrayList<Group>();
